@@ -1,0 +1,350 @@
+/* =========================================================================
+   Blueprint Design System · blueprint.css
+   版本: v0.1 · 2026-07-08
+   用途: 技术参考类文档(架构图/系统图/规范文档)的统一视觉层。
+   主题: 工程蓝图(technical blueprint) - 深靛蓝底 · 细网格 · 青色墨线。
+   用法: <link rel="stylesheet" href="design-system/blueprint.css"> 或内联。
+   规范说明: 见同目录 DESIGN-GUIDE.md
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1. DESIGN TOKENS (设计令牌)
+   ------------------------------------------------------------------------- */
+:root{
+  /* 背景 */
+  --bg:#091421;            /* 主背景:深靛蓝 */
+  --bg-2:#0b1a2c;          /* 次背景 */
+  --grid:rgba(110,190,255,.055);   /* 细网格线 */
+  --grid-2:rgba(110,190,255,.10);  /* 粗网格线 */
+
+  /* 文字(冷色谱) */
+  --ink:#dce8f5;           /* 主文字:冷白 */
+  --ink-dim:#8aa3c4;       /* 次要:蓝灰 */
+  --ink-faint:#5f7896;     /* 辅助/元信息 */
+
+  /* 线条与边框 */
+  --line:rgba(94,234,212,.28);       /* 青色墨线(主) */
+  --line-soft:rgba(94,234,212,.14);  /* 青色墨线(淡) */
+
+  /* 强调色(语义) */
+  --accent:#5eead4;        /* 主强调:青绿 - 编号/激活/数据流 */
+  --accent-2:#7dd3fc;      /* 次强调:天蓝 - 关系/链接 */
+  --warn:#fbbf24;          /* 警告:琥珀 - 边界/星标 */
+  --rose:#fda4af;          /* 占位:粉 - 待补充标签 */
+
+  /* 表面 */
+  --card:rgba(16,33,52,.55);
+  --card-border:rgba(94,234,212,.18);
+  --card-border-hover:rgba(94,234,212,.55);
+
+  /* 字体族 */
+  --mono:'IBM Plex Mono',ui-monospace,monospace;   /* 标注/编号/技术文本 */
+  --sans:'IBM Plex Sans',system-ui,sans-serif;      /* 正文 */
+  --serif:'Fraunces',Georgia,serif;                 /* 标题/展示 */
+}
+
+/* -------------------------------------------------------------------------
+   2. RESET & BASE (重置与基础)
+   ------------------------------------------------------------------------- */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  background-color:var(--bg);
+  /* 双层网格 + 双角光晕,营造蓝图氛围 */
+  background-image:
+    radial-gradient(1200px 600px at 80% -10%, rgba(94,234,212,.07), transparent 60%),
+    radial-gradient(900px 500px at -10% 20%, rgba(125,211,252,.06), transparent 55%),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(var(--grid-2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-2) 1px, transparent 1px);
+  background-size:auto,auto,28px 28px,28px 28px,140px 140px,140px 140px;
+  background-position:0 0,0 0,-1px -1px,-1px -1px,-1px -1px,-1px -1px;
+  line-height:1.6;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* 胶片颗粒叠层,增加蓝图质感(纯 SVG,无外部依赖) */
+body::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:1;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.7  0 0 0 0 0.9  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity:.5;mix-blend-mode:overlay;
+}
+
+/* -------------------------------------------------------------------------
+   3. LAYOUT (布局)
+   ------------------------------------------------------------------------- */
+.wrap{
+  position:relative;z-index:2;
+  max-width:1180px;margin:0 auto;padding:64px 32px 120px;
+}
+
+/* -------------------------------------------------------------------------
+   4. PAGE HEADER (页头)
+   ------------------------------------------------------------------------- */
+header{margin-bottom:56px;animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:14px;margin-bottom:22px;
+}
+.eyebrow::before{content:"";width:42px;height:1px;background:var(--accent);opacity:.7}
+h1{
+  font-family:var(--serif);font-weight:600;
+  font-size:clamp(40px,6vw,72px);line-height:1.02;letter-spacing:-.02em;
+  color:#f1f7ff;
+}
+h1 em{font-style:italic;font-weight:400;color:var(--accent)}
+.subtitle{margin-top:22px;max-width:680px;font-size:17px;color:var(--ink-dim)}
+.meta{
+  margin-top:30px;display:flex;flex-wrap:wrap;gap:10px 26px;
+  font-family:var(--mono);font-size:12px;color:var(--ink-faint);
+  border-top:1px dashed var(--line-soft);padding-top:18px;
+}
+.meta b{color:var(--ink-dim);font-weight:500}
+.meta .tag{
+  color:var(--accent);border:1px solid var(--line);
+  padding:3px 9px;border-radius:3px;letter-spacing:.08em;
+}
+
+/* -------------------------------------------------------------------------
+   5. SECTION HEAD (章节头: 编号 + 标题 + 渐隐线)
+   ------------------------------------------------------------------------- */
+.sec-head{display:flex;align-items:baseline;gap:16px;margin:72px 0 26px}
+.sec-head .idx{
+  font-family:var(--mono);font-size:13px;color:var(--accent);
+  border:1px solid var(--line);padding:3px 8px;border-radius:3px;
+}
+.sec-head h2{
+  font-family:var(--serif);font-weight:600;font-size:30px;letter-spacing:-.01em;color:#eaf2fb;
+}
+.sec-head .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+/* -------------------------------------------------------------------------
+   6. BLUEPRINT CANVAS (蓝图画布: 主图容器,带四角标注)
+   ------------------------------------------------------------------------- */
+.blueprint{
+  position:relative;border:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(94,234,212,.03), transparent 40%),var(--card);
+  border-radius:6px;padding:38px 26px 30px;
+  animation:rise .8s .1s cubic-bezier(.2,.7,.2,1) both;
+}
+.blueprint .corner{position:absolute;width:14px;height:14px;border:1px solid var(--accent);opacity:.7}
+.blueprint .corner.tl{top:10px;left:10px;border-right:0;border-bottom:0}
+.blueprint .corner.tr{top:10px;right:10px;border-left:0;border-bottom:0}
+.blueprint .corner.bl{bottom:10px;left:10px;border-right:0;border-top:0}
+.blueprint .corner.br{bottom:10px;right:10px;border-left:0;border-top:0}
+.blueprint .stamp{
+  position:absolute;top:14px;right:50%;transform:translateX(50%);
+  font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--ink-faint);
+}
+
+/* -------------------------------------------------------------------------
+   7. LAYER (分层块: 图中的每一层/组件块)
+   ------------------------------------------------------------------------- */
+.layer{
+  position:relative;border:1px solid var(--line-soft);
+  background:rgba(10,22,38,.5);border-radius:4px;padding:14px 18px;margin:0 auto;
+  transition:border-color .25s, background .25s, transform .25s;cursor:default;
+}
+.layer:hover{border-color:var(--card-border-hover);background:rgba(16,33,52,.7)}
+.layer .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.layer .num{
+  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--bg);
+  background:var(--accent);width:26px;height:26px;border-radius:50%;
+  display:grid;place-items:center;flex-shrink:0;
+}
+.layer .name{font-weight:600;font-size:16px;color:#eaf2fb;letter-spacing:.01em}
+.layer .name em{font-style:normal;color:var(--ink-faint);font-family:var(--mono);font-size:13px;font-weight:400;margin-left:8px}
+.layer .desc{font-size:13.5px;color:var(--ink-dim);font-family:var(--mono)}
+.layer.full{width:100%}
+.layer.wide{width:88%}
+
+/* 变体: 核心驱动层(大脑) - 强调边框 + 发光 */
+.layer.brain{
+  border-color:var(--accent);
+  background:linear-gradient(180deg,rgba(94,234,212,.10),rgba(94,234,212,.03));
+  box-shadow:0 0 0 1px rgba(94,234,212,.15), 0 12px 40px -18px rgba(94,234,212,.5);
+}
+.layer.brain .name{color:#f1fbf8}
+.brain-star{color:var(--warn);margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.2em}
+
+/* 变体: 横切层 - 左右延伸引线 */
+.layer.crosscut{position:relative}
+.layer.crosscut::before,.layer.crosscut::after{
+  content:"";position:absolute;top:50%;width:6%;height:1px;background:var(--line);
+}
+.layer.crosscut::before{left:-6%}
+.layer.crosscut::after{right:-6%}
+
+/* 变体: 基础设施 - 虚线 */
+.layer.foundation{border-style:dashed;color:var(--ink-dim);text-align:center}
+
+/* 变体: 离线旁路层(如评测) - 虚线 + 天蓝,与在线青绿横切区分 */
+.layer.offline{border-style:dashed;border-color:var(--accent-2);background:rgba(125,211,252,.05)}
+.layer.offline .num{background:var(--accent-2);color:var(--bg)}
+.layer.offline .name{color:#eaf6ff}
+.layer.offline .desc{color:var(--accent-2);opacity:.9}
+
+/* -------------------------------------------------------------------------
+   8. CONNECTORS (连接器: 层间数据流)
+   ------------------------------------------------------------------------- */
+.conn{width:2px;height:22px;margin:0 auto;background:linear-gradient(var(--accent),var(--line));opacity:.6}
+/* 一分多连接器(如:大脑分叉到四列) */
+.conn.split{position:relative;height:30px;background:transparent}
+.conn.split .v{position:absolute;left:50%;top:0;bottom:50%;width:2px;background:var(--accent);opacity:.55;transform:translateX(-50%)}
+.conn.split .h{position:absolute;left:12.5%;right:12.5%;top:50%;height:2px;background:var(--accent);opacity:.55}
+.conn.split .legs{position:absolute;inset:50% 12.5% 0 12.5%}
+.conn.split .legs span{position:absolute;top:0;width:2px;height:50%;background:var(--accent);opacity:.55}
+.conn.split .legs span:nth-child(1){left:0}
+.conn.split .legs span:nth-child(2){left:33.33%;transform:translateX(-1px)}
+.conn.split .legs span:nth-child(3){left:66.66%;transform:translateX(-1px)}
+.conn.split .legs span:nth-child(4){right:0}
+
+/* -------------------------------------------------------------------------
+   9. COLUMNS (多列能力源: 四列等宽)
+   ------------------------------------------------------------------------- */
+.columns{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;width:100%}
+.col .layer{width:100%;padding:14px 12px;text-align:center}
+.col .layer .num{margin:0 auto 8px}
+.col .layer .name{display:block;font-size:14.5px}
+.col .layer .name em{display:block;margin:4px 0 0;font-size:11px}
+.col .layer .sub{display:block;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);line-height:1.5}
+
+/* 数据流文字标注 */
+.flow-label{
+  font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);
+  letter-spacing:.18em;text-transform:uppercase;text-align:center;margin:8px 0;
+}
+
+/* -------------------------------------------------------------------------
+   10. LEGEND (图例)
+   ------------------------------------------------------------------------- */
+.legend{display:flex;flex-wrap:wrap;gap:14px 26px;margin-top:24px;font-family:var(--mono);font-size:12px;color:var(--ink-dim)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.swatch{width:14px;height:14px;border-radius:3px;border:1px solid var(--line)}
+.swatch.brain{background:linear-gradient(180deg,rgba(94,234,212,.4),rgba(94,234,212,.1));border-color:var(--accent)}
+.swatch.cross{background:rgba(10,22,38,.5);border-color:var(--line-soft)}
+.swatch.found{background:transparent;border-style:dashed;border-color:var(--line)}
+.swatch.offline{background:rgba(125,211,252,.12);border-style:dashed;border-color:var(--accent-2)}
+.swatch.accent{background:var(--accent);border:0}
+
+/* -------------------------------------------------------------------------
+   11. CARDS (组件卡片: 详情块)
+   ------------------------------------------------------------------------- */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card{
+  border:1px solid var(--card-border);background:var(--card);
+  border-radius:6px;padding:24px 24px 20px;
+  transition:border-color .25s, transform .25s, box-shadow .25s;
+  scroll-margin-top:80px;
+}
+.card:hover{border-color:var(--card-border-hover);transform:translateY(-2px);box-shadow:0 18px 50px -28px rgba(94,234,212,.45)}
+.card .chead{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.card .cnum{
+  font-family:var(--mono);font-weight:600;font-size:14px;color:var(--bg);
+  background:var(--accent);width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;flex-shrink:0;
+}
+.card .cname{font-family:var(--serif);font-weight:600;font-size:21px;color:#eef5fd;line-height:1.2}
+.card .crole{font-family:var(--mono);font-size:11.5px;color:var(--accent);letter-spacing:.1em;margin-top:2px}
+.card .cbody{font-size:14.5px;color:var(--ink-dim)}
+.card .cbody p+p{margin-top:10px}
+/* 边界提示: 琥珀色左边线 */
+.card .boundary{
+  margin-top:14px;padding:10px 14px;border-left:2px solid var(--warn);
+  background:rgba(251,191,36,.06);font-size:13px;color:#fde9b8;
+  font-family:var(--mono);line-height:1.55;
+}
+.card .boundary b{color:var(--warn)}
+
+/* 可扩展占位: 折叠的"深入展开"区,默认收起,内放待补充标签 */
+details.deep{margin-top:16px;border-top:1px dashed var(--line-soft);padding-top:14px}
+details.deep summary{
+  cursor:pointer;list-style:none;font-family:var(--mono);font-size:12.5px;
+  color:var(--accent);letter-spacing:.08em;display:flex;align-items:center;gap:8px;user-select:none;
+}
+details.deep summary::-webkit-details-marker{display:none}
+details.deep summary::before{content:"▸";transition:transform .2s}
+details.deep[open] summary::before{transform:rotate(90deg)}
+details.deep .placeholder{
+  margin-top:12px;padding:16px;border:1px dashed var(--line-soft);border-radius:4px;
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);line-height:1.7;
+}
+details.deep .placeholder .ph-tag{color:var(--rose)}
+
+/* -------------------------------------------------------------------------
+   12. RELATIONS (关系列表)
+   ------------------------------------------------------------------------- */
+.relations{display:grid;grid-template-columns:1fr;gap:12px}
+.rel{
+  display:flex;gap:16px;align-items:flex-start;
+  border:1px solid var(--line-soft);background:rgba(10,22,38,.4);
+  border-radius:5px;padding:16px 20px;
+}
+.rel .rk{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid var(--line);border-radius:3px;padding:2px 8px;flex-shrink:0}
+.rel .rt{font-size:14.5px;color:var(--ink)}
+.rel .rt b{color:var(--accent-2);font-weight:600}
+
+/* -------------------------------------------------------------------------
+   13. FOOTER (页脚)
+   ------------------------------------------------------------------------- */
+footer{
+  margin-top:90px;padding-top:24px;border-top:1px dashed var(--line-soft);
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(--line)}
+
+/* -------------------------------------------------------------------------
+   14. MOTION (动效)
+   ------------------------------------------------------------------------- */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.layer{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+/* 交错入场(staggered) - 选择器按文档顺序调 delay */
+.blueprint .layer:nth-child(2){animation-delay:.15s}
+.blueprint .layer:nth-child(4){animation-delay:.25s}
+.blueprint .layer:nth-child(6){animation-delay:.35s}
+.card{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+.card:nth-child(1){animation-delay:.05s}.card:nth-child(2){animation-delay:.1s}
+.card:nth-child(3){animation-delay:.15s}.card:nth-child(4){animation-delay:.2s}
+.card:nth-child(5){animation-delay:.25s}.card:nth-child(6){animation-delay:.3s}
+.card:nth-child(7){animation-delay:.35s}.card:nth-child(8){animation-delay:.4s}
+.card:nth-child(9){animation-delay:.45s}
+/* 跳转命中高亮 */
+.card.flash{animation:flash 1.2s ease}
+@keyframes flash{0%{box-shadow:0 0 0 2px var(--accent)}100%{box-shadow:0 0 0 2px transparent}}
+
+/* -------------------------------------------------------------------------
+   15. RESPONSIVE (响应式断点)
+   ------------------------------------------------------------------------- */
+@media (max-width:880px){
+  .columns{grid-template-columns:repeat(2,1fr)}
+  .cards{grid-template-columns:1fr}
+  .wrap{padding:44px 18px 80px}
+}
+@media (max-width:520px){
+  .columns{grid-template-columns:1fr}
+  .conn.split .legs span:nth-child(2),
+  .conn.split .legs span:nth-child(3){display:none}
+}
+
+/* -------------------------------------------------------------------------
+   16. PRINT (打印: 反转为白底,省墨)
+   ------------------------------------------------------------------------- */
+@media print{
+  body{background:#fff;color:#0b1a2c}
+  body::before{display:none}
+  .wrap{max-width:none}
+  .blueprint,.card,.rel,.layer{border-color:#9bb !important;background:#fff !important;box-shadow:none !important}
+  .layer .num,.card .cnum{background:#0b1a2c !important;color:#fff !important}
+  h1,.layer .name,.card .cname,h2{color:#0b1a2c !important}
+  .layer .desc,.card .cbody,.subtitle,.rel .rt{color:#334 !important}
+  details.deep .placeholder{border-color:#bbc !important;color:#556 !important}
+  footer{color:#668}
+}

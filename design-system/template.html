@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!--
+  Blueprint 设计系统 · 文档骨架模板
+  用法: 复制本文件到项目根或子目录, 只改 <!-- FILL --> 标记处的内容, 不要动样式。
+  规范: 见 ../AGENTS.md 与 blueprint.css 注释。
+  字体: head 已引入 Fraunces + IBM Plex Sans + IBM Plex Mono (必须保留)。
+  样式路径规则 (重要):
+    - 本模板当前位于 design-system/ 内, 用同级 href="blueprint.css" 即可预览。
+    - 把模板复制到 docs/ 时, 把 href 改为 "../design-system/blueprint.css"。
+    - 本项目默认使用外链样式,不要为新文档复制整份 CSS。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title><!-- FILL: 文档标题 -->文档标题 · Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- ============ 样式: 外链 blueprint.css ============ -->
+<!-- 当前位置(design-system/内)用 href="blueprint.css"; 复制到 docs/ 改为 "../design-system/blueprint.css" -->
+<link rel="stylesheet" href="blueprint.css" />
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <div class="eyebrow"><!-- FILL: 主题域, 如 "AI Agent · System Architecture" -->DOMAIN · SUBJECT</div>
+    <h1><!-- FILL: 主标题 -->主标题 <em>副标题</em></h1>
+    <p class="subtitle"><!-- FILL: 一句话描述这份文档解决什么 -->一句话说明文档用途。</p>
+    <div class="meta">
+      <span><b>版本</b> v0.1 · 基础骨架</span>
+      <span><b>生成</b> <!-- FILL: YYYY-MM-DD -->2026-07-08</span>
+      <span><b>主题</b> 技术蓝图</span>
+      <span class="tag"><!-- FILL: N COMPONENTS -->N COMPONENTS</span>
+    </div>
+  </header>
+
+  <!-- ============ FIG.01 主图 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="idx">FIG.01</span>
+      <h2><!-- FILL: 章节名 -->整体图</h2>
+      <span class="rule"></span>
+    </div>
+
+    <div class="blueprint">
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+      <span class="stamp"><!-- FILL: 图内标注 -->BLUEPRINT · TOP → BOTTOM</span>
+
+      <!-- 普通全宽层 -->
+      <div class="layer full" onclick="jump(1)">
+        <div class="row">
+          <span class="num">1</span>
+          <span class="name"><!-- FILL -->层名 <em>English</em></span>
+          <span class="desc"><!-- FILL -->一行说明</span>
+        </div>
+      </div>
+      <div class="flow-label">↓ 数据流文字标注 ↓</div>
+
+      <!-- 横切层(变体, 在线贯穿实时流) -->
+      <div class="layer full crosscut" onclick="jump(2)">
+        <div class="row">
+          <span class="num">2</span>
+          <span class="name"><!-- FILL -->横切层 <em>Cross-cutting</em></span>
+          <span class="desc"><!-- FILL -->说明</span>
+        </div>
+      </div>
+      <!-- 离线旁路层(变体, 如评测; 不贯穿实时流, --accent-2 天蓝+虚线区分) -->
+      <div class="layer full offline">
+        <div class="row">
+          <span class="name">离线旁路层 <em>Offline · 如 Evals</em></span>
+          <span class="desc">消费在线层 trace, 离线打分</span>
+        </div>
+      </div>
+      <div class="conn"></div>
+
+      <!-- 核心层(大脑, 变体) -->
+      <div class="layer full brain" onclick="jump(3)">
+        <div class="row">
+          <span class="num">3</span>
+          <span class="name"><!-- FILL -->核心层 <em>Core</em></span>
+          <span class="desc"><!-- FILL -->说明</span>
+          <span class="brain-star">★ DRIVER</span>
+        </div>
+      </div>
+
+      <!-- 一分多连接器 → 多列 -->
+      <div class="conn split">
+        <div class="v"></div><div class="h"></div>
+        <div class="legs"><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="columns">
+        <div class="col"><div class="layer" onclick="jump(4)">
+          <span class="num">4</span>
+          <span class="name">组件A<em>Comp A</em></span>
+          <span class="sub">说明<br/>子标注</span>
+        </div></div>
+        <div class="col"><div class="layer" onclick="jump(5)">
+          <span class="num">5</span>
+          <span class="name">组件B<em>Comp B</em></span>
+          <span class="sub">说明</span>
+        </div></div>
+        <div class="col"><div class="layer" onclick="jump(6)">
+          <span class="num">6</span>
+          <span class="name">组件C<em>Comp C</em></span>
+          <span class="sub">说明</span>
+        </div></div>
+        <div class="col"><div class="layer" onclick="jump(7)">
+          <span class="num">7</span>
+          <span class="name">组件D<em>Comp D</em></span>
+          <span class="sub">说明</span>
+        </div></div>
+      </div>
+
+      <!-- 基础设施(虚线) -->
+      <div class="layer full foundation">
+        <div class="row" style="justify-content:center">
+          <span class="name" style="font-family:var(--mono);font-size:13px"><!-- FILL -->基础设施 · 沙箱 · 运行时</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><span class="swatch brain"></span>核心驱动</span>
+      <span><span class="swatch cross"></span>横切层</span>
+      <span><span class="swatch found"></span>基础设施</span>
+      <span style="margin-left:auto;color:var(--ink-faint)">提示: 点击图中组件 → 跳转详情</span>
+    </div>
+  </section>
+
+  <!-- ============ FIG.02 组件详情卡 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="idx">FIG.02</span>
+      <h2><!-- FILL -->组件构成</h2>
+      <span class="rule"></span>
+    </div>
+
+    <div class="cards">
+      <!-- 卡片模板: 复制本块, 改 id 和内容。锚点 id 必须与主图 onclick 数字一致 -->
+      <div class="card" id="comp-1">
+        <div class="chead"><span class="cnum">1</span>
+          <div><div class="cname"><!-- FILL -->组件名</div><div class="crole"><!-- FILL -->ROLE</div></div></div>
+        <div class="cbody">
+          <p><!-- FILL -->定位与职责描述。</p>
+          <p><b>职责</b>:<!-- FILL -->细化职责。</p>
+        </div>
+        <div class="boundary"><b>边界</b> · <!-- FILL -->一句话点明职责边界。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> <!-- FILL -->该单元下一步要填的子主题(用 · 分隔)</div>
+        </details>
+      </div>
+
+      <!-- 更多卡片: id="comp-2" / "comp-3" ... 按需复制 -->
+      <div class="card" id="comp-2">
+        <div class="chead"><span class="cnum">2</span>
+          <div><div class="cname">组件名 2</div><div class="crole">ROLE</div></div></div>
+        <div class="cbody"><p>定位与职责。</p></div>
+        <div class="boundary"><b>边界</b> · 说明。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> 子主题</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FIG.03 关系 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="idx">FIG.03</span>
+      <h2><!-- FILL -->关键关系</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="relations">
+      <div class="rel"><span class="rk">R1</span>
+        <span class="rt"><b><!-- FILL -->关系名</b>:<!-- FILL -->说明。</span></div>
+      <div class="rel"><span class="rk">R2</span>
+        <span class="rt"><b>关系名</b>:说明。</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span><!-- FILL -->文档名 · v0.1 · 2026-07-08</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+
+</div>
+
+<script>
+  // 点击主图组件块 → 滚动到详情卡并高亮
+  function jump(n){
+    const el=document.getElementById('comp-'+n);
+    if(!el) return;
+    el.scrollIntoView({behavior:'smooth',block:'start'});
+    el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');
+  }
+  // 键盘 1-9 跳转
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+    const k=parseInt(e.key,10);if(k>=1&&k<=9)jump(k);
+  });
+</script>
+</body>
+</html>

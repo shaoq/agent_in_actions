@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Agent 系统架构 · Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <div class="eyebrow">AI Agent · System Architecture</div>
+    <h1>AI Agent <em>系统架构</em><br/>Blueprint</h1>
+    <p class="subtitle">
+      一张整体的、合理的 agent 架构地图。九个组件、七条关键关系。
+      本文档为基础骨架，后续按组件编号逐个深入补充。
+    </p>
+    <div class="meta">
+      <span><b>版本</b> v0.1 · 基础骨架</span>
+      <span><b>生成</b> 2026-07-08</span>
+      <span><b>主题</b> 技术蓝图 / Technical Blueprint</span>
+      <span class="tag">9 COMPONENTS · 7 RELATIONS</span>
+    </div>
+  </header>
+
+  <!-- ============ BLUEPRINT DIAGRAM ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="idx">FIG.01</span>
+      <h2>整体架构图</h2>
+      <span class="rule"></span>
+    </div>
+
+    <div class="blueprint">
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+      <span class="stamp">SYSTEM BLUEPRINT · DATA FLOWS TOP → BOTTOM</span>
+
+      <!-- ① 接入层 -->
+      <div class="layer full" onclick="jump(1)">
+        <div class="row">
+          <span class="num">1</span>
+          <span class="name">交互与接入层 <em>Interaction / Channel</em></span>
+          <span class="desc">用户 · 外部系统 ⇄ 渠道适配(Web·语音·IM·IDE) ⇄ 会话管理</span>
+        </div>
+      </div>
+      <div class="flow-label">↓ 所有进 / 出请求都穿过治理层 ↓</div>
+
+      <!-- ⑦ 安全与治理横切(在线) -->
+      <div class="layer full crosscut" onclick="jump(7)">
+        <div class="row">
+          <span class="num">7</span>
+          <span class="name">安全与治理层 <em>Security & Governance · 在线横切</em></span>
+          <span class="desc">安全防护(prompt injection/护栏/数据安全) ｜ 权限/审计 ｜ trace/监测/成本预算</span>
+        </div>
+      </div>
+      <!-- ⑧ 评测(离线旁路,消费 ⑦ trace) -->
+      <div class="flow-label">⑦ 在线·每次请求穿过&nbsp;&nbsp;⟂&nbsp;&nbsp;⑧ 离线·周期旁路(消费 ⑦ trace → 反馈 ②)</div>
+      <div class="layer full offline" onclick="jump(8)">
+        <div class="row">
+          <span class="num">8</span>
+          <span class="name">评测层 <em>Evals · 离线旁路</em></span>
+          <span class="desc">功能(评测集/LLM-as-judge/回归/基准) · 安全(红队/能力扫描/越狱)</span>
+        </div>
+      </div>
+      <div class="conn"></div>
+
+      <!-- ② 编排层（大脑） -->
+      <div class="layer full brain" onclick="jump(2)">
+        <div class="row">
+          <span class="num">2</span>
+          <span class="name">编排控制层 <em>Orchestrator · 系统大脑</em></span>
+          <span class="desc">单 agent 循环 ｜ 多 agent 协作 ｜ 状态机 / 路由 ｜ 规划 ⇄ 反思</span>
+          <span class="brain-star">★ DRIVER</span>
+        </div>
+      </div>
+
+      <!-- 分叉到四列 -->
+      <div class="conn split">
+        <div class="v"></div><div class="h"></div>
+        <div class="legs"><span></span><span></span><span></span><span></span></div>
+      </div>
+
+      <!-- 四列 ③④⑤⑥ -->
+      <div class="columns">
+        <div class="col"><div class="layer" onclick="jump(3)">
+          <span class="num">3</span>
+          <span class="name">推理内核<em>Reasoning Core</em></span>
+          <span class="sub">LLM + 推理模式<br/>ReAct / Plan / Reflexion</span>
+        </div></div>
+        <div class="col"><div class="layer" onclick="jump(4)">
+          <span class="num">4</span>
+          <span class="name">工具 / 动作<em>Tools / Actions</em></span>
+          <span class="sub">MCP · browser-use<br/>computer-use · skills</span>
+        </div></div>
+        <div class="col"><div class="layer" onclick="jump(5)">
+          <span class="num">5</span>
+          <span class="name">记忆系统<em>Memory</em></span>
+          <span class="sub">情景 · 语义 · working<br/>(跨会话)</span>
+        </div></div>
+        <div class="col"><div class="layer" onclick="jump(6)">
+          <span class="num">6</span>
+          <span class="name">知识 / 检索<em>Knowledge / RAG</em></span>
+          <span class="sub">向量库 · 文档 · API<br/>(外部既有信息)</span>
+        </div></div>
+      </div>
+
+      <div class="flow-label">↓ 推理内核 ③ 统一经模型网关 ⑨ 取用模型能力 ↓</div>
+
+      <!-- ⑨ 模型网关 -->
+      <div class="layer full" onclick="jump(9)">
+        <div class="row">
+          <span class="num">9</span>
+          <span class="name">模型网关 <em>Model Gateway</em></span>
+          <span class="desc">多模型路由 · 降本策略 · 缓存 · 故障转移</span>
+        </div>
+      </div>
+      <div class="conn"></div>
+
+      <!-- 基础设施 -->
+      <div class="layer full foundation">
+        <div class="row" style="justify-content:center">
+          <span class="name" style="font-family:var(--mono);font-size:13px">基础设施 · 沙箱执行环境(执行隔离安全) · 运行时 · 存储 · 网络</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><span class="swatch brain"></span>核心驱动层(大脑)</span>
+      <span><span class="swatch cross"></span>在线横切层(贯穿实时流)</span>
+      <span><span class="swatch offline"></span>离线旁路层(评测)</span>
+      <span><span class="swatch found"></span>基础设施</span>
+      <span><span class="swatch accent"></span>编号 = 可深入单元</span>
+      <span style="margin-left:auto;color:var(--ink-faint)">提示:点击图中组件 → 跳转到详情卡片</span>
+    </div>
+  </section>
+
+  <!-- ============ COMPONENT CARDS ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="idx">FIG.02</span>
+      <h2>组件构成</h2>
+      <span class="rule"></span>
+    </div>
+
+    <div class="cards">
+
+      <div class="card" id="comp-1">
+        <div class="chead"><span class="cnum">1</span>
+          <div><div class="cname">交互与接入层</div><div class="crole">INTERACTION / CHANNEL</div></div></div>
+        <div class="cbody">
+          <p>agent 与外界的边界。把不同渠道(网页、语音、IM、IDE)的输入统一成内部表示,并管理"一次会话"的生命周期。</p>
+          <p><b>职责</b>:渠道适配、会话状态持有、人在回路入口。它不思考,只翻译和持会话。</p>
+        </div>
+        <div class="boundary"><b>边界</b> · 不含推理;多渠道协议差异在此收敛。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> 内部构成 · 子组件 · 渠道适配模式 · 会话生命周期 · 设计权衡</div>
+        </details>
+      </div>
+
+      <div class="card" id="comp-2">
+        <div class="chead"><span class="cnum">2</span>
+          <div><div class="cname">编排控制层 <span style="font-size:14px;color:var(--warn)">★</span></div><div class="crole">ORCHESTRATOR · 系统大脑</div></div></div>
+        <div class="cbody">
+          <p>整个系统唯一驱动者。决定"下一步做什么":再想一轮、调工具、查记忆、还是拆任务给子 agent。</p>
+          <p><b>职责</b>:单 agent 循环、多 agent 协作(orchestrator-workers / 层级 / 黑板)、状态机、规划-反思循环。<b>所有其他组件都由它驱动。</b></p>
+        </div>
+        <div class="boundary"><b>边界</b> · 本月研究里最被强调的一层;架构分水岭。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> 单 vs 多 agent 决策 · 协作模式对比 · 状态机选型 · 规划-反思循环</div>
+        </details>
+      </div>
+
+      <div class="card" id="comp-3">
+        <div class="chead"><span class="cnum">3</span>
+          <div><div class="cname">推理内核</div><div class="crole">REASONING CORE</div></div></div>
+        <div class="cbody">
+          <p>agent 的"思考引擎":LLM + 推理模式(ReAct、Plan-and-Execute、Reflexion 等)。</p>
+          <p><b>职责</b>:给定上下文,产出下一步判断。<b>本身无状态、不记事、不直接动手。</b></p>
+        </div>
+        <div class="boundary"><b>边界</b> · 永不直连模型厂商,必经 ⑨ 模型网关。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> 推理模式对比 · 自适应思考/effort · 模型选型分流</div>
+        </details>
+      </div>
+
+      <div class="card" id="comp-4">
+        <div class="chead"><span class="cnum">4</span>
+          <div><div class="cname">工具 / 动作层</div><div class="crole">TOOLS / ACTIONS</div></div></div>
+        <div class="cbody">
+          <p>agent 的"手和脚"。"能聊天→能动手"转变的落点:MCP 工具、浏览器操作、computer-use、可复用 skills。</p>
+          <p><b>职责</b>:声明能力 + 调用协议。<b>动作的真正执行下沉到 ⑨ 的沙箱。</b></p>
+        </div>
+        <div class="boundary"><b>边界</b> · 声明在此,执行在沙箱;不裸跑生产环境。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> MCP 协议 · browser/computer-use 子系统 · skills 封装 · action 工具占比趋势</div>
+        </details>
+      </div>
+
+      <div class="card" id="comp-5">
+        <div class="chead"><span class="cnum">5</span>
+          <div><div class="cname">记忆系统 <span style="font-size:14px;color:var(--accent)">★</span></div><div class="crole">MEMORY · 分水岭</div></div></div>
+        <div class="cbody">
+          <p>agent 自己产生的状态历史,跨会话复用。分三类:情景(发生过什么)、语义(持久事实/业务上下文)、working(当前任务草稿)。</p>
+          <p><b>职责</b>:把记忆当设计时一等公民,而非事后补丁。</p>
+        </div>
+        <div class="boundary"><b>边界</b> · 记忆是 agent"经历"出来的;和 ⑥ 知识(外部已有)严格分离。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> 三类记忆存储选型 · 读写时机 · 遗忘策略 · memory files 实战</div>
+        </details>
+      </div>
+
+      <div class="card" id="comp-6">
+        <div class="chead"><span class="cnum">6</span>
+          <div><div class="cname">知识 / 检索</div><div class="crole">KNOWLEDGE / RAG</div></div></div>
+        <div class="cbody">
+          <p>外部既有的信息库:文档、向量库、API 数据。RAG、检索增强归这里。当 agent 自己记忆不够时,来这里查。</p>
+          <p><b>职责</b>:提供事实依据,降低幻觉。</p>
+        </div>
+        <div class="boundary"><b>边界</b> · 只读为主;不承载 agent 的对话历史(那是 ⑤)。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> 检索策略 · 向量库选型 · chunking · 混合检索 · 与记忆协作</div>
+        </details>
+      </div>
+
+      <div class="card" id="comp-7">
+        <div class="chead"><span class="cnum">7</span>
+          <div><div class="cname">治理与可观测层 <span style="font-size:14px;color:var(--accent-2)">⇆</span></div><div class="crole">GOVERNANCE · 横切</div></div></div>
+        <div class="cbody">
+          <p>在线横切的防护与监督。三组职责:</p>
+          <p><b>安全防护</b>:prompt injection 防御 · 输入/输出护栏 · 数据安全(PII/脱敏) · 内容安全。</p>
+          <p><b>访问控制</b>:权限 · 授权 · 审计(进出都校验、可追溯)。</p>
+          <p><b>运行监督</b>:trace · 失败监测 · 成本预算/限流。<b>每次实时请求都过它,不参与推理,但是上线前置条件。</b>离线安全评测见 ⑧,执行隔离见 ⑨。</p>
+        </div>
+        <div class="boundary"><b>边界</b> · 只管"在线·每次请求";离线(安全)评测归 ⑧,执行隔离(沙箱)归 ⑨,成本策略归 ⑨。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> prompt injection 防御 · 护栏蓝图 · 权限模型 · 审计 · 数据安全/PII · 人在回路</div>
+        </details>
+      </div>
+
+      <div class="card" id="comp-8">
+        <div class="chead"><span class="cnum">8</span>
+          <div><div class="cname">评测层 <span style="font-size:14px;color:var(--accent-2)">⟂</span></div><div class="crole">EVALS · 离线旁路</div></div></div>
+        <div class="cbody">
+          <p>回答"agent 干得好不好、有没有退化、<b>危不危险</b>"。两类评测:</p>
+          <p><b>功能</b>:golden cases、自动评分(LLM-as-judge/规则)、回归测试、基准对标(Terminal-Bench)、版本 A/B。</p>
+          <p><b>安全</b>:红队测试、能力扫描(MakerChecker 类)、越狱测试。<b>离线/周期度量,不参与实时请求;消费 ⑦ 的 trace,结果反馈 ②。</b></p>
+        </div>
+        <div class="boundary"><b>边界</b> · 离线,不在请求路径;含安全评测;与 ⑦(在线防护)是上下游而非同层。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> 评测集构建 · LLM-as-judge · 回归策略 · 基准选型 · 红队/越狱 · 离线/在线 eval 分界</div>
+        </details>
+      </div>
+
+      <div class="card" id="comp-9">
+        <div class="chead"><span class="cnum">9</span>
+          <div><div class="cname">模型网关 + 基础设施</div><div class="crole">MODEL GATEWAY · INFRA</div></div></div>
+        <div class="cbody">
+          <p>推理内核的"供水系统"。模型网关统一处理多模型路由、降本策略(开源/前沿分流)、缓存、故障转移;底下是沙箱执行环境和运行时存储。</p>
+          <p><b>职责</b>:把模型能力从 ③ 解耦,这是控成本、可切供应商的关键。成本<b>策略</b>归此,成本<b>预算/限流</b>归 ⑦。</p>
+        </div>
+        <div class="boundary"><b>边界</b> · 所有模型调用必经此;<b>执行隔离(沙箱)</b>在此 - 防 agent 裸跑/能力溢出。</div>
+        <details class="deep"><summary>深入展开(待补充)</summary>
+          <div class="placeholder"><span class="ph-tag">[ 待补充 ]</span> 多模型路由策略 · 降本策略 · 缓存 · 故障转移 · 沙箱/执行隔离</div>
+        </details>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ RELATIONS ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="idx">FIG.03</span>
+      <h2>七条关键关系</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="relations">
+      <div class="rel"><span class="rk">R1</span>
+        <span class="rt"><b>② 是唯一驱动者</b>:③④⑤⑥ 都是被编排层调用的"能力源",彼此不直接耦合,靠 ② 协调。</span></div>
+      <div class="rel"><span class="rk">R2</span>
+        <span class="rt"><b>⑦ 在线横切一切</b>:任何请求进、任何动作出,都强制穿过治理层,没有旁路。</span></div>
+      <div class="rel"><span class="rk">R3</span>
+        <span class="rt"><b>③ 经 ⑨ 取模型</b>:推理内核永远不直连模型厂商,必经网关,才能路由、降本、故障转移。</span></div>
+      <div class="rel"><span class="rk">R4</span>
+        <span class="rt"><b>⑤ 与 ⑥ 分离</b>:记忆是私历、知识是公库,混在一起是常见架构错误。</span></div>
+      <div class="rel"><span class="rk">R5</span>
+        <span class="rt"><b>④ 的执行下沉 ⑨</b>:动作声明在 ④,真实执行在沙箱,避免 agent 裸跑生产环境。</span></div>
+      <div class="rel"><span class="rk">R6</span>
+        <span class="rt"><b>⑧ 评测是离线旁路</b>:消费 ⑦ 的 trace 对行为打分,结果反馈 ② 优化;不进实时请求路径。</span></div>
+      <div class="rel"><span class="rk">R7</span>
+        <span class="rt"><b>安全是横切,三处分布</b>:在线防护归 ⑦、离线安全评测归 ⑧、执行隔离(沙箱)归 ⑨;不单建安全层。</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>AI Agent 系统架构 · Blueprint v0.1 · 2026-07-08</span>
+    <span>逐个组件深入 → 报编号即可 · 数据源自 /last30days 2026-07 社区研究</span>
+  </footer>
+
+</div>
+
+<script>
+  function jump(n){
+    const el=document.getElementById('comp-'+n);
+    if(!el) return;
+    el.scrollIntoView({behavior:'smooth',block:'start'});
+    el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');
+    // open its deep-dive details for attention
+  }
+  // keyboard: number keys 1-9 jump to component
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+    const k=parseInt(e.key,10);if(k>=1&&k<=9)jump(k);
+  });
+</script>
+</body>
+</html>
