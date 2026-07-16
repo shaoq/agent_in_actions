@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent 应用工程师面试题库 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">INTERVIEW · QUESTION BANK</div>
+    <h1>Agent 应用工程师面试题库</h1>
+    <p class="subtitle">围绕 Agent 九层架构建立通用面试问题入口。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../docs/index.html">学习首页</a>
+      <a href="../roadmap/learning-plan.html">学习路线</a>
+      <a href="../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../docs/00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>Agent 应用工程师面试题库</h1>
+<p>本文件是跨主题问题索引。包含短回答、深入回答、追问链和工程表达的专题题集:</p>
+<ul>
+<li><a href="01-orchestration-questions.html">01 编排控制层面试题</a></li>
+</ul>
+<h2>架构总览</h2>
+<ol>
+<li>一个生产级 Agent 应用通常包含哪些层?</li>
+<li>Agent 和普通 LLM Chatbot 的核心区别是什么?</li>
+<li>编排层为什么是 Agent 系统的“大脑”?</li>
+<li>为什么推理内核不应该直接调用模型厂商 API?</li>
+<li>单 Agent 和多 Agent 架构分别适合什么场景?</li>
+</ol>
+<h2>工具调用</h2>
+<ol>
+<li>Tool calling 的关键风险有哪些?</li>
+<li>如何设计工具权限模型?</li>
+<li>工具调用失败时应该怎么重试?</li>
+<li>什么是幂等工具? 为什么 Agent 工具尤其需要幂等?</li>
+<li>MCP 解决了什么问题?</li>
+</ol>
+<h2>RAG 与记忆</h2>
+<ol>
+<li>RAG 和 Memory 的区别是什么?</li>
+<li>chunking 策略会如何影响检索质量?</li>
+<li>什么时候需要 rerank?</li>
+<li>Agent 的长期记忆应该如何写入?</li>
+<li>如何避免错误记忆污染后续行为?</li>
+</ol>
+<h2>评测与可观测</h2>
+<ol>
+<li>为什么 Agent 需要 evals?</li>
+<li>离线 eval 和在线监控的区别是什么?</li>
+<li>LLM-as-judge 有什么风险?</li>
+<li>如何设计一个 Agent 回归测试集?</li>
+<li>trace 在 Agent 调试中有什么作用?</li>
+</ol>
+<h2>安全与治理</h2>
+<ol>
+<li>如何防 prompt injection?</li>
+<li>Agent 执行动作前需要哪些权限检查?</li>
+<li>如何设计人在回路?</li>
+<li>如何控制 Agent 成本?</li>
+<li>沙箱在 Agent 系统中解决什么问题?</li>
+</ol>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../assessment/01-orchestration-checklist.html">← 上一步</a>
+    <a href="01-orchestration-questions.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>Agent 应用工程师面试题库 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>编排控制层理论课程 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">L2 · ORCHESTRATION</div>
+    <h1>编排控制层理论课程</h1>
+    <p class="subtitle">按顺序学习编排控制的五个理论单元。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../index.html">学习首页</a>
+      <a href="../../roadmap/learning-plan.html">学习路线</a>
+      <a href="../../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>编排控制层理论课程</h1>
+<h2>定位</h2>
+<p>本课程属于 L2 组件理论深潜。目标是在阅读代码前,充分理解编排控制层的职责、状态、模式、可靠性和 Multi-Agent 边界。</p>
+<p>前置条件:</p>
+<ol>
+<li>阅读<a href="../foundations/01-agent-basics.html">Agent 基础理论</a>。</li>
+<li>通过<a href="../../assessment/00-agent-foundations-theory-checkpoint.html">Agent 基础理论检查点</a>。</li>
+<li>能复述<a href="../00-agent-architecture.html">九层 Agent 架构</a>的主要关系。</li>
+</ol>
+<h2>五个理论单元</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>单元</th>
+<th>核心问题</th>
+<th>必须产出</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><a href="01-responsibilities-and-boundaries.html">职责与边界</a></td>
+<td>编排、推理、Workflow、状态机、工具和治理如何分工?</td>
+<td>边界表、请求控制图</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="02-state-and-lifecycle.html">状态与生命周期</a></td>
+<td>run、session、checkpoint 和 memory 如何区分与演进?</td>
+<td>状态模型、生命周期图</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="03-patterns-and-tradeoffs.html">模式与取舍</a></td>
+<td>何时使用 Workflow、Router、ReAct 或 Plan-and-Execute?</td>
+<td>模式选择矩阵</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="04-reliability-and-recovery.html">可靠性与恢复</a></td>
+<td>如何停止、重试、恢复、补偿、转人工并留下证据?</td>
+<td>失败矩阵、trace 归因</td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="05-multi-agent-boundaries.html">Multi-Agent 边界</a></td>
+<td>什么时候分工收益超过协调成本?</td>
+<td>升级决策表</td>
+</tr>
+</tbody></table></div>
+<p>必须按顺序学习。Multi-Agent 放在最后,因为不了解单 Agent 状态与可靠性时,很难判断多 Agent 的新增复杂度。</p>
+<h2>六维学习框架</h2>
+<p>每个单元都从以下维度展开:</p>
+<ol>
+<li>定义与动机。</li>
+<li>架构边界。</li>
+<li>内部机制。</li>
+<li>方案模式。</li>
+<li>工程取舍。</li>
+<li>失败与治理。</li>
+</ol>
+<p>文档中的结论分为三类:</p>
+<ul>
+<li><strong>通用事实</strong>:不依赖本项目的稳定机制或工程约束。</li>
+<li><strong>项目参考架构</strong>:本项目用于学习和讨论的九层职责划分。</li>
+<li><strong>实现偏好</strong>:根据风险、团队和技术栈可替换的具体选择。</li>
+</ul>
+<h2>学习方式</h2>
+<p>每个单元按以下步骤完成:</p>
+<ol>
+<li>第一次阅读:只回答“为什么存在”和“边界是什么”。</li>
+<li>第二次阅读:自己重画图表,不要复制原图。</li>
+<li>场景推演:对给定业务选择模式并说明拒绝其他方案的理由。</li>
+<li>失败分析:区分 trace 事实、原因假设和修复层次。</li>
+<li>口述复盘:3 分钟主回答 + 至少两轮追问。</li>
+</ol>
+<p>建议时长只用于安排节奏,每个单元可以分多次完成。是否结束由产出质量决定。</p>
+<h2>理论门禁</h2>
+<p>完成五个单元后,执行<a href="../../assessment/01-orchestration-theory-checkpoint.html">编排无代码理论检查点</a>。通过前暂不要求运行实验。</p>
+<p>门禁证据:</p>
+<ul>
+<li>单 Agent 请求链路图。</li>
+<li>run/session/checkpoint/memory 边界说明。</li>
+<li>编排模式选择矩阵。</li>
+<li>decide/act/observe/terminate 失败归因。</li>
+<li>可暂停工单 Agent 无代码系统设计。</li>
+<li>连续口述追问记录。</li>
+</ul>
+<p>总分达到 80 且每个维度达到单项门槛后,再进入<a href="../../labs/agent-loop-minimal/README.md">最小 Agent Loop 实验</a>,用代码验证理论。</p>
+<h2>课程边界</h2>
+<ul>
+<li>本课程解释 tool action 与编排的接口,不深入 MCP、schema、权限实现和幂等代码。</li>
+<li>本课程解释 checkpoint 与 memory 的语义差异,不深入长期记忆检索算法。</li>
+<li>本课程讨论 trace 证据,不实现可观测平台。</li>
+<li>本课程讨论 Multi-Agent 选择,不实现多 Agent 实验。</li>
+</ul>
+<h2>参考入口</h2>
+<ul>
+<li><a href="../01-orchestration.html">编排 Blueprint 总览</a></li>
+<li><a href="../../interview/01-orchestration-questions.html">编排面试题</a></li>
+<li><a href="../../roadmap/progress-tracker.html">学习进度跟踪</a></li>
+</ul>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../01-orchestration.html">← 上一步</a>
+    <a href="01-responsibilities-and-boundaries.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>编排控制层理论课程 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

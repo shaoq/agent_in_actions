@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent 基础理论检查点 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ASSESSMENT · L0</div>
+    <h1>Agent 基础理论检查点</h1>
+    <p class="subtitle">检验 Agent 基础理论是否达到进入组件深潜的门槛。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../docs/index.html">学习首页</a>
+      <a href="../roadmap/learning-plan.html">学习路线</a>
+      <a href="../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../docs/00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>Agent 基础理论检查点</h1>
+<h2>目的</h2>
+<p>验证你是否建立了 Agent 应用工程的共同语义。此检查点不写代码,也不检查背诵数量。通过后才进入九层架构和编排理论深潜。</p>
+<p>前置阅读:<a href="../docs/foundations/01-agent-basics.html">Agent 基础理论</a>。</p>
+<h2>规则</h2>
+<ul>
+<li>总分:100 分。</li>
+<li>建议时限:75 分钟,仅用于训练节奏。</li>
+<li>通过线:总分不低于 80 分。</li>
+<li>单项门槛:五项任务均不低于该项满分的 60%。</li>
+<li>必须提交全部证据;只写“已阅读”不计分。</li>
+<li>首次未通过时只补强薄弱项,使用新案例复测。</li>
+</ul>
+<h2>任务一:术语辨析</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>不看文档解释以下概念,并说明它们之间的关系:</p>
+<ul>
+<li>Agent</li>
+<li>Workflow</li>
+<li>Chatbot</li>
+<li>LLM Application</li>
+<li>Goal</li>
+<li>Environment</li>
+<li>State</li>
+<li>Action</li>
+<li>Observation</li>
+<li>Autonomy</li>
+<li>Feedback loop</li>
+</ul>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-7</td>
+<td>主要复述名词,无法说明控制权和反馈。</td>
+</tr>
+<tr>
+<td>8-12</td>
+<td>基本定义正确,但将界面形态、架构和实现混合。</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>能用控制权、状态、环境和反馈解释边界。</td>
+</tr>
+<tr>
+<td>17-20</td>
+<td>能说明灰色地带、连续谱和不同资料的定义差异。</td>
+</tr>
+</tbody></table></div>
+<h2>任务二:场景分类</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>分别为以下场景选择“普通代码、单次 LLM、Workflow、局部 Agent、Agent”中的起点,每题说明至少两个理由和一个风险:</p>
+<ol>
+<li>固定字段的简历信息抽取。</li>
+<li>大额退款审批。</li>
+<li>根据新线索不断扩展的行业研究。</li>
+<li>代码修复、测试和继续修改。</li>
+<li>企业知识库 FAQ。</li>
+</ol>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-7</td>
+<td>只按任务复杂程度判断,所有复杂任务都选 Agent。</td>
+</tr>
+<tr>
+<td>8-12</td>
+<td>能区分固定和动态路径,但忽略验证或风险。</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>同时考虑不确定性、反馈、成功条件和副作用。</td>
+</tr>
+<tr>
+<td>17-20</td>
+<td>能提出混合方案、升级条件和不选其他方案的理由。</td>
+</tr>
+</tbody></table></div>
+<h2>任务三:九层概念图</h2>
+<p><strong>分值</strong>:25 分。</p>
+<p>在空白纸或 Markdown 中画出:</p>
+<ol>
+<li>用户请求的在线主链路。</li>
+<li>编排、推理、动作、观察和模型网关的关系。</li>
+<li>Memory 与 RAG 的边界。</li>
+<li>在线治理与离线评测的关系。</li>
+<li>沙箱和权限各自解决的问题。</li>
+</ol>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-9</td>
+<td>只有组件列表,没有方向和数据流。</td>
+</tr>
+<tr>
+<td>10-15</td>
+<td>主链路基本正确,但在线/离线或边界混乱。</td>
+</tr>
+<tr>
+<td>16-20</td>
+<td>能画出主要控制流、数据流和反馈流。</td>
+</tr>
+<tr>
+<td>21-25</td>
+<td>能标出参考架构假设、替代位置和关键治理点。</td>
+</tr>
+</tbody></table></div>
+<h2>任务四:反例评审</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>评审以下描述:</p>
+<blockquote>
+<p>“系统使用 Agent 框架和三个 Agent,所以具备生产能力。所有对话、工具结果和公司文档都进入一个向量库。动作失败统一重试,模型输出完成后直接返回成功。”</p>
+</blockquote>
+<p>要求指出至少六个问题,每个问题包含:</p>
+<ul>
+<li>错误假设。</li>
+<li>对应架构层。</li>
+<li>潜在风险。</li>
+<li>修复方向。</li>
+</ul>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-7</td>
+<td>只指出“可能幻觉”等泛化问题。</td>
+</tr>
+<tr>
+<td>8-12</td>
+<td>能识别 Memory/RAG、重试或完成判定问题。</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>能做分层归因并提出针对性修复。</td>
+</tr>
+<tr>
+<td>17-20</td>
+<td>能区分事实和推测,并质疑是否需要 Multi-Agent。</td>
+</tr>
+</tbody></table></div>
+<h2>任务五:连续口述追问</h2>
+<p><strong>分值</strong>:15 分。</p>
+<p>先用 3 分钟回答“什么是 Agent,什么时候不应该使用 Agent”,再回答至少两轮追问:</p>
+<ol>
+<li>Tool calling 为什么不必然等于 Agent?</li>
+<li>Workflow 中使用 LLM 后是否变成 Agent?</li>
+<li>自治程度如何控制?</li>
+<li>模型说完成时为什么还需要业务验收?</li>
+<li>如何证明 Multi-Agent 比单 Agent 更好?</li>
+</ol>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-5</td>
+<td>回答以框架名和术语堆砌为主。</td>
+</tr>
+<tr>
+<td>6-9</td>
+<td>能解释主概念,追问下边界不稳定。</td>
+</tr>
+<tr>
+<td>10-12</td>
+<td>结构清晰,能结合场景说明取舍。</td>
+</tr>
+<tr>
+<td>13-15</td>
+<td>能主动说明定义差异、证据边界和替代方案。</td>
+</tr>
+</tbody></table></div>
+<h2>证据模板</h2>
+<pre><code class="language-md">检查日期:
+总用时:
+
+术语辨析:__/20
+场景分类:__/20
+九层概念图:__/25
+反例评审:__/20
+连续口述:__/15
+总分:__/100
+
+单项门槛是否全部满足:是 / 否
+结论:通过 / 补强后复测
+
+证据链接:
+- 术语:
+- 场景:
+- 概念图:
+- 反例:
+- 口述:
+
+最不稳定的三个概念:
+补强动作:
+复测日期:
+</code></pre>
+<h2>补强规则</h2>
+<ul>
+<li>术语不足:重新用自己的案例解释,不能抄定义。</li>
+<li>场景选择不足:每题补充“不选其他方案”的理由。</li>
+<li>架构图不足:从一次真实请求重新画控制流、数据流和反馈流。</li>
+<li>反例不足:按九层逐项检查职责、失败和治理。</li>
+<li>口述不足:录制 3 分钟回答,只重练表达不稳定部分。</li>
+</ul>
+<p>通过后更新<a href="../roadmap/progress-tracker.html">进度跟踪</a>,再进入<a href="../docs/orchestration/index.html">编排理论课程</a>。</p>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../docs/foundations/01-agent-basics.html">← 上一步</a>
+    <a href="../docs/00-agent-architecture.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>Agent 基础理论检查点 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

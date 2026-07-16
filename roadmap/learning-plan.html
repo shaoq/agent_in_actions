@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent 应用工程师理论优先学习路线 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">LEARNING ROADMAP</div>
+    <h1>Agent 应用工程师理论优先学习路线</h1>
+    <p class="subtitle">以能力证据而非日历时间推进 Agent 学习路线。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../docs/index.html">学习首页</a>
+      <a href="learning-plan.html">学习路线</a>
+      <a href="progress-tracker.html">进度跟踪</a>
+      <a href="../docs/00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>Agent 应用工程师理论优先学习路线</h1>
+<p>本路线服务于两个目标:先系统理解 Agent 应用工程,再把理解转化为实现、调试、考核和面试能力。时间只用于安排节奏,阶段是否完成由能力证据决定。</p>
+<h2>两大阶段</h2>
+<h3>第一阶段:学习与训练</h3>
+<p>学习阶段按 L0 到 L4 逐层推进:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>目标</th>
+<th>主要产出</th>
+<th>进入下一层条件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>L0 Agent 基础</td>
+<td>建立共同术语,区分 Agent、Workflow、Chatbot 和 LLM Application</td>
+<td>术语表、场景分类、基础概念图</td>
+<td>通过 Agent 基础理论检查点</td>
+</tr>
+<tr>
+<td>L1 九层知识地图</td>
+<td>理解九层职责、上下游、在线主链路和离线旁路</td>
+<td>九层图、请求级数据流、边界对照表</td>
+<td>能脱稿讲清九层关系和常见错误</td>
+</tr>
+<tr>
+<td>L2 组件理论深潜</td>
+<td>逐层理解机制、模式、取舍和失败治理</td>
+<td>专题笔记、模式矩阵、失败矩阵、理论追问</td>
+<td>通过对应组件无代码理论门禁</td>
+</tr>
+<tr>
+<td>L3 工程验证</td>
+<td>用最小实验验证理论,训练 trace 调试</td>
+<td>可运行实验、测试、失败复盘</td>
+<td>能实现、解释并诊断主要失败路径</td>
+</tr>
+<tr>
+<td>L4 面试与综合设计</td>
+<td>将理论和实践转成结构化表达</td>
+<td>高频问答、系统设计、项目复盘</td>
+<td>通过模块复测后进入综合考核</td>
+</tr>
+</tbody></table></div>
+<p>当前处于 <strong>L0 Agent 基础</strong>。现有编排实验已经可用,但推荐在 L2 编排理论门禁通过后再运行。</p>
+<h3>第二阶段:考核与查漏补缺</h3>
+<p>考核阶段不再输入新知识,而是验证迁移能力:</p>
+<ol>
+<li>模块复测:使用新案例检查是否仍然掌握。</li>
+<li>限时系统设计:覆盖主流程、失败、权限、安全、成本和评测。</li>
+<li>限时 trace 调试:基于证据定位模型、检索、工具、状态、权限或评测问题。</li>
+<li>端到端项目:实现包含工具、RAG、记忆、评测和 trace 的最小系统。</li>
+<li>模拟面试:连续追问架构选择、工程取舍、失败经验和上线策略。</li>
+</ol>
+<p>毕业标准:</p>
+<ul>
+<li>能独立设计生产级 Agent 应用的端到端架构。</li>
+<li>能实现核心链路并处理失败路径。</li>
+<li>能基于 trace 做分层归因,而不是只改 prompt 试错。</li>
+<li>能解释为何拒绝某个复杂方案。</li>
+<li>能把理论、代码和失败案例组织成可信的面试回答。</li>
+</ul>
+<h2>三轮学习方法</h2>
+<h3>第一轮:横向全景</h3>
+<p>先学习 Agent 基础与九层地图,不写代码。目标是知道每个概念位于哪里,避免在缺少全局坐标时陷入框架 API。</p>
+<h3>第二轮:纵向理论深潜</h3>
+<p>每个组件统一回答六类问题:</p>
+<ol>
+<li><strong>定义与动机</strong>:它是什么,为什么存在?</li>
+<li><strong>架构边界</strong>:负责什么,明确不负责什么?</li>
+<li><strong>内部机制</strong>:有哪些子能力,数据如何流动?</li>
+<li><strong>方案模式</strong>:常见模式和替代方案是什么?</li>
+<li><strong>工程取舍</strong>:如何根据不确定性、成本、延迟、风险和可审计性选择?</li>
+<li><strong>失败与治理</strong>:如何失败,如何观测、恢复、评测和约束?</li>
+</ol>
+<p>每个理论专题必须包含概念图、流程或时序、方案对比矩阵、失败矩阵、场景题、理论追问和下一步。</p>
+<h3>第三轮:工程验证</h3>
+<p>理论门禁通过后再进入实验。实验用于证明或修正理解,不是第一次接触概念。每次实验都要回答:</p>
+<ul>
+<li>哪个理论概念在代码中由什么结构表达?</li>
+<li>正常路径和失败路径分别是什么?</li>
+<li>trace 提供了哪些证据,又缺少哪些证据?</li>
+<li>当前实现是教学简化、项目推荐还是生产通用做法?</li>
+</ul>
+<h2>九层组件理论顺序</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>组件</th>
+<th>六维学习重点</th>
+<th>专题入口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>Agent 基础语义</td>
+<td>Agent 边界、环境、动作、状态、自治和反馈</td>
+<td><a href="../docs/foundations/01-agent-basics.html">Agent 基础理论</a></td>
+</tr>
+<tr>
+<td>1</td>
+<td>九层架构总览</td>
+<td>层级职责、在线/离线链路、七条关键关系</td>
+<td><a href="../docs/00-agent-architecture.html">架构总览</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>编排控制层</td>
+<td>状态推进、路由、终止、恢复和协作</td>
+<td><a href="../docs/orchestration/index.html">编排理论课程</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>推理内核</td>
+<td>决策契约、推理模式、结构化输出和模型边界</td>
+<td>待创建 <code>docs/reasoning/</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>工具 / 动作层</td>
+<td>schema、MCP、权限、重试、幂等和副作用</td>
+<td>待创建 <code>docs/tools/</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>知识 / 检索</td>
+<td>chunking、召回、rerank、grounding 和引用</td>
+<td>待创建 <code>docs/rag/</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>记忆系统</td>
+<td>working、episodic、semantic、写入和污染治理</td>
+<td>待创建 <code>docs/memory/</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>治理与可观测</td>
+<td>trace、审计、权限、成本、护栏和 HITL</td>
+<td>待创建 <code>docs/governance/</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>评测层</td>
+<td>数据集、轨迹/结果评测、judge、回归和红队</td>
+<td>待创建 <code>docs/evals/</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>模型网关 + 基础设施</td>
+<td>路由、fallback、缓存、预算、沙箱和运行时</td>
+<td>待创建 <code>docs/model-gateway/</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>交互与接入层</td>
+<td>会话、身份、多渠道、流式交互和人工入口</td>
+<td>待创建 <code>docs/interaction/</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Multi-Agent 综合</td>
+<td>分工、上下文隔离、协调、共享状态和归因</td>
+<td>编排理论后段,后续单独实验</td>
+</tr>
+</tbody></table></div>
+<p>推理内核和交互与接入层不能只停留在总览图。后续创建专题时必须使用<a href="../docs/theory-content-template.md">理论专题模板</a>。</p>
+<h2>理论门禁</h2>
+<p>阅读完成不等于理论通过。进入某组件实验前,至少提交:</p>
+<ol>
+<li>一份脱稿定义和边界说明。</li>
+<li>一张组件上下游与数据流图。</li>
+<li>一份主要模式对比和场景选择题。</li>
+<li>一份失败矩阵或 trace 归因记录。</li>
+<li>一次至少两轮追问的口述记录。</li>
+<li>一道无代码系统设计题。</li>
+</ol>
+<p>只有在上述证据达到对应检查点标准后,进度才从“理论学习中”变为“理论通过 / 可进入实验”。超过建议时间但证据不足时,应补强具体缺口,不能按日历自动进入 L3。</p>
+<h2>当前学习顺序</h2>
+<ol>
+<li>阅读<a href="../docs/foundations/01-agent-basics.html">Agent 基础理论</a>。</li>
+<li>完成<a href="../assessment/00-agent-foundations-theory-checkpoint.html">Agent 基础理论检查点</a>。</li>
+<li>复述<a href="../docs/00-agent-architecture.html">九层架构总览</a>。</li>
+<li>进入<a href="../docs/orchestration/index.html">编排理论课程</a>。</li>
+<li>完成<a href="../assessment/01-orchestration-theory-checkpoint.html">编排无代码理论检查点</a>。</li>
+<li>通过后运行<a href="../labs/agent-loop-minimal/README.md">最小 Agent Loop 实验</a>。</li>
+</ol>
+<h2>防止理论学习跑偏</h2>
+<ul>
+<li>不以阅读数量、收藏链接或学习天数作为完成标准。</li>
+<li>不追求穷尽所有框架和论文,优先掌握稳定概念与工程边界。</li>
+<li>不把单一厂商、框架或项目方案写成行业唯一标准。</li>
+<li>不无限推迟实践;理论门禁通过后必须进入对应实验验证。</li>
+<li>不提前学习 Multi-Agent 实现,先完成单 Agent 编排理论。</li>
+</ul>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../docs/index.html">← 上一步</a>
+    <a href="progress-tracker.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>Agent 应用工程师理论优先学习路线 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

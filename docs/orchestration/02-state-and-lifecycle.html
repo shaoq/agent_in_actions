@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>单元 2:状态与生命周期 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ORCHESTRATION · UNIT 02</div>
+    <h1>单元 2:状态与生命周期</h1>
+    <p class="subtitle">理解运行状态、会话、检查点、暂停与恢复语义。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../index.html">学习首页</a>
+      <a href="../../roadmap/learning-plan.html">学习路线</a>
+      <a href="../../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>单元 2:状态与生命周期</h1>
+<h2>前置与目标</h2>
+<p>前置:<a href="01-responsibilities-and-boundaries.html">职责与边界</a>。</p>
+<p>完成后能够:</p>
+<ol>
+<li>区分 run state、session state、checkpoint 和 long-term memory。</li>
+<li>说明一次 run 从创建到终止的状态变化。</li>
+<li>分析暂停、恢复、重放、版本迁移和重复副作用。</li>
+<li>设计“最小但足够”的显式状态。</li>
+</ol>
+<h2>1. 为什么状态是编排的中心</h2>
+<p>决策只有结合状态才有意义。同一个工具错误在第一次出现时可能值得重试,连续第三次出现时可能应转人工。若系统只保留最新 prompt,就无法判断历史动作、预算、权限和恢复位置。</p>
+<blockquote>
+<p><strong>通用事实</strong>:可恢复的多步系统必须持有足以重建控制决策的状态。</p>
+<p><strong>项目参考架构</strong>:一次任务的 run state 归编排层;跨会话经历归记忆系统;外部知识归 RAG。</p>
+<p><strong>实现偏好</strong>:状态存储可以是内存、数据库、事件日志或框架 checkpointer,但语义应先于存储选型。</p>
+</blockquote>
+<h2>2. 四类容易混淆的状态</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>生命周期</th>
+<th>典型内容</th>
+<th>主要用途</th>
+<th>不应承载</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Run state</td>
+<td>一次任务运行</td>
+<td>goal、step、plan、observations、budget、status</td>
+<td>推进和恢复任务</td>
+<td>无关历史偏好</td>
+</tr>
+<tr>
+<td>Session state</td>
+<td>一段交互会话</td>
+<td>message history、channel、identity、locale</td>
+<td>保持对话连续</td>
+<td>所有长期经验</td>
+</tr>
+<tr>
+<td>Checkpoint</td>
+<td>run 在特定时刻的快照</td>
+<td>state values、next node、metadata、version</td>
+<td>暂停、恢复、回放</td>
+<td>业务真相的唯一副本</td>
+</tr>
+<tr>
+<td>Long-term memory</td>
+<td>跨 run / 跨 session</td>
+<td>用户偏好、经验证事实、可复用经验</td>
+<td>个性化和经验复用</td>
+<td>未经治理的所有 trace</td>
+</tr>
+</tbody></table></div>
+<p>Checkpoint 是保存状态的机制或产物;Memory 是跨任务复用信息的业务语义。某个框架可以用 checkpoint 提供线程记忆,但架构讨论仍需区分“恢复控制流”和“长期记住什么”。</p>
+<h2>3. Run state 最小模型</h2>
+<pre><code class="language-text">RunState
+├── identity: run_id, user_id, tenant_id
+├── goal: task, success_criteria, constraints
+├── control: status, current_step, next_action, retry_count
+├── context: observations, selected_knowledge, working_notes
+├── governance: permissions, approvals, risk_level
+├── budget: max_steps, deadline, token/cost limit
+├── result: final_output, acceptance_status
+└── diagnosis: error_type, trace_id, state_version
+</code></pre>
+<p>不是所有系统都需要全部字段。选择标准是:</p>
+<ol>
+<li>它是否影响下一步决策?</li>
+<li>它是否需要在失败后恢复?</li>
+<li>它是否用于审计或业务验收?</li>
+<li>它是否有独立的安全和保留期限?</li>
+</ol>
+<h2>4. 生命周期</h2>
+<pre><code class="language-mermaid">stateDiagram-v2
+    [*] --&gt; Created
+    Created --&gt; Running: validate goal and identity
+    Running --&gt; Waiting: need user / approval / external event
+    Waiting --&gt; Running: resume with new input
+    Running --&gt; Completed: business acceptance passed
+    Running --&gt; Failed: unrecoverable error
+    Running --&gt; Cancelled: user or policy cancellation
+    Running --&gt; Exhausted: time / step / cost limit
+    Failed --&gt; Running: recover from checkpoint
+    Completed --&gt; [*]
+    Cancelled --&gt; [*]
+    Exhausted --&gt; [*]
+</code></pre>
+<p>关键原则:</p>
+<ul>
+<li><code>completed</code>、<code>failed</code>、<code>cancelled</code>、<code>exhausted</code> 是不同终态。</li>
+<li>waiting 不是失败,它表示需要外部输入。</li>
+<li>模型产生 finish 只是完成候选,业务 acceptance 通过后才是 completed。</li>
+<li>恢复不等于从头重跑,必须知道哪些副作用已经发生。</li>
+</ul>
+<h2>5. Checkpoint 边界</h2>
+<p>Checkpoint 至少需要回答:</p>
+<ul>
+<li>保存的是哪个 run / thread?</li>
+<li>发生在动作前还是动作后?</li>
+<li>对应什么代码和 state schema 版本?</li>
+<li>下一个节点或动作是什么?</li>
+<li>哪些结果已提交,哪些仍是 pending?</li>
+<li>恢复时使用原权限还是重新授权?</li>
+</ul>
+<p>LangGraph 的官方文档把 checkpoint 描述为图状态在特定 super-step 的快照,可支持 HITL、time travel 和 fault tolerance。这是一个框架实现示例,不是所有系统都必须按 super-step 保存。</p>
+<h2>6. 暂停与恢复时序</h2>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant O as Orchestrator
+    participant C as Checkpoint Store
+    participant H as Human
+    participant T as Tool
+
+    O-&gt;&gt;O: build high-risk action intent
+    O-&gt;&gt;C: persist state before side effect
+    O-&gt;&gt;H: request approval with evidence
+    H--&gt;&gt;O: approve / reject / edit
+    O-&gt;&gt;C: load checkpoint + new decision
+    O-&gt;&gt;O: verify version, identity, permission
+    O-&gt;&gt;T: execute with idempotency key
+    T--&gt;&gt;O: observation
+    O-&gt;&gt;C: persist committed result
+</code></pre>
+<p>恢复前至少重新检查:</p>
+<ol>
+<li>用户和租户身份是否仍有效。</li>
+<li>权限和审批是否过期。</li>
+<li>外部资源状态是否已变化。</li>
+<li>action 是否曾经成功但响应丢失。</li>
+<li>当前代码能否读取旧 state version。</li>
+</ol>
+<h2>7. 重放与副作用</h2>
+<p>Checkpoint 可以恢复计算,但不能自动撤销外部副作用。典型危险:</p>
+<ol>
+<li>Agent 发送邮件成功。</li>
+<li>写 checkpoint 前进程崩溃。</li>
+<li>恢复后再次发送同一邮件。</li>
+</ol>
+<p>应对方式:</p>
+<ul>
+<li>为动作生成稳定 idempotency key。</li>
+<li>记录 action intent、submitted、committed 等状态。</li>
+<li>恢复前查询外部系统的真实执行状态。</li>
+<li>将不可逆动作放在清晰 checkpoint 边界后。</li>
+<li>对无法幂等的动作要求人工确认或补偿流程。</li>
+</ul>
+<h2>8. 状态版本迁移</h2>
+<p>长任务可能跨越代码发布。若旧 checkpoint 的字段或状态名已变化,恢复会失败或产生错误转移。</p>
+<p>建议记录:</p>
+<ul>
+<li><code>state_schema_version</code></li>
+<li><code>workflow_version</code></li>
+<li><code>tool_contract_version</code></li>
+<li><code>created_at</code> / <code>expires_at</code></li>
+</ul>
+<p>迁移策略可以是:</p>
+<ul>
+<li>向后兼容读取。</li>
+<li>显式 state migration。</li>
+<li>旧版本运行时继续处理旧 run。</li>
+<li>无法安全迁移时终止并转人工。</li>
+</ul>
+<h2>9. 失败矩阵</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>失败</th>
+<th>证据</th>
+<th>风险</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>状态字段语义混乱</td>
+<td>同一字段混合消息和业务状态</td>
+<td>路由不可预测</td>
+<td>按生命周期拆分 schema</td>
+</tr>
+<tr>
+<td>checkpoint 太少</td>
+<td>崩溃后重复大量工作</td>
+<td>成本和副作用增加</td>
+<td>在稳定边界保存</td>
+</tr>
+<tr>
+<td>checkpoint 太频繁</td>
+<td>写放大、延迟升高</td>
+<td>成本和吞吐下降</td>
+<td>按风险与恢复代价选择粒度</td>
+</tr>
+<tr>
+<td>恢复不重新授权</td>
+<td>旧审批继续生效</td>
+<td>越权动作</td>
+<td>恢复时重验身份与策略</td>
+</tr>
+<tr>
+<td>schema 漂移</td>
+<td>旧 run 无法加载</td>
+<td>长任务中断</td>
+<td>版本字段和迁移策略</td>
+</tr>
+<tr>
+<td>observation 未写回</td>
+<td>重复同一动作</td>
+<td>循环不收敛</td>
+<td>原子记录结果与状态转移</td>
+</tr>
+</tbody></table></div>
+<h2>10. 案例:可暂停退款调查</h2>
+<p>调查阶段允许 Agent 查询订单、物流和聊天记录。退款动作前进入 waiting,保存:</p>
+<ul>
+<li>用户和订单标识。</li>
+<li>调查证据和推理结论摘要。</li>
+<li>建议退款金额与政策条款。</li>
+<li>已调用动作和当前预算。</li>
+<li>待审批动作的 idempotency key。</li>
+<li>policy 和 state schema 版本。</li>
+</ul>
+<p>人工批准后不能直接复用旧判断;需要重新查询订单是否已退款、审批是否仍有效、金额是否变化,再执行受控动作。</p>
+<h2>11. 常见误区</h2>
+<ol>
+<li>把 messages 当成所有状态:消息不适合承载审批、预算和动作提交状态。</li>
+<li>把 checkpoint 当长期记忆:恢复位置和用户偏好有不同生命周期。</li>
+<li>认为恢复就是重跑:有副作用的节点不能盲目重放。</li>
+<li>只保存模型输出:工具真实结果、授权和业务验收同样关键。</li>
+</ol>
+<h2>理论追问</h2>
+<ol>
+<li>什么状态必须持久化,什么可以重算?</li>
+<li>checkpoint 应该在动作前还是动作后?</li>
+<li>为什么 checkpoint 不能解决所有幂等问题?</li>
+<li>session history 和 run observations 能否共用一个表?</li>
+<li>恢复旧 run 为什么要重新授权?</li>
+<li>如何在恢复能力和存储成本之间取舍?</li>
+<li>code deploy 时长任务如何迁移?</li>
+</ol>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/persistence">LangGraph Persistence</a> - checkpoint、thread、replay 和 fault tolerance 的框架实例。</li>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/interrupts">LangGraph Interrupts</a> - 暂停、持久化和恢复 HITL 流程。</li>
+</ul>
+<h2>本单元产出</h2>
+<ul>
+<li>画出 run/session/checkpoint/memory 四类生命周期。</li>
+<li>为退款案例设计最小 RunState。</li>
+<li>写出一次恢复前的检查清单。</li>
+</ul>
+<p>下一步:<a href="03-patterns-and-tradeoffs.html">模式与取舍</a>。</p>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="01-responsibilities-and-boundaries.html">← 上一步</a>
+    <a href="03-patterns-and-tradeoffs.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>单元 2:状态与生命周期 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

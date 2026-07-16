@@ -4,7 +4,15 @@
 
 这个项目的目标是把 Agent 相关知识从零散概念整理成一套可训练、可复盘、可面试表达、可工程落地的能力体系。它不是资料仓库,也不是单纯的 demo 集合,而是围绕“成为能通过 Agent 应用工程师面试并胜任真实研发”的长期训练系统。
 
-当前阶段:阶段 1 - 学习与知识框架搭建。
+当前阶段:第一阶段“学习与训练”中的 L0 Agent 基础。采用理论优先路线,理论门禁通过后再进入实验。
+
+当前学习单元:Agent 基础语义。
+
+- [统一学习首页](docs/index.html)
+- [第一学习入口:Agent 基础理论](docs/foundations/01-agent-basics.html)
+- [Agent 基础理论检查点](assessment/00-agent-foundations-theory-checkpoint.html)
+- [理论优先学习路线](roadmap/learning-plan.html)
+- [学习进度跟踪](roadmap/progress-tracker.html)
 
 ## 项目使命
 
@@ -30,33 +38,33 @@
 
 ## 当前重点
 
-1. 以 `docs/00-agent-architecture.html` 为总览,建立 Agent 应用工程的完整地图。
-2. 按模块补齐专题文档:编排、工具调用、RAG、记忆、评测、治理、模型网关。
-3. 为每个模块配套一个可运行实验和一组面试题。
-4. 最终形成学习阶段和考核阶段两套资产。
+1. 完成 Agent 基础理论,建立 Agent、Workflow、状态、动作、环境和反馈的共同语义。
+2. 通过 Agent 基础无代码检查点,再复述九层 Agent 架构。
+3. 按五单元学习编排理论,通过编排理论门禁后再运行最小 Agent Loop。
+4. 验证理论优先方法后,逐个补齐推理、工具、RAG、记忆、治理、评测和基础设施理论。
 
 ## 学习闭环
 
-每个主题都按同一闭环推进:
+每个主题都按理论优先闭环推进:
 
 1. 知识输入:读文档、论文、官方说明或源码。
 2. 架构抽象:整理这个主题在 Agent 系统中的位置、职责和边界。
-3. 工程实验:做一个最小可运行 demo 或复现实战场景。
-4. 失败分析:记录它会在哪里失败,如何观测,如何修复。
-5. 面试表达:整理成 3 分钟解释、10 分钟系统设计和追问回答。
-6. 考核验证:用题目或任务检查是否真正掌握。
+3. 理论推演:完成概念图、模式比较、失败分析和连续追问。
+4. 理论门禁:不用代码完成边界解释和系统设计。
+5. 工程实验:门禁通过后用最小 demo 验证理论。
+6. 面试与考核:整理表达并用新案例复测。
 
 不建议只阅读不产出。每次学习至少留下一个可复用资产:一页文档、一段实验代码、一组问答、一个复盘记录。
 
 ## 建议学习顺序
 
-1. 编排控制层:状态、规划、反思、单 Agent 与多 Agent 协作。
-2. 工具 / 动作层:tool calling、MCP、权限、失败重试、幂等。
-3. 知识 / 检索:RAG、chunking、rerank、grounding、引用。
-4. 记忆系统:短期记忆、长期记忆、用户偏好、经验沉淀。
-5. 评测层:任务成功率、LLM-as-judge、回归集、安全评测。
-6. 治理与可观测:trace、成本、限流、审计、prompt injection 防御。
-7. 模型网关与基础设施:多模型路由、fallback、缓存、沙箱。
+1. Agent 基础语义与九层架构全景。
+2. 编排控制层与推理内核。
+3. 工具 / 动作层与 MCP。
+4. 知识 / RAG 和记忆系统。
+5. 治理与可观测、评测层。
+6. 模型网关、基础设施与交互接入。
+7. 单 Agent 理论稳定后再学习 Multi-Agent。
 
 ## 产出标准
 
@@ -98,10 +106,12 @@
 
 ## 起点
 
-打开 `docs/00-agent-architecture.html` 查看当前 Agent 系统架构总览。
+打开 `docs/index.html` 进入统一学习首页,再从 `docs/foundations/01-agent-basics.html` 开始 Agent 基础理论。
 
 然后阅读:
 
-- `roadmap/learning-plan.md`: 总体学习阶段。
-- `roadmap/progress-tracker.md`: 当前进度跟踪。
+- `roadmap/learning-plan.html`: 总体学习阶段。
+- `roadmap/progress-tracker.html`: 当前进度跟踪。
+- `docs/00-agent-architecture.html`: 九层 Agent 系统架构总览。
+- `docs/orchestration/index.html`: 编排理论课程,通过基础检查点后进入。
 - `docs/project-charter.md`: 项目章程和能力模型。

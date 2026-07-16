@@ -13,13 +13,15 @@
 
 ## 推荐实验顺序
 
-1. `agent-loop-minimal`: 最小 Agent loop。
+1. [`agent-loop-minimal`](agent-loop-minimal/README.md): 最小 Agent loop。代码与测试已就绪,当前学习入口。
 2. `tool-calling-minimal`: 带 schema 的工具调用。
 3. `tool-permission-retry`: 工具权限、重试和幂等。
 4. `rag-minimal`: 最小 RAG pipeline。
 5. `memory-minimal`: 记忆读写策略。
 6. `evals-minimal`: LLM-as-judge 或规则评测。
 7. `trace-debugging`: trace 采集与失败分析。
+
+实验资产完成不代表能力已掌握。运行第一个实验后,继续完成[编排模块考核](../assessment/01-orchestration-checklist.html),并在进度表中记录证据。
 
 ## 实验 README 模板
 

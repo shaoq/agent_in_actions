@@ -8,6 +8,8 @@
     - 本模板当前位于 design-system/ 内, 用同级 href="blueprint.css" 即可预览。
     - 把模板复制到 docs/ 时, 把 href 改为 "../design-system/blueprint.css"。
     - 本项目默认使用外链样式,不要为新文档复制整份 CSS。
+  导航规则:复制到目标目录后,同步调整 learning-navigation.js 的相对路径,
+    并在 design-system/learning-navigation.js 的课程清单中注册新页面。
 -->
 <html lang="zh-CN">
 <head>
@@ -21,6 +23,7 @@
 <!-- ============ 样式: 外链 blueprint.css ============ -->
 <!-- 当前位置(design-system/内)用 href="blueprint.css"; 复制到 docs/ 改为 "../design-system/blueprint.css" -->
 <link rel="stylesheet" href="blueprint.css" />
+<script src="learning-navigation.js" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -36,6 +39,11 @@
       <span><b>主题</b> 技术蓝图</span>
       <span class="tag"><!-- FILL: N COMPONENTS -->N COMPONENTS</span>
     </div>
+    <nav class="learning-nav" aria-label="基础学习导航">
+      <a href="../docs/index.html">学习首页</a>
+      <a href="../roadmap/learning-plan.html">学习路线</a>
+      <a href="../roadmap/progress-tracker.html">进度跟踪</a>
+    </nav>
   </header>
 
   <!-- ============ FIG.01 主图 ============ -->

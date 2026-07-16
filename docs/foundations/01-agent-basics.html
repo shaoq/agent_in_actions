@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent 基础理论:从 LLM 调用到可控自治系统 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">L0 · AGENT FOUNDATIONS</div>
+    <h1>Agent 基础理论:从 LLM 调用到可控自治系统</h1>
+    <p class="subtitle">建立 Agent、Workflow、Chatbot 与 LLM Application 的共同语义。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../index.html">学习首页</a>
+      <a href="../../roadmap/learning-plan.html">学习路线</a>
+      <a href="../../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>Agent 基础理论:从 LLM 调用到可控自治系统</h1>
+<h2>学习定位</h2>
+<ul>
+<li>所属阶段:L0 Agent 基础。</li>
+<li>对应架构:九层 Agent 架构的共同语义。</li>
+<li>前置知识:了解 LLM 的基本输入输出即可。</li>
+<li>下一步:<a href="../../assessment/00-agent-foundations-theory-checkpoint.html">Agent 基础理论检查点</a>。</li>
+<li>本阶段不要求写代码。</li>
+</ul>
+<h2>学习目标</h2>
+<p>完成本单元后,你应能:</p>
+<ol>
+<li>区分 Chatbot、LLM Application、Workflow 和 Agent。</li>
+<li>解释 goal、environment、state、action、observation、autonomy 和 feedback loop。</li>
+<li>从控制权而不是产品名称判断一个系统是否具有 Agent 特征。</li>
+<li>将核心概念映射到项目九层架构。</li>
+<li>识别常见错误架构和“为了 Agent 而 Agent”的设计。</li>
+</ol>
+<h2>1. 为什么 Agent 很难用一句话定义</h2>
+<p>“Agent”没有唯一、稳定且被所有团队共同接受的定义。不同资料强调的维度不同:</p>
+<ul>
+<li>有的强调代表用户自主完成目标。</li>
+<li>有的强调 LLM 动态控制流程和工具选择。</li>
+<li>有的把预定义 Workflow 也归入广义 agentic system。</li>
+<li>有的要求跨多轮观察环境、修正行为和判断完成。</li>
+</ul>
+<p>因此,工程讨论不能只问“它是不是 Agent”,还要问:</p>
+<ol>
+<li>谁控制下一步流程?</li>
+<li>系统能否改变外部环境?</li>
+<li>是否根据观察反馈调整后续行为?</li>
+<li>是否维护跨步骤状态?</li>
+<li>自治范围和停止条件是什么?</li>
+</ol>
+<blockquote>
+<p><strong>通用事实</strong>:Agent 通常围绕目标执行多步任务,能够根据状态和环境反馈选择下一步动作。</p>
+<p><strong>项目参考架构</strong>:本项目使用九层架构拆解生产级 Agent 的职责,不把单次模型调用视为完整 Agent。</p>
+<p><strong>实现偏好</strong>:优先使用能解决问题的最简单方案;只有固定流程不足时才增加动态自治。</p>
+</blockquote>
+<h2>2. 四类系统的边界</h2>
+<h3>2.1 Chatbot</h3>
+<p>Chatbot 描述的是交互形态,不必然描述内部架构。它可能只是消息输入和文本回复,也可能背后连接复杂 Agent。</p>
+<p>典型特征:</p>
+<ul>
+<li>主要交互是对话。</li>
+<li>通常由用户发起每一轮。</li>
+<li>不一定具有工具、状态或自主任务推进。</li>
+</ul>
+<p>“聊天界面”不能证明系统是 Agent。</p>
+<h3>2.2 LLM Application</h3>
+<p>LLM Application 是使用 LLM 完成某项能力的应用,例如摘要、分类、抽取、改写或单轮问答。</p>
+<p>典型特征:</p>
+<ul>
+<li>应用代码决定何时调用模型。</li>
+<li>模型通常只完成一个明确变换。</li>
+<li>没有由模型动态控制的多步执行循环。</li>
+</ul>
+<p>所有 Agent 都是 LLM Application 的一种可能形态,但不是所有 LLM Application 都是 Agent。</p>
+<h3>2.3 Workflow</h3>
+<p>Workflow 将任务拆为预定义步骤。步骤可以包含模型、规则、人工和工具,但路径主要由代码或流程配置决定。</p>
+<p>典型特征:</p>
+<ul>
+<li>节点和主要边在设计时已知。</li>
+<li>易于预测、审计和测试。</li>
+<li>适合稳定流程、合规要求和明确例外分支。</li>
+</ul>
+<p>Anthropic 的工程分类把“预定义代码路径”称为 workflow,把由 LLM 动态控制过程和工具使用的系统称为 agent。这是一种有用的工程划分,但不是行业标准的唯一口径。</p>
+<h3>2.4 Agent</h3>
+<p>Agent 接收目标和约束,维护运行状态,基于当前上下文决定下一步,通过动作与环境交互,读取观察结果并继续、完成、失败或请求人工帮助。</p>
+<p>典型特征:</p>
+<ul>
+<li>LLM 或决策模块拥有一定流程控制权。</li>
+<li>所需步骤难以在设计时全部写死。</li>
+<li>动作结果会改变下一步决策。</li>
+<li>有明确自治边界、停止条件和治理约束。</li>
+</ul>
+<pre><code class="language-mermaid">flowchart LR
+    G[Goal + Constraints] --&gt; S[State]
+    S --&gt; D[Decide]
+    D --&gt; A[Action]
+    A --&gt; E[Environment]
+    E --&gt; O[Observation]
+    O --&gt; S
+    D --&gt; T[Finish / Fail / Escalate]
+</code></pre>
+<h2>3. 这不是四个互斥产品类别</h2>
+<p>现实系统通常位于连续谱上:</p>
+<pre><code class="language-text">确定性代码
+  -&gt; 单次 LLM 调用
+  -&gt; 固定 LLM Workflow
+  -&gt; 局部动态路由
+  -&gt; 单 Agent 自治循环
+  -&gt; Multi-Agent 协作
+</code></pre>
+<p>同一个产品也可能混合多种方式。例如客服系统可以:</p>
+<ul>
+<li>用固定规则校验身份。</li>
+<li>用分类模型路由意图。</li>
+<li>用 RAG 回答知识问题。</li>
+<li>在复杂工单中启动 Agent 动态调用内部系统。</li>
+<li>在退款动作前暂停并等待人工批准。</li>
+</ul>
+<p>正确问题不是“全系统是不是 Agent”,而是“哪一段流程需要多少动态控制权”。</p>
+<h2>4. Agent 的核心原语</h2>
+<h3>4.1 Goal:目标</h3>
+<p>Goal 描述希望达到的结果,不是单条模型指令。一个可工程化的目标还需要:</p>
+<ul>
+<li>成功条件:怎样证明完成?</li>
+<li>约束:哪些动作禁止或需要审批?</li>
+<li>预算:最多允许多少时间、步骤和成本?</li>
+<li>失败出口:何时停止、降级或转人工?</li>
+</ul>
+<p>目标模糊时,Agent 可能执行很多合理动作,却没有完成用户真正需要的结果。</p>
+<h3>4.2 Environment:环境</h3>
+<p>Environment 是 Agent 所观察和影响的外部世界,例如文件系统、浏览器、数据库、工单系统、代码仓库或用户本身。</p>
+<p>环境提供 ground truth。模型认为“退款成功”不是事实,只有支付系统返回并被校验的结果才是观察证据。</p>
+<h3>4.3 State:状态</h3>
+<p>State 是做出下一步决策所需的显式信息。至少可能包含:</p>
+<ul>
+<li>原始目标和约束。</li>
+<li>当前步骤和运行状态。</li>
+<li>已执行动作与观察。</li>
+<li>计划、待办和中间产物。</li>
+<li>权限、预算和审批状态。</li>
+<li>失败原因与恢复位置。</li>
+</ul>
+<p>状态不等于完整聊天历史,也不等于长期记忆。不同生命周期的信息应分别管理。</p>
+<h3>4.4 Action:动作</h3>
+<p>Action 是 Agent 影响环境或取得新信息的操作。动作可以是:</p>
+<ul>
+<li>读取:搜索、查询数据库、读取文件。</li>
+<li>写入:更新工单、发送消息、修改代码。</li>
+<li>交互:向用户澄清、请求批准或转人工。</li>
+<li>委派:将子任务交给其他执行单元。</li>
+</ul>
+<p>动作必须有明确契约、权限、风险等级和可观察结果。高风险副作用不能只依赖模型判断。</p>
+<h3>4.5 Observation:观察</h3>
+<p>Observation 是动作执行后的环境反馈,例如查询结果、错误码、测试输出、用户回复或审批结果。</p>
+<p>观察必须回写状态。只把工具结果打印到日志,却不进入下一轮上下文,Agent 就无法根据环境修正行为。</p>
+<h3>4.6 Autonomy:自治</h3>
+<p>Autonomy 不是开或关,而是权限范围内的控制程度。可以从以下维度衡量:</p>
+<ul>
+<li>是否自主选择下一步?</li>
+<li>是否自主选择工具和参数?</li>
+<li>是否能改变计划?</li>
+<li>是否能执行有副作用动作?</li>
+<li>是否能决定任务完成?</li>
+<li>何时必须请示人类?</li>
+</ul>
+<p>更高自治通常带来更强适应性,同时增加成本、不可预测性和复合错误风险。</p>
+<h3>4.7 Feedback Loop:反馈循环</h3>
+<p>反馈循环是 Agent 区别于单次生成的关键机制:</p>
+<ol>
+<li>根据当前状态作出决策。</li>
+<li>执行动作。</li>
+<li>从环境取得观察。</li>
+<li>更新状态和进度判断。</li>
+<li>继续、完成、失败或升级。</li>
+</ol>
+<p>没有可靠 observation 的循环容易变成模型对自身输出的反复加工,而不是对真实任务进展的修正。</p>
+<h2>5. 核心原语如何映射到九层架构</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>核心原语</th>
+<th>主要承载层</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Goal / user constraints</td>
+<td>交互与接入层 + 编排层</td>
+<td>接入层接收和规范化,编排层在整个 run 中维护</td>
+</tr>
+<tr>
+<td>Decide</td>
+<td>推理内核</td>
+<td>根据上下文提出结构化的下一步判断</td>
+</tr>
+<tr>
+<td>Control flow</td>
+<td>编排控制层</td>
+<td>推进状态、路由、调用能力并决定停止</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>工具 / 动作层</td>
+<td>声明可执行能力,实际执行受权限和沙箱约束</td>
+</tr>
+<tr>
+<td>Run state</td>
+<td>编排控制层</td>
+<td>服务于一次任务的步骤、观察、预算和状态</td>
+</tr>
+<tr>
+<td>Experience</td>
+<td>记忆系统</td>
+<td>沉淀 Agent 经历、用户偏好和可复用经验</td>
+</tr>
+<tr>
+<td>External facts</td>
+<td>知识 / 检索</td>
+<td>从外部资料取得事实依据</td>
+</tr>
+<tr>
+<td>Guardrails / trace</td>
+<td>治理与可观测层</td>
+<td>在线校验、审计、预算和过程证据</td>
+</tr>
+<tr>
+<td>Quality feedback</td>
+<td>评测层</td>
+<td>离线消费轨迹,判断效果、退化和安全风险</td>
+</tr>
+<tr>
+<td>Model capability</td>
+<td>模型网关 + 基础设施</td>
+<td>提供路由、fallback、缓存、运行时和执行隔离</td>
+</tr>
+</tbody></table></div>
+<h3>5.1 在线控制流</h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant U as User / Channel
+    participant G as Governance
+    participant O as Orchestrator
+    participant R as Reasoning Core
+    participant A as Action / Knowledge / Memory
+    participant M as Model Gateway
+
+    U-&gt;&gt;G: goal + identity + constraints
+    G-&gt;&gt;O: validated request
+    O-&gt;&gt;R: current state
+    R-&gt;&gt;M: model request
+    M--&gt;&gt;R: decision
+    R--&gt;&gt;O: act / finish / ask
+    O-&gt;&gt;G: authorize action
+    G-&gt;&gt;A: permitted call
+    A--&gt;&gt;O: observation
+    O--&gt;&gt;U: progress / result / escalation
+</code></pre>
+<p>这张图是项目参考架构,不是唯一实现。生产系统可以把部分治理放在网关、中间件或工具服务中,但相应职责不能消失。</p>
+<h3>5.2 离线反馈流</h3>
+<p>在线 trace 被评测层消费,形成成功率、失败分类、安全结果和回归信号,再反馈给编排策略、工具定义、检索配置或模型路由。离线 eval 不应被误画成每次请求必经的同步节点。</p>
+<h2>6. 场景分类</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>更合适的起点</th>
+<th>判断理由</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>固定格式合同字段抽取</td>
+<td>单次 LLM Application</td>
+<td>输入输出明确,无动态多步路径</td>
+</tr>
+<tr>
+<td>发票审批:校验、金额阈值、人工签字</td>
+<td>Workflow</td>
+<td>路径稳定且需要强审计</td>
+</tr>
+<tr>
+<td>开放式竞品研究并根据新线索继续搜索</td>
+<td>Agent</td>
+<td>步骤难预先确定,观察会改变计划</td>
+</tr>
+<tr>
+<td>FAQ 对话但不访问外部系统</td>
+<td>Chatbot / RAG Application</td>
+<td>有对话形态,未必需要自治动作</td>
+</tr>
+<tr>
+<td>代码修复并运行测试直到通过</td>
+<td>Agent + deterministic gates</td>
+<td>动态探索适合 Agent,测试和提交门禁应确定化</td>
+</tr>
+<tr>
+<td>大额退款</td>
+<td>Workflow + 局部 Agent + HITL</td>
+<td>理解和调查可动态,最终副作用需权限与人工控制</td>
+</tr>
+</tbody></table></div>
+<p>分类不是追求标签正确,而是判断哪里需要模型控制,哪里必须保持确定性。</p>
+<h2>7. 常见误区</h2>
+<h3>误区 1:调用了模型 API 就是 Agent</h3>
+<p>单次摘要或分类没有多步控制、环境动作和反馈循环。它是 LLM Application,但不因此成为 Agent。</p>
+<h3>误区 2:用了 Agent 框架就拥有完整架构</h3>
+<p>框架提供执行抽象,不会自动解决权限、状态语义、评测、trace、成本和业务完成条件。框架名不是架构说明。</p>
+<h3>误区 3:所有业务流程都应该 Agent 化</h3>
+<p>固定规则、强合规或可完全枚举的流程通常更适合确定性代码。动态自治会增加延迟、成本和不可预测性。</p>
+<h3>误区 4:Memory 和 RAG 都是向量库,所以是一层</h3>
+<p>存储技术相同不代表语义相同。RAG 获取外部既有知识;Memory 沉淀 Agent 经历或用户上下文,写入来源和治理要求不同。</p>
+<h3>误区 5:自治意味着不需要人类</h3>
+<p>生产自治必须有权限边界、预算、停止条件和高风险动作审批。人在回路是可靠性机制,不是 Agent 不够智能的补丁。</p>
+<h3>误区 6:模型输出 finish 就说明任务成功</h3>
+<p>模型只能声明完成意图。业务成功应由外部状态、测试、规则或用户确认等可验证证据判断。</p>
+<h3>误区 7:Agent 越多能力越强</h3>
+<p>Multi-Agent 增加通信、状态同步、冲突、成本和归因难度。单 Agent 问题若来自工具差或目标模糊,增加 Agent 不会自动解决。</p>
+<h2>8. 反例评审</h2>
+<p>考虑下面的设计:</p>
+<blockquote>
+<p>“我们做了一个生产级 Agent。前端把用户问题发送给 LLM,LLM 可以调用数据库查询工具。所有聊天和公司文档都写入同一个向量库。模型认为完成时直接返回结果。调用失败就重试三次。”</p>
+</blockquote>
+<p>至少存在以下问题:</p>
+<ol>
+<li>没有明确运行状态、预算和终止分类。</li>
+<li>用户身份、工具权限和审计边界缺失。</li>
+<li>对话经历与公司知识混存,写入来源和污染治理不清。</li>
+<li>“模型认为完成”缺少业务验收证据。</li>
+<li>所有失败统一重试,可能重复副作用。</li>
+<li>没有 trace、离线评测和回归门禁。</li>
+<li>无法判断它是单轮 tool calling 还是可持续任务循环。</li>
+</ol>
+<h2>9. 如何判断是否需要 Agent</h2>
+<p>先回答五个问题:</p>
+<ol>
+<li>任务步骤是否无法在设计时可靠枚举?</li>
+<li>环境反馈是否经常改变下一步?</li>
+<li>结果是否存在可验证的成功条件?</li>
+<li>失败是否可恢复、可停止或可转人工?</li>
+<li>动态自治带来的收益是否覆盖延迟、成本和风险?</li>
+</ol>
+<p>若前两项均为否,优先考虑普通代码或 Workflow。若缺少可验证成功条件和停止机制,即使任务复杂也不应直接提高自治程度。</p>
+<h2>10. 无代码练习</h2>
+<ol>
+<li>将“文档摘要、客服问答、自动退款、竞品研究、代码修复”分别放到连续谱上,说明依据。</li>
+<li>画出一次带工具 Agent 请求的控制流、数据流和反馈流。</li>
+<li>为“企业工单助手”标出哪些环节确定化、哪些环节可由模型动态决定。</li>
+<li>评审一个“所有状态都放 messages”的设计,指出生命周期和恢复问题。</li>
+<li>用 3 分钟解释为什么 Agent 不等于“LLM + tool calling”。</li>
+</ol>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic: Building effective agents</a> - workflow 与 agent 的工程区分、常见模式和增加复杂度的条件。</li>
+<li><a href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/">OpenAI: A practical guide to building agents</a> - Agent 定义、模型/工具/指令基础和编排建议。</li>
+<li><a href="https://arxiv.org/abs/2210.03629">ReAct: Synergizing Reasoning and Acting in Language Models</a> - reasoning 与 action 交错并利用环境观察的原始研究。</li>
+<li><a href="https://modelcontextprotocol.io/docs/getting-started/intro">Model Context Protocol: Introduction</a> - 模型应用连接外部能力和上下文的开放协议概览。</li>
+</ul>
+<h2>下一步</h2>
+<ol>
+<li>完成<a href="../../assessment/00-agent-foundations-theory-checkpoint.html">Agent 基础理论检查点</a>。</li>
+<li>通过后复述<a href="../00-agent-architecture.html">九层架构总览</a>。</li>
+<li>进入<a href="../orchestration/index.html">编排理论课程</a>。</li>
+<li>当前不要运行最小 Agent Loop 实验。</li>
+</ol>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../index.html">← 上一步</a>
+    <a href="../../assessment/00-agent-foundations-theory-checkpoint.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>Agent 基础理论:从 LLM 调用到可控自治系统 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

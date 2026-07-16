@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>单元 4:可靠性、失败与恢复 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ORCHESTRATION · UNIT 04</div>
+    <h1>单元 4:可靠性、失败与恢复</h1>
+    <p class="subtitle">从预算、重试、幂等、补偿与 Trace 建立可靠性模型。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../index.html">学习首页</a>
+      <a href="../../roadmap/learning-plan.html">学习路线</a>
+      <a href="../../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>单元 4:可靠性、失败与恢复</h1>
+<h2>前置与目标</h2>
+<p>前置:<a href="03-patterns-and-tradeoffs.html">模式与取舍</a>。</p>
+<p>完成后能够:</p>
+<ol>
+<li>区分模型 finish、编排终止和业务成功。</li>
+<li>为步骤、时间、成本和失败设置有界控制。</li>
+<li>按错误类型选择重试、重新决策、补偿或人工接管。</li>
+<li>用 trace 区分 decide、act、observe 和 terminate 失败。</li>
+</ol>
+<h2>1. 可靠性不等于“最终返回了答案”</h2>
+<p>一次可靠运行至少要同时满足:</p>
+<ul>
+<li>任务结果通过业务成功条件。</li>
+<li>没有越权或未审计副作用。</li>
+<li>成本、时间和步骤在预算内。</li>
+<li>失败时状态可诊断、可停止或可恢复。</li>
+<li>结果可由外部证据验证。</li>
+</ul>
+<blockquote>
+<p><strong>通用事实</strong>:非确定模型的自我声明不能替代外部业务验收。</p>
+<p><strong>项目参考架构</strong>:编排维护控制状态,治理在线门禁,评测离线判断行为质量。</p>
+<p><strong>实现偏好</strong>:已知失败优先转为 typed state 和 trace,而不是只抛出无上下文异常。</p>
+</blockquote>
+<h2>2. 完成判定</h2>
+<p>完成可以分三层:</p>
+<ol>
+<li><strong>Model finish</strong>:模型不再请求动作并产生最终回答。</li>
+<li><strong>Run termination</strong>:编排器停止循环并记录终态。</li>
+<li><strong>Business acceptance</strong>:测试、外部状态、规则或用户确认任务真的成功。</li>
+</ol>
+<p>例如代码 Agent 输出补丁并 finish,但测试失败,只能说明模型结束了,不能标记任务成功。</p>
+<pre><code class="language-mermaid">flowchart LR
+    F[Model finish] --&gt; V{Acceptance check}
+    V --&gt;|pass| C[Completed]
+    V --&gt;|recoverable| R[Replan / Act]
+    V --&gt;|need judgement| H[Human review]
+    V --&gt;|unrecoverable| X[Failed]
+</code></pre>
+<h2>3. 有界终止</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>预算</th>
+<th>防止的问题</th>
+<th>终止后的选择</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>max steps</td>
+<td>无限循环和重复动作</td>
+<td>总结已完成工作、转人工或失败</td>
+</tr>
+<tr>
+<td>deadline / timeout</td>
+<td>外部服务或长推理阻塞</td>
+<td>取消、恢复点或异步等待</td>
+</tr>
+<tr>
+<td>token / cost</td>
+<td>非受控费用</td>
+<td>降级模型、缩短上下文或停止</td>
+</tr>
+<tr>
+<td>retry limit</td>
+<td>暂时错误变成永久循环</td>
+<td>重新决策、fallback 或人工</td>
+</tr>
+<tr>
+<td>risk budget</td>
+<td>多次低风险动作累积成高风险</td>
+<td>审批或禁止继续</td>
+</tr>
+</tbody></table></div>
+<p>预算必须进入状态和 trace,否则无法解释“为什么停止”。</p>
+<h2>4. 重复轨迹与无信息增益</h2>
+<p>仅有最大步数仍然浪费资源。编排器可以检测:</p>
+<ul>
+<li>相同 action + 参数重复。</li>
+<li>连续 observation 相同。</li>
+<li>计划没有减少未完成项。</li>
+<li>错误类型在多轮中不变。</li>
+<li>置信度或验收结果没有改善。</li>
+</ul>
+<p>检测后可注入失败摘要要求重新规划,切换工具,降低目标,或转人工。不能用“再思考一次”作为唯一修复。</p>
+<h2>5. 错误分类先于重试</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>错误类型</th>
+<th>示例</th>
+<th>默认策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Transient</td>
+<td>限流、短暂网络失败</td>
+<td>有界退避重试</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>参数缺失、schema 不合法</td>
+<td>返回决策器修正,不原样重试</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>权限不足、审批过期</td>
+<td>拒绝或重新授权</td>
+</tr>
+<tr>
+<td>Business conflict</td>
+<td>工单已关闭、余额变化</td>
+<td>重新读取环境并决策</td>
+</tr>
+<tr>
+<td>Model contract</td>
+<td>输出无法解析</td>
+<td>结构化修复或模型 fallback</td>
+</tr>
+<tr>
+<td>Irreversible uncertainty</td>
+<td>支付响应丢失</td>
+<td>查询真实状态,禁止盲重试</td>
+</tr>
+<tr>
+<td>Permanent</td>
+<td>工具不存在、资源删除</td>
+<td>失败、降级或人工</td>
+</tr>
+</tbody></table></div>
+<p>工具层可处理传输级短重试;编排层负责跨步骤业务决策。两层需要共享错误分类和 action ID。</p>
+<h2>6. 幂等和动作状态</h2>
+<p>对有副作用动作,至少跟踪:</p>
+<pre><code class="language-text">intent_created -&gt; authorized -&gt; submitted -&gt; committed
+                         \-&gt; rejected
+submitted -&gt; unknown -&gt; reconciled(committed | not_committed)
+</code></pre>
+<p>幂等键用于让重复请求返回同一业务结果,但前提是下游支持该契约。若下游不支持,需要查询、锁、去重表、补偿或人工处理。</p>
+<h2>7. 补偿不是回滚</h2>
+<p>分布式副作用通常无法真正回滚。补偿是新的业务动作,例如:</p>
+<ul>
+<li>发送更正邮件,而不是“撤销已读邮件”。</li>
+<li>创建冲正记录,而不是删除支付历史。</li>
+<li>恢复工单状态并保留审计,而不是抹去更新。</li>
+</ul>
+<p>补偿也会失败,因此需要独立状态、权限和告警。</p>
+<h2>8. Checkpoint 与 HITL</h2>
+<p>适合暂停的控制点:</p>
+<ul>
+<li>高风险、不可逆或大额动作前。</li>
+<li>模型置信度不足且需要业务判断时。</li>
+<li>用户目标存在歧义时。</li>
+<li>预算接近阈值但已有部分成果时。</li>
+</ul>
+<p>人在回路请求应包含:</p>
+<ul>
+<li>目标和当前状态摘要。</li>
+<li>已验证事实与来源。</li>
+<li>拟执行动作、参数和风险。</li>
+<li>可选决策及其后果。</li>
+<li>审批有效期和恢复标识。</li>
+</ul>
+<p>恢复时重新验证身份、权限和环境状态,不能把人类的一次批准当永久授权。</p>
+<h2>9. Trace 最小语义</h2>
+<pre><code class="language-text">TraceEvent
+├── run_id / parent_id / step
+├── phase: orchestrate | decide | act | observe | terminate
+├── event_type
+├── state_version
+├── model/tool identity and version
+├── input/output summary or reference
+├── duration / token / cost
+├── permission and approval result
+└── error_type / retryability / terminal_reason
+</code></pre>
+<p>Trace 不应直接记录密钥、完整 PII 或未经策略允许的内部 reasoning。应记录足以复现控制决策的结构化证据。</p>
+<h2>10. 失败归因矩阵</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>现象</th>
+<th>已知证据</th>
+<th>可能原因</th>
+<th>修复层次</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>decide</td>
+<td>decision schema invalid</td>
+<td>validation error + raw response ref</td>
+<td>指令、模型或 schema</td>
+<td>推理契约 / gateway</td>
+</tr>
+<tr>
+<td>act</td>
+<td>action timeout</td>
+<td>action ID + timeout</td>
+<td>下游慢或网络</td>
+<td>工具重试 / fallback</td>
+</tr>
+<tr>
+<td>observe</td>
+<td>结果未写入 state</td>
+<td>tool success 但 state version 未变</td>
+<td>原子性或映射错误</td>
+<td>编排状态更新</td>
+</tr>
+<tr>
+<td>terminate</td>
+<td>max steps</td>
+<td>重复轨迹</td>
+<td>目标、工具或策略不收敛</td>
+<td>编排策略 / HITL</td>
+</tr>
+<tr>
+<td>finish</td>
+<td>acceptance failed</td>
+<td>模型 finish + 测试失败</td>
+<td>完成判断过早</td>
+<td>验收器 / 重新决策</td>
+</tr>
+<tr>
+<td>resume</td>
+<td>duplicate side effect</td>
+<td>同一业务键多次提交</td>
+<td>checkpoint 边界或幂等缺失</td>
+<td>动作协议 / 恢复流程</td>
+</tr>
+</tbody></table></div>
+<p>分析时要分开:</p>
+<ul>
+<li><strong>事实</strong>:trace 已证明的事件。</li>
+<li><strong>假设</strong>:还需要更多证据验证的原因。</li>
+<li><strong>修复</strong>:应落在哪个组件。</li>
+<li><strong>回归</strong>:如何证明同类问题不再发生。</li>
+</ul>
+<h2>11. 案例:工单 Agent 卡在重复检索</h2>
+<p>Trace 显示连续四步调用同一搜索动作,query 略有改写,返回文档集合相同。</p>
+<p>事实:</p>
+<ul>
+<li>action 和 observation 高度重复。</li>
+<li>未完成项没有变化。</li>
+<li>达到 max steps 后停止。</li>
+</ul>
+<p>不能直接断言“模型太差”。可能原因还包括:</p>
+<ul>
+<li>检索工具没有返回缺失信息提示。</li>
+<li>目标缺少可接受的降级条件。</li>
+<li>状态没有把已读文档和未解决问题传回模型。</li>
+<li>编排没有重复检测。</li>
+</ul>
+<p>修复需要分别验证工具、状态和策略,并增加重复轨迹回归用例。</p>
+<h2>常见误区</h2>
+<ol>
+<li>所有异常重试三次。</li>
+<li>有 checkpoint 就不会重复副作用。</li>
+<li>人工批准后不需要重新授权。</li>
+<li>Trace 越详细越好,忽略隐私和成本。</li>
+<li><code>run_completed</code> 就是任务成功率分子。</li>
+</ol>
+<h2>理论追问</h2>
+<ol>
+<li>如何确定最大步数而不是拍脑袋?</li>
+<li>工具层重试和编排层重试如何分工?</li>
+<li>响应超时如何判断动作是否实际成功?</li>
+<li>补偿失败时系统进入什么状态?</li>
+<li>如何定义 observation 的信息增益?</li>
+<li>哪些 trace 字段必须脱敏?</li>
+<li>在线监控和离线 eval 如何消费同一 trace?</li>
+</ol>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/">OpenAI: A practical guide to building agents</a> - 停止阈值、人工介入和 guardrails。</li>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/persistence">LangGraph Persistence</a> - checkpoint、恢复和 fault tolerance 实例。</li>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/interrupts">LangGraph Interrupts</a> - HITL 暂停与恢复实例。</li>
+</ul>
+<h2>本单元产出</h2>
+<ul>
+<li>为工单 Agent 写出错误分类和重试策略。</li>
+<li>从给定重复 trace 区分事实、假设、修复和回归。</li>
+<li>设计高风险动作前的 HITL 信息包。</li>
+</ul>
+<p>下一步:<a href="05-multi-agent-boundaries.html">Multi-Agent 边界</a>。</p>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="03-patterns-and-tradeoffs.html">← 上一步</a>
+    <a href="05-multi-agent-boundaries.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>单元 4:可靠性、失败与恢复 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

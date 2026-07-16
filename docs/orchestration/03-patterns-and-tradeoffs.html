@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>单元 3:编排模式与工程取舍 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ORCHESTRATION · UNIT 03</div>
+    <h1>单元 3:编排模式与工程取舍</h1>
+    <p class="subtitle">比较 Workflow、Router、ReAct、Plan-and-Execute 与混合模式。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../index.html">学习首页</a>
+      <a href="../../roadmap/learning-plan.html">学习路线</a>
+      <a href="../../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>单元 3:编排模式与工程取舍</h1>
+<h2>前置与目标</h2>
+<p>前置:<a href="02-state-and-lifecycle.html">状态与生命周期</a>。</p>
+<p>完成后能够:</p>
+<ol>
+<li>区分 deterministic workflow、router、ReAct、plan-and-execute 和混合模式。</li>
+<li>根据任务不确定性、审计、延迟、成本、恢复和风险选择模式。</li>
+<li>说明拒绝其他模式的理由与升级触发条件。</li>
+</ol>
+<h2>1. 先从最简单方案开始</h2>
+<p>模式选择不是自治程度竞赛。更动态的模式提高适应性,同时扩大状态空间、调用次数和失败组合。</p>
+<blockquote>
+<p><strong>通用事实</strong>:路径越动态,行为预测、回归覆盖和成本控制越困难。</p>
+<p><strong>项目参考架构</strong>:编排层可以同时承载确定性路由和模型驱动决策。</p>
+<p><strong>实现偏好</strong>:先建立最简单可测基线,只有结果证明有必要时才提高自治程度。</p>
+</blockquote>
+<h2>2. Deterministic Workflow</h2>
+<p>主要路径由代码预先定义,模型只在局部节点执行分类、生成或判断。</p>
+<p>适合:</p>
+<ul>
+<li>步骤与例外可以枚举。</li>
+<li>合规和可审计性要求高。</li>
+<li>失败处理需要确定性。</li>
+<li>延迟和成本预算严格。</li>
+</ul>
+<p>代价:对开放式问题适应性弱,规则可能膨胀。</p>
+<pre><code class="language-mermaid">flowchart LR
+    I[Input] --&gt; V[Validate]
+    V --&gt; C[Classify]
+    C --&gt; A[Fixed Action A]
+    C --&gt; B[Fixed Action B]
+    A --&gt; G[Acceptance]
+    B --&gt; G
+</code></pre>
+<h2>3. Router</h2>
+<p>Router 先分类输入,再进入专门流程、模型或工具集。分类器可以是规则、传统模型或 LLM。</p>
+<p>适合:</p>
+<ul>
+<li>输入存在稳定类别。</li>
+<li>不同类别需要不同 prompt、模型、权限或 SLA。</li>
+<li>路由准确率可以独立评测。</li>
+</ul>
+<p>主要风险:</p>
+<ul>
+<li>错误路由让后续流程再正确也无法完成任务。</li>
+<li>类别边界漂移。</li>
+<li>置信度不足时没有 fallback。</li>
+</ul>
+<p>Router 不一定是 Agent;如果所有下游路径固定,它仍然是 Workflow。</p>
+<h2>4. ReAct</h2>
+<p>ReAct 将 reasoning 和 action 交错:模型根据当前观察提出动作,环境返回结果,模型再更新下一步。</p>
+<p>适合:</p>
+<ul>
+<li>下一步高度依赖刚取得的信息。</li>
+<li>无法提前知道需要多少次检索或工具调用。</li>
+<li>环境提供可验证反馈。</li>
+</ul>
+<p>优势:适应变化,可根据观察修正路径。</p>
+<p>代价:</p>
+<ul>
+<li>调用次数和延迟难预测。</li>
+<li>容易重复动作或不收敛。</li>
+<li>需要严格停止条件、工具契约和 trace。</li>
+<li>reasoning 文本不应被当作唯一审计证据。</li>
+</ul>
+<p>ReAct 论文展示的是 reasoning 与 action 交错范式。生产系统仍需外部状态、授权、预算和完成校验。</p>
+<h2>5. Plan-and-Execute</h2>
+<p>先生成计划,再按计划执行;过程中根据观察决定继续、修改或重新规划。</p>
+<p>适合:</p>
+<ul>
+<li>任务可以分解为相对稳定阶段。</li>
+<li>计划需要展示、审批或并行。</li>
+<li>希望将规划模型和执行模型分离。</li>
+</ul>
+<p>风险:</p>
+<ul>
+<li>初始计划基于不完整信息。</li>
+<li>计划与现实漂移。</li>
+<li>重新规划过频会退化为昂贵的 ReAct。</li>
+<li>执行器可能机械完成步骤却没有达成目标。</li>
+</ul>
+<p>计划需要版本、假设、依赖和失效条件。计划是控制输入,不是事实。</p>
+<h2>6. 混合模式</h2>
+<p>生产系统常用外层确定性 Workflow 包围局部 Agent loop:</p>
+<pre><code class="language-mermaid">flowchart LR
+    I[Identity + Input Validation] --&gt; R{Deterministic Route}
+    R --&gt;|simple| W[Fixed Workflow]
+    R --&gt;|open-ended| A[Bounded Agent Loop]
+    A --&gt; H{High-risk Action?}
+    H --&gt;|yes| P[Human Approval]
+    H --&gt;|no| G[Business Acceptance]
+    P --&gt; G
+    W --&gt; G
+</code></pre>
+<p>混合模式的价值是把不确定性限制在真正需要它的局部,关键边界仍然确定化。</p>
+<h2>7. 对比矩阵</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Workflow</th>
+<th>Router</th>
+<th>ReAct</th>
+<th>Plan-and-Execute</th>
+<th>混合模式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>路径不确定性</td>
+<td>低</td>
+<td>低到中</td>
+<td>高</td>
+<td>中</td>
+<td>局部高</td>
+</tr>
+<tr>
+<td>可审计性</td>
+<td>高</td>
+<td>高</td>
+<td>中到低</td>
+<td>中到高</td>
+<td>高风险段高</td>
+</tr>
+<tr>
+<td>延迟可预测</td>
+<td>高</td>
+<td>高</td>
+<td>低</td>
+<td>中</td>
+<td>中</td>
+</tr>
+<tr>
+<td>成本可预测</td>
+<td>高</td>
+<td>高</td>
+<td>低</td>
+<td>中</td>
+<td>中</td>
+</tr>
+<tr>
+<td>恢复难度</td>
+<td>低</td>
+<td>低</td>
+<td>高</td>
+<td>中</td>
+<td>中</td>
+</tr>
+<tr>
+<td>动态适应</td>
+<td>低</td>
+<td>中</td>
+<td>高</td>
+<td>中到高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>典型风险</td>
+<td>规则膨胀</td>
+<td>错误路由</td>
+<td>循环漂移</td>
+<td>计划过时</td>
+<td>边界复杂</td>
+</tr>
+</tbody></table></div>
+<h2>8. 选择流程</h2>
+<pre><code class="language-mermaid">flowchart TD
+    A[任务开始] --&gt; B{步骤能可靠枚举?}
+    B --&gt;|是| C{仅需按类别分流?}
+    C --&gt;|是| D[Router + Workflow]
+    C --&gt;|否| E[Deterministic Workflow]
+    B --&gt;|否| F{能先形成稳定计划?}
+    F --&gt;|是| G[Plan-and-Execute]
+    F --&gt;|否| H[Bounded ReAct]
+    G --&gt; I{存在高风险边界?}
+    H --&gt; I
+    I --&gt;|是| J[Hybrid + Guard + HITL]
+    I --&gt;|否| K[Measure and iterate]
+</code></pre>
+<p>这不是机械决策树。业务成功条件、工具可靠性和评测能力不足时,即使任务开放也不应直接使用高自治模式。</p>
+<h2>9. 三个案例</h2>
+<h3>固定发票审批</h3>
+<p>选择 Workflow。金额阈值、字段校验、审批角色和异常路径稳定。模型可用于字段抽取,但不控制付款路径。</p>
+<p>升级条件:异常类型无法维护且需要综合大量非结构化证据时,可增加局部调查 Agent,付款仍走确定门禁。</p>
+<h3>开放式竞品研究</h3>
+<p>选择 bounded ReAct 或 plan-and-execute。研究线索会改变后续搜索;若研究维度可预先定义,先计划再执行更利于覆盖审计。</p>
+<p>停止条件:来源覆盖、证据质量、时间和调用预算。</p>
+<h3>企业工单处理</h3>
+<p>选择混合模式。意图路由和权限用确定性控制;诊断过程允许 Agent 动态检索和询问;创建、修改和关闭工单前走治理与验收。</p>
+<h2>10. 模式切换触发条件</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>当前模式</th>
+<th>观测信号</th>
+<th>可能调整</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Workflow</td>
+<td>规则分支持续膨胀且未知例外多</td>
+<td>局部增加 Router 或 Agent</td>
+</tr>
+<tr>
+<td>Router</td>
+<td>错误分类成为主要失败</td>
+<td>改类别、加澄清或合并路径</td>
+</tr>
+<tr>
+<td>ReAct</td>
+<td>重复轨迹、成本高、步骤可归纳</td>
+<td>提取固定 Workflow 或先规划</td>
+</tr>
+<tr>
+<td>Plan-and-Execute</td>
+<td>频繁重规划、计划快速失效</td>
+<td>缩短计划窗口或改 ReAct</td>
+</tr>
+<tr>
+<td>Multi-Agent</td>
+<td>协调成本高于并行收益</td>
+<td>合并为单 Agent 或普通并行任务</td>
+</tr>
+</tbody></table></div>
+<h2>11. 失败矩阵</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>失败</th>
+<th>Trace 证据</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Workflow</td>
+<td>未覆盖例外</td>
+<td>落入 unknown 分支</td>
+<td>增加显式分支或人工出口</td>
+</tr>
+<tr>
+<td>Router</td>
+<td>错误路由</td>
+<td>route label 与后续失败相关</td>
+<td>独立路由评测、置信度 fallback</td>
+</tr>
+<tr>
+<td>ReAct</td>
+<td>不收敛</td>
+<td>重复 action/observation</td>
+<td>重复检测、预算、策略调整</td>
+</tr>
+<tr>
+<td>Plan-and-Execute</td>
+<td>计划过时</td>
+<td>执行前提与环境冲突</td>
+<td>计划校验与重规划触发器</td>
+</tr>
+<tr>
+<td>Hybrid</td>
+<td>两套控制冲突</td>
+<td>workflow edge 与模型 intent 不一致</td>
+<td>明确优先级和单一状态契约</td>
+</tr>
+</tbody></table></div>
+<h2>常见误区</h2>
+<ol>
+<li>ReAct 就等于把完整思维链写入日志。</li>
+<li>计划越详细越可靠;过早细化会放大错误假设。</li>
+<li>Router 使用 LLM 后就自动成为 Agent。</li>
+<li>混合模式只是把多种框架拼在一起;关键是控制边界。</li>
+</ol>
+<h2>理论追问</h2>
+<ol>
+<li>如何判断任务步骤是否“可枚举”?</li>
+<li>Router 的置信度低时有哪些 fallback?</li>
+<li>ReAct 如何检测 observation 没有信息增益?</li>
+<li>Plan-and-Execute 的重规划触发器应该由谁判断?</li>
+<li>为什么高风险动作适合放在确定性边界?</li>
+<li>如何通过 trace 把成功轨迹沉淀为 Workflow?</li>
+</ol>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic: Building effective agents</a> - routing、parallelization、orchestrator-workers、evaluator-optimizer 与 agent 模式。</li>
+<li><a href="https://arxiv.org/abs/2210.03629">ReAct paper</a> - reasoning 与 action 交错范式。</li>
+<li><a href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/">OpenAI: A practical guide to building agents</a> - 单 Agent 与多 Agent 编排的渐进式建议。</li>
+</ul>
+<h2>本单元产出</h2>
+<ul>
+<li>为三个案例完成模式选择和拒绝理由。</li>
+<li>绘制自己的模式决策树。</li>
+<li>写出每个模式的升级与降级信号。</li>
+</ul>
+<p>下一步:<a href="04-reliability-and-recovery.html">可靠性与恢复</a>。</p>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="02-state-and-lifecycle.html">← 上一步</a>
+    <a href="04-reliability-and-recovery.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>单元 3:编排模式与工程取舍 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

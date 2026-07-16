@@ -35,17 +35,24 @@
 ## 文档规范
 
 - 语言以中文为主,关键技术术语保留英文对照。
-- 架构类 HTML 文档必须复用 Blueprint 设计系统。
-- 新 HTML 文档优先从 `design-system/template.html` 复制生成。
+- 面向学习者直接发布的内容统一使用 HTML 作为唯一权威源,包括 `docs/` 中的课程与架构内容、`roadmap/` 学习路线、`interview/` 面试资产和 `assessment/` 考核资产。
+- 所有学习者 HTML 必须复用 Blueprint 设计系统,并从 `design-system/template.html` 或已有学习页面骨架生成。
+- 根目录 `README.md`、`AGENTS.md`、`labs/**/README.md`、OpenSpec artifacts 和内部内容模板继续使用 Markdown,用于工程协作和维护。
+- 同一份学习者内容不得长期并行维护 HTML 与 Markdown 两个权威版本;迁移完成并更新引用后必须删除被替代的学习者 Markdown。
+- 新增学习者 HTML 必须接入 `docs/index.html` 或对应课程索引,并提供清晰的前置、下一步和检查点链接。
+- 所有学习者 HTML 必须加载 `design-system/learning-navigation.js`;课程层级、顺序、路径和资产状态以该文件中的共享清单为唯一目录数据源。
+- 新增或迁移学习者 HTML 时,必须同步注册共享课程清单,声明稳定 ID、所属层级、内容类型、顺序和 `available/planned` 状态,并更新 `roadmap/progress-tracker.html` 的资产状态。
+- 同一内容的 `available` 只表示学习资产可用,不得用它表达学习者已经掌握;个人门禁证据和复测结果仍以 progress tracker 为准。
+- 新增学习页面交付前必须运行 `node design-system/validate-learning-navigation.mjs`,确保页面已注册、导航脚本已加载且目标路径有效。
 - 根目录下的技术文档应放入 `docs/`,不要直接散落在项目根目录。
 - 文档内容要服务于学习、实战或面试,避免只做概念堆砌。
-- Markdown 文档要尽量包含“目标、核心概念、工程要点、常见坑、面试表达、下一步”。
+- 学习文档要尽量包含“目标、核心概念、工程要点、常见坑、面试表达、下一步”。
 - 实验目录必须有 README,说明运行方式和学习目标。
 
 ## Blueprint 设计系统
 
 - 样式权威源: `design-system/blueprint.css`。
-- 新文档应通过 `<link rel="stylesheet" href="../design-system/blueprint.css" />` 引用样式。
+- 新文档应根据所在目录层级通过相对路径引用 `design-system/blueprint.css`,不得复制整份 CSS 到页面中。
 - 标题字体使用 Fraunces,正文使用 IBM Plex Sans,技术标注使用 IBM Plex Mono。
 - 继续保持工程蓝图风格:深靛蓝背景、细网格、青色墨线、克制可读。
 
@@ -89,6 +96,7 @@
 2. 它对应 9 层 Agent 架构中的哪一层?
 3. 它是否能沉淀为学习资产、实验资产、面试资产或考核资产?
 4. 它是否有明确的后续动作?
+5. 如果它是学习者 HTML,是否已注册统一目录、连接前后顺序、更新资产进度并通过导航校验?
 
 如果无法回答,应先补充定位,不要盲目创建文件。
 
@@ -103,7 +111,7 @@
 
 例如学习“工具调用”时,应产出:
 
-- `docs/02-tool-calling.md`
-- `interview/tool-calling-questions.md`
+- `docs/02-tool-calling.html`
+- `interview/tool-calling-questions.html`
 - `labs/tool-calling-minimal/README.md`
-- `assessment/tool-calling-checklist.md`
+- `assessment/tool-calling-checklist.html`

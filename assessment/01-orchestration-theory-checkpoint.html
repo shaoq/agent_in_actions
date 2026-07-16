@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>编排控制层无代码理论检查点 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ASSESSMENT · ORCHESTRATION</div>
+    <h1>编排控制层无代码理论检查点</h1>
+    <p class="subtitle">通过无代码任务检验编排边界、模式、可靠性与表达。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../docs/index.html">学习首页</a>
+      <a href="../roadmap/learning-plan.html">学习路线</a>
+      <a href="../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../docs/00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>编排控制层无代码理论检查点</h1>
+<h2>目的</h2>
+<p>验证学习者是否能够在不阅读实验代码的情况下解释编排边界、状态、模式和可靠性。通过后才推荐进入最小 Agent Loop 实验。</p>
+<p>前置:</p>
+<ol>
+<li>通过<a href="00-agent-foundations-theory-checkpoint.html">Agent 基础理论检查点</a>。</li>
+<li>完成<a href="../docs/orchestration/index.html">编排五单元理论课程</a>。</li>
+</ol>
+<h2>规则</h2>
+<ul>
+<li>总分:100 分。</li>
+<li>建议时限:120 分钟,不作为自动推进条件。</li>
+<li>通过线:总分不低于 80 分。</li>
+<li>单项门槛:五项任务均不低于 12 分。</li>
+<li>必须提交全部理论证据。</li>
+<li>不允许用框架 API 或代码替代架构解释。</li>
+</ul>
+<h2>任务一:请求链路与职责边界</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>不看资料画出一次带工具的单 Agent 请求,至少包含:</p>
+<ul>
+<li>接入、编排、推理、治理、工具、观察和模型网关。</li>
+<li>控制流和数据流方向。</li>
+<li>动作执行前的权限点。</li>
+<li>finish 和业务 acceptance 的区别。</li>
+</ul>
+<p>再回答:编排和推理可以在同一进程中,为什么架构语义仍需区分?</p>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-7</td>
+<td>只有组件名或将模型视为全部控制。</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>主链路基本正确,但治理、观察或完成边界缺失。</td>
+</tr>
+<tr>
+<td>12-16</td>
+<td>职责和方向正确,能区分决策意图与控制执行。</td>
+</tr>
+<tr>
+<td>17-20</td>
+<td>能补充替代实现、参考架构前提和错误边界。</td>
+</tr>
+</tbody></table></div>
+<h2>任务二:状态与生命周期</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>为“高风险退款调查 Agent”设计状态模型和生命周期,要求:</p>
+<ol>
+<li>区分 run、session、checkpoint 和 long-term memory。</li>
+<li>给出 running、waiting、completed、failed、cancelled、exhausted 转移。</li>
+<li>说明 checkpoint 保存时机。</li>
+<li>列出恢复前检查。</li>
+<li>解释如何避免重复退款。</li>
+</ol>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-7</td>
+<td>所有信息放在 messages 或同一“memory”中。</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>能区分主要状态,但恢复和副作用不完整。</td>
+</tr>
+<tr>
+<td>12-16</td>
+<td>生命周期、checkpoint、重新授权和幂等基本完整。</td>
+</tr>
+<tr>
+<td>17-20</td>
+<td>能讨论 schema version、外部状态核对和无法安全迁移的出口。</td>
+</tr>
+</tbody></table></div>
+<h2>任务三:模式选择</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>分别为以下场景选择 Workflow、Router、ReAct、Plan-and-Execute 或混合模式:</p>
+<ol>
+<li>固定发票审批。</li>
+<li>多类别客服分流。</li>
+<li>开放式竞品研究。</li>
+<li>可先审批计划的批量数据修复。</li>
+<li>既要动态调查又有高风险动作的企业工单。</li>
+</ol>
+<p>每题必须说明:</p>
+<ul>
+<li>选择依据。</li>
+<li>不选两个替代模式的原因。</li>
+<li>模式升级或降级的观测信号。</li>
+</ul>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-7</td>
+<td>按“复杂就用 Agent”选择。</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>能区分固定和动态路径,取舍维度不足。</td>
+</tr>
+<tr>
+<td>12-16</td>
+<td>同时考虑不确定性、审计、延迟、成本和风险。</td>
+</tr>
+<tr>
+<td>17-20</td>
+<td>能给出混合边界、切换信号和评测方案。</td>
+</tr>
+</tbody></table></div>
+<h2>任务四:失败 Trace 归因</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>分析以下摘要:</p>
+<pre><code class="language-text">step=1 phase=decide event=decision_made kind=act action=search
+step=1 phase=observe event=result docs=[A,B]
+step=2 phase=decide event=decision_made kind=act action=search
+step=2 phase=observe event=result docs=[A,B]
+step=3 phase=decide event=decision_made kind=act action=search
+step=3 phase=observe event=result docs=[A,B]
+step=3 phase=terminate event=max_steps_reached
+</code></pre>
+<p>要求分别写出:</p>
+<ul>
+<li>Trace 已证明的事实。</li>
+<li>尚未证明的原因假设。</li>
+<li>需要补充的观测字段。</li>
+<li>可能涉及的组件。</li>
+<li>修复方案和回归验证。</li>
+</ul>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-7</td>
+<td>直接断言“模型能力不足”。</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>能识别重复循环,但事实和推测混合。</td>
+</tr>
+<tr>
+<td>12-16</td>
+<td>能分层检查状态、工具、目标和策略。</td>
+</tr>
+<tr>
+<td>17-20</td>
+<td>能设计补充证据、重复检测和有针对性的回归用例。</td>
+</tr>
+</tbody></table></div>
+<h2>任务五:无代码系统设计与口述</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>设计一个“可暂停、可恢复的企业工单 Agent”,8 分钟内说明:</p>
+<ol>
+<li>问题和成功条件。</li>
+<li>控制流和状态模型。</li>
+<li>模式选择及拒绝其他模式的原因。</li>
+<li>动作权限、重试、幂等和 HITL。</li>
+<li>Trace、业务验收和离线评测。</li>
+<li>什么时候考虑 Multi-Agent。</li>
+</ol>
+<p>随后接受至少两轮追问:</p>
+<ul>
+<li>模型说完成但工单未解决怎么办?</li>
+<li>恢复后如何避免重复动作?</li>
+<li>为什么不直接用 Multi-Agent?</li>
+<li>哪些失败应重试,哪些应转人工?</li>
+</ul>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>分数</th>
+<th>标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-7</td>
+<td>主要讲框架或模型,没有控制和失败设计。</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>主流程可理解,状态、治理或验收不完整。</td>
+</tr>
+<tr>
+<td>12-16</td>
+<td>架构、状态、可靠性和取舍形成闭环。</td>
+</tr>
+<tr>
+<td>17-20</td>
+<td>能说明假设、替代方案、证据边界和演进条件。</td>
+</tr>
+</tbody></table></div>
+<h2>证据模板</h2>
+<pre><code class="language-md">检查日期:
+建议时限内完成:是 / 否(不影响通过,用于复盘)
+
+请求链路与边界:__/20
+状态与生命周期:__/20
+模式选择:__/20
+失败 Trace:__/20
+系统设计与口述:__/20
+总分:__/100
+
+五项是否均 &gt;= 12:是 / 否
+结果:理论通过 / 补强后复测
+
+证据链接:
+- 链路图:
+- 状态设计:
+- 模式矩阵:
+- Trace 分析:
+- 系统设计与口述:
+
+三个最薄弱点:
+补强动作:
+复测日期:
+复测新案例:
+</code></pre>
+<h2>补强规则</h2>
+<ul>
+<li>边界不足:重画“谁提出决策、谁验证、谁执行、谁记录”。</li>
+<li>状态不足:重新按生命周期拆分,补恢复与副作用场景。</li>
+<li>模式不足:每题增加“不选其他方案”的理由和切换信号。</li>
+<li>归因不足:强制分开事实、假设、修复和回归。</li>
+<li>表达不足:录制 3 分钟与 8 分钟两个版本,重练追问不稳定处。</li>
+</ul>
+<h2>通过后的动作</h2>
+<ol>
+<li>在<a href="../roadmap/progress-tracker.html">进度跟踪</a>登记五类证据。</li>
+<li>进入<a href="../labs/agent-loop-minimal/README.md">最小 Agent Loop 实验</a>,把理论映射到代码。</li>
+<li>完成实验后再执行<a href="01-orchestration-checklist.html">编排工程模块考核</a>。</li>
+</ol>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../docs/orchestration/05-multi-agent-boundaries.html">← 上一步</a>
+    <a href="../labs/agent-loop-minimal/README.md">下一步 →</a>
+  </nav>
+  <footer>
+    <span>编排控制层无代码理论检查点 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

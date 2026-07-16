@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>单元 5:Multi-Agent 的适用边界 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ORCHESTRATION · UNIT 05</div>
+    <h1>单元 5:Multi-Agent 的适用边界</h1>
+    <p class="subtitle">判断何时需要 Multi-Agent，以及如何控制协调成本与风险。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../index.html">学习首页</a>
+      <a href="../../roadmap/learning-plan.html">学习路线</a>
+      <a href="../../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>单元 5:Multi-Agent 的适用边界</h1>
+<h2>前置与目标</h2>
+<p>前置:<a href="04-reliability-and-recovery.html">可靠性与恢复</a>。</p>
+<p>完成后能够:</p>
+<ol>
+<li>先定位单 Agent 瓶颈,再判断是否需要 Multi-Agent。</li>
+<li>比较 orchestrator-workers、并行分工和层级协作。</li>
+<li>说明共享状态、冲突仲裁、权限和评测归因问题。</li>
+<li>用收益指标证明升级值得。</li>
+</ol>
+<h2>1. Multi-Agent 不是默认高级形态</h2>
+<p>多个 Agent 可以增加并行性、上下文隔离和专业分工,也会增加:</p>
+<ul>
+<li>任务分解错误。</li>
+<li>通信和 token 成本。</li>
+<li>重复搜索和重复动作。</li>
+<li>共享状态冲突。</li>
+<li>端到端失败归因难度。</li>
+<li>权限扩散和审计复杂度。</li>
+</ul>
+<blockquote>
+<p><strong>通用事实</strong>:增加独立决策主体会增加协调状态和失败组合。</p>
+<p><strong>项目参考架构</strong>:Multi-Agent 协作仍由编排控制层统一表达,治理和 trace 必须贯穿每个子 run。</p>
+<p><strong>实现偏好</strong>:先建立单 Agent 基线,只有可测收益超过协调成本时才升级。</p>
+</blockquote>
+<h2>2. 先诊断单 Agent 为什么失败</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>表现</th>
+<th>可能根因</th>
+<th>Multi-Agent 是否优先解法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>工具经常调用错</td>
+<td>工具描述或 schema 差</td>
+<td>否,先修工具接口</td>
+</tr>
+<tr>
+<td>长上下文丢失重点</td>
+<td>上下文管理或任务过大</td>
+<td>可能,也可先摘要/分段</td>
+</tr>
+<tr>
+<td>独立子任务可并行</td>
+<td>单 Agent 串行造成延迟</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>需要不同专业权限</td>
+<td>单一身份权限过宽</td>
+<td>可能,但治理要先设计</td>
+</tr>
+<tr>
+<td>目标模糊</td>
+<td>需求没有澄清</td>
+<td>否,更多 Agent 会放大分歧</td>
+</tr>
+<tr>
+<td>评测标准不清</td>
+<td>不知道何为成功</td>
+<td>否,无法证明升级收益</td>
+</tr>
+</tbody></table></div>
+<h2>3. 常见协作模式</h2>
+<h3>Orchestrator-Workers</h3>
+<p>主 Agent 动态拆任务,多个 worker 独立执行,主 Agent 汇总。</p>
+<p>适合:</p>
+<ul>
+<li>子任务数量和内容依输入而变化。</li>
+<li>子任务有较强独立性。</li>
+<li>主 Agent 能定义清晰交付契约。</li>
+</ul>
+<p>风险:错误分解、遗漏、重复工作、汇总损失证据。</p>
+<h3>固定并行分工</h3>
+<p>代码预先定义多个角色或检查维度并行执行,最后确定性聚合或投票。</p>
+<p>适合:</p>
+<ul>
+<li>分工稳定。</li>
+<li>需要多视角审查。</li>
+<li>结果可以独立评分或聚合。</li>
+</ul>
+<p>它更接近 parallel workflow,不一定属于动态 Multi-Agent。</p>
+<h3>层级协作</h3>
+<p>上层负责目标和资源,下层继续委派。适合大型任务,但深度增加后状态、预算和责任链迅速复杂。</p>
+<h3>Peer-to-Peer / Handoff</h3>
+<p>Agent 根据能力把控制权移交给另一个 Agent。适合职责清晰的专业接力,需要明确当前 owner、handoff contract 和循环检测。</p>
+<h2>4. Orchestrator-Workers 时序</h2>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant U as User
+    participant L as Lead Agent
+    participant W1 as Worker A
+    participant W2 as Worker B
+    participant E as Evaluator
+
+    U-&gt;&gt;L: goal + constraints
+    L-&gt;&gt;L: decompose + define contracts
+    par independent work
+        L-&gt;&gt;W1: subtask + budget + context
+        L-&gt;&gt;W2: subtask + budget + context
+        W1--&gt;&gt;L: findings + evidence + status
+        W2--&gt;&gt;L: findings + evidence + status
+    end
+    L-&gt;&gt;E: synthesized result + provenance
+    E--&gt;&gt;L: pass / gaps
+    L--&gt;&gt;U: result or further work
+</code></pre>
+<p>每个 worker 应有独立 sub-run ID、预算、工具权限和输出契约。Lead 不能只收到自然语言总结而丢失来源和失败状态。</p>
+<h2>5. 上下文隔离与共享状态</h2>
+<h3>应隔离的信息</h3>
+<ul>
+<li>与子任务无关的大量历史。</li>
+<li>其他 worker 的中间噪声。</li>
+<li>不属于该角色的敏感数据和工具权限。</li>
+<li>主 Agent 的未验证假设。</li>
+</ul>
+<h3>应共享的信息</h3>
+<ul>
+<li>顶层目标和成功条件。</li>
+<li>子任务范围、依赖和预算。</li>
+<li>已确认事实与来源。</li>
+<li>公共约束和禁止动作。</li>
+<li>输出 schema 和截止条件。</li>
+</ul>
+<p>共享状态不能让多个 Agent 任意覆盖同一字段。常见策略:</p>
+<ul>
+<li>单写者、多读者。</li>
+<li>每个 worker 写独立 namespace。</li>
+<li>append-only 事件与最终聚合。</li>
+<li>乐观版本检查或显式锁。</li>
+<li>冲突由确定性规则或指定 owner 仲裁。</li>
+</ul>
+<h2>6. 权限边界</h2>
+<p>不要让所有子 Agent 继承 Lead 的全部权限。应按任务最小授权:</p>
+<ul>
+<li>Research worker 只读搜索和资料。</li>
+<li>Writer 只能写草稿区。</li>
+<li>Reviewer 只读产物并输出建议。</li>
+<li>Committer 在人工批准后才有提交权限。</li>
+</ul>
+<p>委派需要记录“谁代表谁、在什么范围、有效多久”。子 Agent 进一步委派时必须受深度、预算和权限约束。</p>
+<h2>7. 冲突与仲裁</h2>
+<p>多个 Agent 可能产生冲突事实、计划或编辑。仲裁不能默认“再让一个模型投票”。先判断:</p>
+<ol>
+<li>是否存在可查询的外部事实?</li>
+<li>是否有确定性业务规则?</li>
+<li>是否能按来源质量或时间排序?</li>
+<li>是否属于需要人类价值判断的问题?</li>
+</ol>
+<p>模型评审适合主观质量比较,不应覆盖数据库真实状态或权限策略。</p>
+<h2>8. 评测归因</h2>
+<p>至少评测三层:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>指标</th>
+<th>关键问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Worker</td>
+<td>子任务成功率、证据质量、成本</td>
+<td>worker 是否完成契约?</td>
+</tr>
+<tr>
+<td>Coordination</td>
+<td>分解覆盖、重复率、冲突率、等待时间</td>
+<td>协作是否增加损耗?</td>
+</tr>
+<tr>
+<td>End-to-end</td>
+<td>最终成功、总延迟、总成本、安全</td>
+<td>整体是否优于单 Agent 基线?</td>
+</tr>
+</tbody></table></div>
+<p>仅看最终答案无法判断哪个 worker 有贡献或造成失败。trace 需要保留父子 run、委派原因、输入上下文摘要和产物引用。</p>
+<h2>9. 升级决策表</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>是</th>
+<th>否</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单 Agent 基线已经测量?</td>
+<td>继续</td>
+<td>先建立基线</td>
+</tr>
+<tr>
+<td>主要瓶颈来自可分离子任务?</td>
+<td>继续</td>
+<td>修目标、工具或状态</td>
+</tr>
+<tr>
+<td>子任务可并行或需上下文隔离?</td>
+<td>继续</td>
+<td>保持单 Agent</td>
+</tr>
+<tr>
+<td>子任务交付契约可验证?</td>
+<td>继续</td>
+<td>先定义契约</td>
+</tr>
+<tr>
+<td>有父子 trace 和预算控制?</td>
+<td>继续</td>
+<td>先补治理</td>
+</tr>
+<tr>
+<td>成功/延迟收益覆盖协调成本?</td>
+<td>尝试 Multi-Agent</td>
+<td>保持简单方案</td>
+</tr>
+</tbody></table></div>
+<h2>10. 案例:深度研究系统</h2>
+<p>Anthropic 公布的研究系统使用 lead agent 协调并行 subagents,适合开放式研究中动态拆分多个搜索方向。这个案例成立的前提包括:</p>
+<ul>
+<li>搜索方向相对独立,可以并行。</li>
+<li>子 Agent 的工具范围明确。</li>
+<li>Lead 负责计划、继续研究和综合。</li>
+<li>系统可以评估来源与最终研究质量。</li>
+</ul>
+<p>不能从这个案例推出“所有研究都应 Multi-Agent”。对于范围很小的问题,单 Agent 或固定并行搜索可能成本更低。</p>
+<h2>11. 失败矩阵</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>失败</th>
+<th>Trace 证据</th>
+<th>风险</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>错误分解</td>
+<td>多个 worker 均缺关键子问题</td>
+<td>最终答案系统性遗漏</td>
+<td>分解覆盖检查和动态补任务</td>
+</tr>
+<tr>
+<td>重复工作</td>
+<td>相同查询/来源跨 worker 重复</td>
+<td>成本高无收益</td>
+<td>共享已覆盖范围或去重</td>
+</tr>
+<tr>
+<td>上下文污染</td>
+<td>worker 接收无关历史</td>
+<td>偏离子任务</td>
+<td>最小上下文和 namespace</td>
+</tr>
+<tr>
+<td>写冲突</td>
+<td>多 worker 更新同一状态版本</td>
+<td>结果丢失</td>
+<td>单写者、事件合并或版本检查</td>
+</tr>
+<tr>
+<td>无限委派</td>
+<td>父子深度持续增长</td>
+<td>成本失控</td>
+<td>深度、数量和预算上限</td>
+</tr>
+<tr>
+<td>无法归因</td>
+<td>只有最终汇总</td>
+<td>不能定位失败</td>
+<td>父子 trace 和交付契约</td>
+</tr>
+</tbody></table></div>
+<h2>常见误区</h2>
+<ol>
+<li>多 Agent 天然比单 Agent准确。</li>
+<li>给不同 prompt 就等于专业分工。</li>
+<li>共享全部上下文可以避免信息损失。</li>
+<li>Lead 能自动识别所有 worker 错误。</li>
+<li>投票可以解决事实冲突和权限问题。</li>
+</ol>
+<h2>理论追问</h2>
+<ol>
+<li>什么情况下普通并行任务优于 Multi-Agent?</li>
+<li>如何量化协调成本?</li>
+<li>Lead 和 worker 应共享哪些状态?</li>
+<li>子 Agent 能否拥有比 Lead 更高的权限?</li>
+<li>如何避免 handoff 循环?</li>
+<li>最终答案正确时,为什么仍要评测 worker?</li>
+<li>如何做单 Agent 与 Multi-Agent 的公平 A/B?</li>
+</ol>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/multi-agent-research-system">Anthropic: How we built our multi-agent research system</a> - orchestrator-worker 生产案例与协调挑战。</li>
+<li><a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic: Building effective agents</a> - parallelization 和 orchestrator-workers 模式。</li>
+<li><a href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/">OpenAI: A practical guide to building agents</a> - 单 Agent 与多 Agent 编排及渐进复杂度建议。</li>
+</ul>
+<h2>本单元产出</h2>
+<ul>
+<li>用升级决策表评审一个 Multi-Agent 方案。</li>
+<li>设计父子 run trace 和最小权限表。</li>
+<li>给出保留单 Agent 的反方论证。</li>
+</ul>
+<p>下一步:完成<a href="../../assessment/01-orchestration-theory-checkpoint.html">编排无代码理论检查点</a>。</p>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="04-reliability-and-recovery.html">← 上一步</a>
+    <a href="../../assessment/01-orchestration-theory-checkpoint.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>单元 5:Multi-Agent 的适用边界 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

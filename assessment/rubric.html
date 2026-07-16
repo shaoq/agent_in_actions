@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent 能力考核标准 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ASSESSMENT · RUBRIC</div>
+    <h1>Agent 能力考核标准</h1>
+    <p class="subtitle">统一记录理论与工程考核的评分标准。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../docs/index.html">学习首页</a>
+      <a href="../roadmap/learning-plan.html">学习路线</a>
+      <a href="../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../docs/00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>Agent 能力考核标准</h1>
+<p>本文件定义全局能力等级。可直接执行的主题考核:</p>
+<ul>
+<li><a href="00-agent-foundations-theory-checkpoint.html">00 Agent 基础理论检查点</a></li>
+<li><a href="01-orchestration-theory-checkpoint.html">01 编排无代码理论检查点</a></li>
+<li><a href="01-orchestration-checklist.html">01 编排控制层模块考核</a></li>
+</ul>
+<h2>评分维度</h2>
+<h3>1. 架构理解</h3>
+<ul>
+<li>1 分: 只能描述 LLM 调用流程。</li>
+<li>3 分: 能说出 Agent 的主要组件。</li>
+<li>5 分: 能清楚说明组件边界、依赖关系和常见错误设计。</li>
+</ul>
+<h3>2. 工程实现</h3>
+<ul>
+<li>1 分: 只能跑通简单 demo。</li>
+<li>3 分: 能实现工具调用、RAG 或记忆中的单项能力。</li>
+<li>5 分: 能实现带失败处理、权限、日志和评测的端到端 Agent。</li>
+</ul>
+<h3>3. 调试能力</h3>
+<ul>
+<li>1 分: 主要靠改 prompt 试错。</li>
+<li>3 分: 能根据日志定位大致问题。</li>
+<li>5 分: 能基于 trace 区分模型、检索、工具、状态、权限、评测问题。</li>
+</ul>
+<h3>4. 安全与治理</h3>
+<ul>
+<li>1 分: 只知道 prompt injection 这个概念。</li>
+<li>3 分: 能设计基础权限和审计。</li>
+<li>5 分: 能覆盖在线防护、离线安全评测和沙箱隔离。</li>
+</ul>
+<h3>5. 面试表达</h3>
+<ul>
+<li>1 分: 回答零散,缺少结构。</li>
+<li>3 分: 能按模块回答常见问题。</li>
+<li>5 分: 能结合项目经验、取舍、失败案例和上线策略回答追问。</li>
+</ul>
+<h2>阶段考核任务</h2>
+<ol>
+<li>设计一个客服 Agent,要求覆盖 RAG、工具调用、权限、安全、评测。</li>
+<li>给定一段失败 trace,判断问题来源并给出修复方案。</li>
+<li>实现一个最小可运行 Agent demo,包含至少一个工具和一个评测用例。</li>
+<li>解释 Memory 与 RAG 的边界,并设计防污染策略。</li>
+<li>设计一套 Agent 上线前评测与上线后观测方案。</li>
+</ol>
+
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../docs/index.html">← 上一步</a>
+    <a href="00-agent-foundations-theory-checkpoint.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>Agent 能力考核标准 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>
