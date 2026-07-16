@@ -1,0 +1,4 @@
+# 本地工具 / 工作区目录（不入版本库）
+.codex/
+.claude/
+openspec/
