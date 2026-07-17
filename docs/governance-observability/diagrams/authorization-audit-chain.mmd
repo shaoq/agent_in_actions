@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant O as Orchestrator
+    participant P as Policy Engine
+    participant H as HITL
+    participant T as Tool Runtime
+    participant A as Audit Store
+    O->>P: subject, action, resource, context, policy_version
+    P-->>O: require_approval + obligations + decision_id
+    O->>H: immutable action_digest + reason + expiry
+    H-->>O: approval_id + approver + scope
+    O->>P: resume with approval evidence
+    P-->>O: allow / deny after revalidation
+    O->>T: authorized invocation + obligations
+    T-->>O: typed observation
+    P->>A: append policy decision
+    H->>A: append approval event
+    T->>A: append execution outcome

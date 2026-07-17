@@ -1,0 +1,13 @@
+flowchart TD
+    A[一次 run] --> B[Trace: 因果路径]
+    A --> C[Log: 离散事件]
+    A --> D[Metric: 聚合趋势]
+    B --> E[trace_id / span_id]
+    C --> F[event_name / severity / actor]
+    D --> G[counter / histogram / gauge]
+    E --> H[关联查询]
+    F --> H
+    G --> I[告警与 SLO]
+    I --> H
+    H --> J[事实 → 假设 → 处置]
+    K[Audit: 谁基于何策略做了什么] --> H

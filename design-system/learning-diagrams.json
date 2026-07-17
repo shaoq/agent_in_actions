@@ -286,6 +286,56 @@
       "caption": "写时安全不代替读时授权；低风险写入也不自动获得高风险使用权。",
       "alt": "不可信输入经敏感信息、授权、来源、投毒和风险门禁后才能进入隔离候选区；读取时再次按身份目的过滤，高风险使用需要确认，审计与删除贯穿全链路。",
       "wide": true
+    },
+    {
+      "id": "online-governance-control-plane",
+      "type": "flowchart",
+      "page": "docs/governance-observability/01-online-cross-cutting-and-control-plane.html",
+      "source": "docs/governance-observability/diagrams/online-governance-control-plane.mmd",
+      "svg": "docs/governance-observability/diagrams/online-governance-control-plane.svg",
+      "caption": "每次跨越信任边界都重新判定，而不是复用一次粗粒度“已登录”。",
+      "alt": "请求身份经输入门禁进入编排与推理，检索和动作候选再经授权、预算与审批，输出通过校验脱敏；遥测与审计贯穿各阶段。",
+      "wide": true
+    },
+    {
+      "id": "telemetry-correlation",
+      "type": "flowchart",
+      "page": "docs/governance-observability/02-trace-log-and-metric.html",
+      "source": "docs/governance-observability/diagrams/telemetry-correlation.mmd",
+      "svg": "docs/governance-observability/diagrams/telemetry-correlation.svg",
+      "caption": "Trace 解释单次因果，Metric 发现群体异常，Log 补充细节，Audit 证明责任链。",
+      "alt": "一次运行产生描述因果路径的 trace、描述离散事件的 log、描述聚合趋势的 metric 与描述责任链的 audit，并通过关联查询支持诊断。",
+      "wide": true
+    },
+    {
+      "id": "authorization-audit-chain",
+      "type": "sequence",
+      "page": "docs/governance-observability/03-identity-authorization-and-audit.html",
+      "source": "docs/governance-observability/diagrams/authorization-audit-chain.mmd",
+      "svg": "docs/governance-observability/diagrams/authorization-audit-chain.svg",
+      "caption": "审批是受范围、参数、版本和有效期约束的证据，不是一次永久放行。",
+      "alt": "编排向策略引擎提交主体动作资源上下文，需审批时绑定动作摘要；恢复后重新验证，再调用工具，并把策略、审批和执行结果写入审计。",
+      "wide": true
+    },
+    {
+      "id": "injection-pii-defense",
+      "type": "flowchart",
+      "page": "docs/governance-observability/04-prompt-injection-pii-and-guardrails.html",
+      "source": "docs/governance-observability/diagrams/injection-pii-defense.mmd",
+      "svg": "docs/governance-observability/diagrams/injection-pii-defense.svg",
+      "caption": "内容检测只能降低概率；权限、隔离、审批和输出控制限制真实影响。",
+      "alt": "用户网页文档和工具观察被标为不可信数据，经来源授权、指令数据边界、PII 最小化和风险判定后形成受限上下文，动作再授权且输出脱敏。",
+      "wide": true
+    },
+    {
+      "id": "hitl-budget-incident-loop",
+      "type": "flowchart",
+      "page": "docs/governance-observability/05-hitl-budget-and-incident-response.html",
+      "source": "docs/governance-observability/diagrams/hitl-budget-incident-loop.mmd",
+      "svg": "docs/governance-observability/diagrams/hitl-budget-incident-loop.svg",
+      "caption": "HITL 是状态协议，预算是多维控制，事件响应以证据保存和安全恢复收口。",
+      "alt": "运行事件按风险预算和异常分流，正常继续，高风险暂停审批，超预算降级终止，安全事件撤权隔离并保存证据，经修复回归后受控恢复。",
+      "wide": true
     }
   ]
 }
