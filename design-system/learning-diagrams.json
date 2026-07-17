@@ -146,6 +146,56 @@
       "caption": "降低不确定性需要新证据或新权限；无进展的重复推理不是恢复。",
       "alt": "推理内核识别目标、事实、风险或模型契约方面的不确定性，分别提出澄清、查询、升级或修复意图；编排层取得新观察后重新决策，证据充分时输出意图，否则显式失败。",
       "wide": true
+    },
+    {
+      "id": "tool-execution-boundary",
+      "type": "flowchart",
+      "page": "docs/tools/01-tool-contract-and-schema.html",
+      "source": "docs/tools/diagrams/tool-execution-boundary.mmd",
+      "svg": "docs/tools/diagrams/tool-execution-boundary.svg",
+      "caption": "ActionIntent 只是候选动作；只有通过阶段校验与授权后，工具层才按权威契约执行。",
+      "alt": "推理内核提出动作意图，编排校验阶段，治理层授权后由工具运行时解析权威契约并调用外部系统，最终返回类型化 observation；模型网关与基础设施位于各自边界。",
+      "wide": true
+    },
+    {
+      "id": "tool-call-lifecycle",
+      "type": "sequence",
+      "page": "docs/tools/02-call-lifecycle-and-observation.html",
+      "source": "docs/tools/diagrams/tool-call-lifecycle.mmd",
+      "svg": "docs/tools/diagrams/tool-call-lifecycle.svg",
+      "caption": "调用完成必须区分派发、下游响应、结果规范化和证据持久化。",
+      "alt": "编排提交已校验意图，工具层准备请求并等待授权，获准后派发外部调用，规范化响应为 observation，持久化调用记录后由编排写回步骤；拒绝、超时和未知结果走类型化分支。",
+      "wide": true
+    },
+    {
+      "id": "approval-sandbox-flow",
+      "type": "sequence",
+      "page": "docs/tools/03-permissions-approval-and-sandbox.html",
+      "source": "docs/tools/diagrams/approval-sandbox-flow.mmd",
+      "svg": "docs/tools/diagrams/approval-sandbox-flow.svg",
+      "caption": "审批必须绑定规范化动作摘要；恢复后重新授权，再进入最小权限的隔离执行环境。",
+      "alt": "编排把规范化动作交给治理判定，高风险动作暂停并请求人工审批；恢复时重新验证身份、策略、动作摘要和有效期，工具运行时再向基础设施请求最小凭据与隔离环境执行。",
+      "wide": true
+    },
+    {
+      "id": "retry-idempotency-decision",
+      "type": "flowchart",
+      "page": "docs/tools/04-retry-idempotency-and-side-effects.html",
+      "source": "docs/tools/diagrams/retry-idempotency-decision.mmd",
+      "svg": "docs/tools/diagrams/retry-idempotency-decision.svg",
+      "caption": "未知结果优先查询 effect，而不是把 timeout 当作“肯定未执行”。",
+      "alt": "工具错误先按是否已派发、结果是否已知、动作是否幂等以及错误是否瞬时分类；未派发的瞬时错误可受限重试，未知结果先按幂等键查询状态，非幂等动作进入补偿或人工核对。",
+      "wide": true
+    },
+    {
+      "id": "tool-interface-selection",
+      "type": "flowchart",
+      "page": "docs/tools/05-function-calling-mcp-and-computer-use.html",
+      "source": "docs/tools/diagrams/tool-interface-selection.mmd",
+      "svg": "docs/tools/diagrams/tool-interface-selection.svg",
+      "caption": "优先选择最稳定、最小权限和最可验证的接口；Computer Use 是受限兜底，不是默认自动化方式。",
+      "alt": "稳定且可集成的系统优先使用 typed API，由 Function Calling 表达模型侧结构化意图；需要标准化发现与连接时可通过 MCP adapter；只有缺少可靠 API 且可接受高脆弱性时才选择受限 Computer Use。",
+      "wide": true
     }
   ]
 }

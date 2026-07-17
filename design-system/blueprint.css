@@ -591,7 +591,10 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   }
   .learning-diagram__viewport{padding:8px;overflow:visible}
   .learning-diagram__image-link{width:100%;min-width:0}
-  .learning-diagram img,.learning-diagram--wide img{width:100%;max-width:100%;min-width:0;height:auto}
+  .learning-diagram img,.learning-diagram--wide img{
+    width:100%;max-width:100%;min-width:0;height:auto;
+    filter:invert(1) grayscale(1) contrast(1.2);
+  }
   .learning-diagram figcaption{display:block;color:#24364a;background:#fff !important;border-color:#9bb !important}
   .learning-diagram__actions{display:none}
   footer{color:#668}

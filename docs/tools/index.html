@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>工具 / 动作层理论课程 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body><div class="wrap">
+  <header><div class="eyebrow">L2 · TOOLS / ACTIONS</div><h1>工具 / 动作层理论课程</h1><p class="subtitle">让 Agent 的结构化意图经过契约、授权与可靠性控制，成为可审计的真实动作。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="../../roadmap/learning-plan.html">学习路线</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+  <main class="prose">
+    <h1>工具 / 动作层理论课程</h1>
+    <p>工具 / 动作层（Tools / Actions）是 Agent 的<strong>执行适配面</strong>：接收已校验、已授权的调用请求，绑定凭据与运行约束，调用外部能力，再返回带来源、状态和错误类型的 observation。它不决定任务目标，不推进整个 run，也不把模型输出当权限凭证。</p>
+
+    <h2>学习目标</h2>
+    <ol>
+      <li>设计可版本化的工具契约，区分 input、output、error 与 side-effect contract。</li>
+      <li>解释 prepare、authorize、dispatch、observe、commit 的调用生命周期与证据。</li>
+      <li>根据主体、资源、动作和上下文设计最小权限、审批与执行隔离。</li>
+      <li>按错误类别决定重试，使用幂等键、去重记录和补偿控制副作用。</li>
+      <li>辨析 Function Calling、MCP 与 Computer Use 的抽象层级和适用边界。</li>
+    </ol>
+
+    <h2>前置知识</h2>
+    <ol><li>理解<a href="../00-agent-architecture.html">九层 Agent 架构</a>。</li><li>完成<a href="../orchestration/index.html">编排控制层课程</a>，知道 run、step、pause/resume 和终止条件由谁拥有。</li><li>完成<a href="../reasoning/index.html">推理内核课程</a>，理解 ActionIntent、schema 校验与能力选择。</li></ol>
+    <div class="callout"><b>先推理、后工具</b> · 推理内核回答“建议做什么”，工具层回答“如何把获准意图安全地做成，并留下什么证据”。两者之间必须经过编排推进与治理授权。</div>
+
+    <h2>五个理论单元</h2>
+    <div class="table-wrap"><table><thead><tr><th>顺序</th><th>单元</th><th>核心产出</th></tr></thead><tbody>
+      <tr><td>01</td><td><a href="01-tool-contract-and-schema.html">工具契约与 Schema</a></td><td>四类契约、版本策略、类型化错误与组件边界</td></tr>
+      <tr><td>02</td><td><a href="02-call-lifecycle-and-observation.html">调用生命周期与 Observation</a></td><td>调用状态机、可观测字段与 observation 信任边界</td></tr>
+      <tr><td>03</td><td><a href="03-permissions-approval-and-sandbox.html">权限、审批与沙箱</a></td><td>最小权限、TOCTOU 防护、审批绑定与隔离责任</td></tr>
+      <tr><td>04</td><td><a href="04-retry-idempotency-and-side-effects.html">重试、幂等与副作用</a></td><td>错误分类、幂等协议、未知结果与补偿设计</td></tr>
+      <tr><td>05</td><td><a href="05-function-calling-mcp-and-computer-use.html">Function Calling、MCP 与 Computer Use</a></td><td>接口选择矩阵、信任边界与降级策略</td></tr>
+    </tbody></table></div>
+
+    <h2>统一组件边界</h2>
+    <div class="table-wrap"><table><thead><tr><th>组件</th><th>在动作链路中的职责</th><th>不应交给工具层的事</th></tr></thead><tbody>
+      <tr><td>推理内核</td><td>从可见能力中提出结构化 ActionIntent</td><td>工具层不规划下一步、不解释用户目标</td></tr>
+      <tr><td>编排控制</td><td>校验步骤阶段，推进 run，暂停、恢复并写回 observation</td><td>工具层不拥有全局状态机或终止条件</td></tr>
+      <tr><td>治理与可观测</td><td>做策略判定、审批、审计和敏感数据规则</td><td>工具层不自行放宽权限或覆盖 deny</td></tr>
+      <tr><td>工具 / 动作</td><td>适配能力、执行请求、规范化结果与错误</td><td>不直接访问模型厂商，不持有长期记忆</td></tr>
+      <tr><td>模型网关 + 基础设施</td><td>提供模型访问、凭据托管、进程/网络/文件隔离等能力</td><td>工具层声明和使用隔离策略，但底层容器不是工具业务逻辑</td></tr>
+    </tbody></table></div>
+
+    <h2>完成标准</h2>
+    <ul><li>按顺序读完五个单元，并完成每页“学习产出”。</li><li>能对退款、邮件发送或生产变更场景画出从 ActionIntent 到 observation 的链路。</li><li>能解释“schema 合法、策略允许、执行成功、业务完成”为什么是四件不同的事。</li><li>完成<a href="../../assessment/03-tools-actions-theory-checkpoint.html">工具 / 动作层理论检查点</a>：总分至少 80，且每项至少达到该项满分 60%。</li></ul>
+    <p>检查点通过只证明 L2 理论边界与方案设计达标，不等于已经完成 L3 工具运行时实现。</p>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="../reasoning/04-uncertainty-failure-and-recovery.html">← 推理内核末单元</a><a href="01-tool-contract-and-schema.html">开始单元 01 →</a></nav>
+  <footer><span>工具 / 动作层 · L2 理论课程</span><span>资产可用 ≠ 个人已掌握</span></footer>
+</div></body></html>

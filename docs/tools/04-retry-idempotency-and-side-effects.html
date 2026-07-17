@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>04 重试、幂等与副作用 · 工具 / 动作层</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" /><link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script></head>
+<body><div class="wrap"><header><div class="eyebrow">L2 · TOOLS / ACTIONS · UNIT 04</div><h1>重试、幂等与副作用</h1><p class="subtitle">先判断错误与动作语义，再决定重试、查询、补偿或人工介入。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="index.html">工具课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+<main class="prose"><h1>04 重试、幂等与副作用</h1>
+<h2>学习目标</h2><ul><li>按 transient、permanent、conflict、unknown outcome 分类错误。</li><li>理解“使用幂等键”需要服务端去重协议与持久记录。</li><li>区分 retry、status inquiry、resume、compensation 与 manual reconcile。</li><li>为副作用定义 precondition、effect receipt 和恢复边界。</li></ul>
+
+<h2>重试不是默认恢复</h2><figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/retry-idempotency-decision.mmd"><div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/retry-idempotency-decision.svg" target="_blank" rel="noopener" aria-label="打开重试与幂等决策图原图"><img src="diagrams/retry-idempotency-decision.svg" alt="工具错误先按是否已派发、结果是否已知、动作是否幂等以及错误是否瞬时分类；未派发的瞬时错误可受限重试，未知结果先按幂等键查询状态，非幂等动作进入补偿或人工核对。" /></a></div><figcaption><span>未知结果优先查询 effect，而不是把 timeout 当作“肯定未执行”。</span><span class="learning-diagram__actions"><a href="diagrams/retry-idempotency-decision.mmd">查看 Mermaid 源码</a><a href="diagrams/retry-idempotency-decision.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption></figure>
+
+<h2>错误分类矩阵</h2><div class="table-wrap"><table><thead><tr><th>类别</th><th>例子</th><th>默认动作</th></tr></thead><tbody><tr><td>Validation / Permanent</td><td>缺字段、资源不存在、业务规则拒绝</td><td>不重试；返回类型化错误，由编排澄清或改计划</td></tr><tr><td>Authorization</td><td>deny、审批过期</td><td>不绕过；重新授权或终止动作路径</td></tr><tr><td>Transient before dispatch</td><td>连接池暂不可用、客户端限流</td><td>预算内退避重试，带 jitter</td></tr><tr><td>Transient after dispatch</td><td>下游处理后响应丢失</td><td>未知结果；先按幂等键查询状态</td></tr><tr><td>Conflict</td><td>版本/余额/状态已变化</td><td>刷新权威状态并重新决策，不复用旧参数</td></tr><tr><td>Dependency outage</td><td>持续不可用</td><td>熔断、延迟恢复或人工出口，避免重试风暴</td></tr></tbody></table></div>
+
+<h2>真正的幂等协议</h2><p>幂等表示同一逻辑请求重复提交不会产生额外业务效果，不等于“HTTP 方法是 PUT”。可靠设计包含：</p><ol><li>由编排/工具层基于 <code>run + step + logical effect</code> 生成稳定幂等键，重试不得换键。</li><li>服务端或可信 adapter 原子保存 key、规范化请求摘要、状态与 effect receipt。</li><li>相同 key + 相同摘要返回原结果；相同 key + 不同摘要必须 conflict。</li><li>记录的 TTL 覆盖客户端最大重试与恢复窗口；过期策略显式化。</li><li>并发首次请求需要原子 claim，避免两次都进入真实副作用。</li></ol>
+<pre><code class="language-text">idempotency_key = run-8:step-4:refund
+request_digest = hash(order=ORD-42, amount=1299, currency=CNY)
+
+NEW       -> atomically claim -> EXECUTING
+EXECUTING -> duplicate waits/queries
+SUCCEEDED -> return stored effect_receipt
+FAILED_SAFE -> retry only if policy allows
+UNKNOWN   -> reconcile before any new effect
+</code></pre>
+
+<h2>副作用等级</h2><div class="table-wrap"><table><thead><tr><th>类型</th><th>示例</th><th>控制</th></tr></thead><tbody><tr><td>只读</td><td>查询订单</td><td>仍需授权、限流、隐私控制；通常可安全重试</td></tr><tr><td>可覆盖写</td><td>更新草稿标题</td><td>版本条件/ETag，避免覆盖并发修改</td></tr><tr><td>可逆写</td><td>创建可取消预约</td><td>effect receipt + 显式补偿能力</td></tr><tr><td>不可逆/外部传播</td><td>转账、邮件、发布</td><td>强审批、幂等、预览、收件人/金额绑定、人工核对</td></tr></tbody></table></div>
+
+<h2>补偿不是回滚</h2><p>分布式副作用通常无法 ACID 回滚。Compensation 是一个新的、可失败且需授权的业务动作，例如退款不是“撤销支付”，撤销邮件也无法让收件人忘记内容。因此要保存原 effect receipt、补偿原因、审批与新幂等键，并允许进入 manual reconcile。</p>
+
+<h2>重试预算</h2><ul><li>同时受单调用次数、step 时长、run 总时长、成本和下游 rate limit 约束。</li><li>指数退避加 jitter；尊重 <code>Retry-After</code>，避免所有 worker 同步重试。</li><li>熔断器减少持续故障时的放大；half-open 探测与业务流量分开。</li><li>推理修复、编排重试与工具网络重试分别计数，避免层层各重试 3 次造成指数放大。</li></ul>
+
+<h2>工程要点</h2><ul><li>trace 记录 dispatch boundary、idempotency key 的安全摘要、attempt、result class 和 effect receipt。</li><li>副作用前校验 precondition/version，副作用后先持久化 receipt 再对上层报告成功。</li><li>批量动作按 item 返回结果；避免一个 timeout 隐藏部分成功。</li><li>为 unknown outcome 建立运维队列和 SLA，而不是永久卡在“重试中”。</li></ul>
+<h2>常见坑</h2><ol><li>每次重试生成新幂等键。</li><li>客户端带 key，但服务端不持久去重。</li><li>timeout 立刻再次扣款/发送。</li><li>把补偿描述成绝对回滚，忽略新的失败与权限。</li><li>重试发生在多个层级，却没有统一预算。</li></ol>
+<h2>面试表达</h2><div class="answer-block"><h3>超时后的处理</h3><p>先确定是否已 dispatch；未派发的瞬时错误可退避重试。已派发但无响应属于 unknown outcome，先用稳定幂等键或业务查询接口核对 effect。只有确认安全且在统一预算内才重试；非幂等或不可逆动作进入补偿/人工核对，并保留 effect receipt 和审计链。</p></div>
+<h2>学习产出</h2><ol><li>为支付 timeout 写出 6 状态恢复表。</li><li>解释同 key 不同参数为什么必须 conflict。</li><li>设计批量发信的部分成功 observation 与补偿边界。</li></ol>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="03-permissions-approval-and-sandbox.html">← 单元 03</a><a href="05-function-calling-mcp-and-computer-use.html">单元 05 →</a></nav><footer><span>工具 / 动作层 · 单元 04</span><span>先确认 effect，再决定 retry</span></footer></div></body></html>

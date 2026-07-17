@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>05 Function Calling、MCP 与 Computer Use · 工具 / 动作层</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" /><link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script></head>
+<body><div class="wrap"><header><div class="eyebrow">L2 · TOOLS / ACTIONS · UNIT 05</div><h1>Function Calling、MCP 与 Computer Use</h1><p class="subtitle">它们解决不同层次的连接问题，共同前提仍是契约、授权、隔离与可靠执行。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="index.html">工具课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+<main class="prose"><h1>05 Function Calling、MCP 与 Computer Use</h1>
+<h2>学习目标</h2><ul><li>区分模型结构化调用接口、上下文/工具协议与视觉交互执行方式。</li><li>按稳定性、可观测性、权限与维护成本选择接口。</li><li>为 MCP server 和 Computer Use 建立清晰信任边界。</li><li>设计 API 优先、可降级但不静默扩大权限的策略。</li></ul>
+
+<h2>三个概念不在同一层</h2><figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/tool-interface-selection.mmd"><div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/tool-interface-selection.svg" target="_blank" rel="noopener" aria-label="打开工具接口选择图原图"><img src="diagrams/tool-interface-selection.svg" alt="稳定且可集成的系统优先使用 typed API，由 Function Calling 表达模型侧结构化意图；需要标准化发现与连接时可通过 MCP adapter；只有缺少可靠 API 且可接受高脆弱性时才选择受限 Computer Use。" /></a></div><figcaption><span>优先选择最稳定、最小权限和最可验证的接口；Computer Use 是受限兜底，不是默认自动化方式。</span><span class="learning-diagram__actions"><a href="diagrams/tool-interface-selection.mmd">查看 Mermaid 源码</a><a href="diagrams/tool-interface-selection.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>方式</th><th>主要解决</th><th>优势</th><th>关键风险</th></tr></thead><tbody><tr><td>Function Calling</td><td>让模型按 schema 返回函数/工具意图</td><td>结构化、易校验、适配模型 API</td><td>不自动保证选择正确、授权、执行或幂等</td></tr><tr><td>MCP</td><td>标准化 client 与 server 间的工具、资源、提示等能力发现和调用</td><td>连接解耦、可发现、生态复用</td><td>server 是新信任边界；能力列表和返回内容仍不可信</td></tr><tr><td>Computer Use</td><td>通过截图/DOM/输入事件操作没有合适 API 的界面</td><td>覆盖遗留系统和人机界面</td><td>脆弱、慢、难幂等、易受界面注入和误操作影响</td></tr></tbody></table></div>
+
+<h2>Function Calling 的真实边界</h2><p>Function Calling 改善候选输出的结构，但模型返回的 tool name/arguments 仍需：能力裁剪、schema/semantic 校验、治理授权、adapter 执行与 observation 验证。推理内核通过模型网关使用厂商结构化能力；工具层不应自己直接调用模型以“修复参数”。</p>
+
+<h2>MCP 的工程落点</h2><p>MCP client/adapter 可以位于工具接入面，把远端 server 暴露的能力映射到内部 capability registry。接入时至少检查：</p><ul><li>server 身份、传输与部署来源；生产环境不要自动信任任意本地/远端 server。</li><li>发现的 tool schema 固化版本/指纹并经过审核；列表变化不应静默扩大 Agent 可见能力。</li><li>把 MCP server 权限映射为内部 subject/resource policy，不能因“协议标准化”跳过授权。</li><li>对返回 resources/content 标注 provenance 和 untrusted data，防间接 prompt injection。</li><li>限制超时、响应大小、并发和网络；记录 server、tool、request/response 摘要及错误类型。</li></ul>
+
+<h2>Computer Use 的受控循环</h2><ol><li>在隔离浏览器/桌面创建最小权限 session，限制域名、下载、剪贴板与凭据。</li><li>取得 observation（截图、可访问性树或 DOM 摘要），标记页面内容不可信。</li><li>模型提出单步 action；确定性校验坐标/元素、域名、动作类别和预算。</li><li>高风险动作（提交、购买、发送、删除、上传）在最后一步前预览并审批。</li><li>执行后重新观察，使用可见证据确认状态；不要仅凭“点击已发出”判成功。</li></ol><p>尽可能使用语义元素和稳定 selector；坐标点击对布局、缩放和弹窗敏感。若站点提供可靠 API，优先 API，因为它更易契约化、幂等和审计。</p>
+
+<h2>选择矩阵</h2><div class="table-wrap"><table><thead><tr><th>场景</th><th>首选</th><th>理由与防护</th></tr></thead><tbody><tr><td>内部订单系统有稳定 API</td><td>typed API + Function Calling</td><td>契约、权限、幂等和结果验证最清晰</td></tr><tr><td>多个 IDE/Agent 复用统一开发工具</td><td>审核后的 MCP server</td><td>标准发现与连接；仍需内部授权和沙箱</td></tr><tr><td>遗留后台只有网页</td><td>受限 Computer Use</td><td>域名隔离、逐步观察、提交前 HITL、低频使用</td></tr><tr><td>转账/生产发布</td><td>专用 API / Workflow</td><td>避免视觉自动化；强审批、预条件和 effect receipt</td></tr><tr><td>MCP server 异常</td><td>fail closed 或经批准的等价 adapter</td><td>不能静默切换到更高权限 Computer Use</td></tr></tbody></table></div>
+
+<h2>统一 adapter 模型</h2><pre><code class="language-text">Internal Capability Contract
+  -> Local/API Adapter
+  -> MCP Adapter
+  -> Computer-Use Adapter
+
+All adapters MUST enforce:
+  validated request + authorization decision
+  deadline + idempotency/effect policy
+  isolation + typed observation + trace
+</code></pre><p>内部契约保持稳定，接入方式是实现细节。但不同方式的可靠性并不相同，adapter 必须显式声明 <code>risk</code>、<code>supports_idempotency</code>、<code>observation_strength</code> 与 <code>requires_human_confirmation</code>。</p>
+
+<h2>工程要点</h2><ul><li>工具选择阶段只暴露当前任务需要的最小集合，避免 capability overload。</li><li>接入方式变化需要回归契约、权限、错误映射和 trace，不只测 happy path。</li><li>对 MCP/Computer Use 设独立 kill switch、并发与成本预算。</li><li>降级必须语义等价且权限不扩大；否则返回不可用并交编排决定。</li></ul>
+<h2>常见坑</h2><ol><li>把 Function Calling 当成执行器或授权系统。</li><li>连接 MCP server 后把所有工具自动暴露给模型。</li><li>网页提示“忽略之前要求”就改变策略或泄露数据。</li><li>Computer Use 点击成功就判业务成功。</li><li>API 不可用时静默切换到更高风险界面操作。</li></ol>
+<h2>面试表达</h2><div class="answer-block"><h3>如何比较三者</h3><p>Function Calling 是模型侧结构化意图接口；MCP 是 client/server 能力连接协议；Computer Use 是缺少合适 API 时的环境交互方式。三者都不能替代内部 capability contract、治理授权、工具运行时、幂等与 observation 验证。选型上 API 优先，MCP 用于标准连接，Computer Use 只做受限兜底。</p></div>
+<h2>学习产出</h2><ol><li>为同一 CRM 操作分别画出 API、MCP、Computer Use 信任边界。</li><li>列出 MCP server 接入审核的 8 个检查项。</li><li>设计 Computer Use 在“提交订单”前后的 HITL 与证据。</li></ol>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="04-retry-idempotency-and-side-effects.html">← 单元 04</a><a href="../../assessment/03-tools-actions-theory-checkpoint.html">进入理论检查点 →</a></nav><footer><span>工具 / 动作层 · 单元 05</span><span>API 优先，Computer Use 受限兜底</span></footer></div></body></html>

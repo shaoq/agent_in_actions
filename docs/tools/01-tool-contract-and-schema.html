@@ -1,0 +1,42 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>01 工具契约与 Schema · 工具 / 动作层</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script></head>
+<body><div class="wrap"><header><div class="eyebrow">L2 · TOOLS / ACTIONS · UNIT 01</div><h1>工具契约与 Schema</h1><p class="subtitle">契约不只是参数格式，还要定义结果、错误、副作用和演进方式。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="index.html">工具课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+<main class="prose"><h1>01 工具契约与 Schema</h1>
+<h2>学习目标</h2><ul><li>把工具建模为稳定 capability，而不是一段 prompt 描述或任意函数。</li><li>同时设计输入、输出、错误和副作用契约。</li><li>区分模型侧结构化意图与执行侧权威请求。</li><li>用版本化和兼容策略安全演进工具。</li></ul>
+
+<h2>工具是受控能力契约</h2><p>生产工具通常包含：稳定 <code>capability_id</code>、人类可读用途、输入/输出 schema、错误分类、风险与副作用声明、超时与幂等能力、所需权限、所有者和版本。模型看见的是裁剪后的能力描述；执行器使用的是注册表中的权威契约，不能信任模型回传的 endpoint、credential 或 risk level。</p>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/tool-execution-boundary.mmd"><div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/tool-execution-boundary.svg" target="_blank" rel="noopener" aria-label="打开工具执行边界图原图"><img src="diagrams/tool-execution-boundary.svg" alt="推理内核提出动作意图，编排校验阶段，治理层授权后由工具运行时解析权威契约并调用外部系统，最终返回类型化 observation；模型网关与基础设施位于各自边界。" /></a></div><figcaption><span>ActionIntent 只是候选动作；只有通过阶段校验与授权后，工具层才按权威契约执行。</span><span class="learning-diagram__actions"><a href="diagrams/tool-execution-boundary.mmd">查看 Mermaid 源码</a><a href="diagrams/tool-execution-boundary.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption></figure>
+
+<h2>四类契约</h2><div class="table-wrap"><table><thead><tr><th>契约</th><th>必须说明</th><th>典型缺陷</th></tr></thead><tbody>
+<tr><td>Input</td><td>必填、类型、枚举、格式、上限、互斥条件、引用语义</td><td>允许自由 SQL / shell / URL；金额单位不清</td></tr>
+<tr><td>Output</td><td>成功状态、业务字段、provenance、freshness、截断与分页</td><td>只返回自然语言，无法确定性消费</td></tr>
+<tr><td>Error</td><td>validation、authz、rate_limit、timeout、conflict、dependency、unknown_outcome</td><td>所有异常压成 <code>success:false</code> 或一段文本</td></tr>
+<tr><td>Effect</td><td>read/write/external communication、可逆性、幂等支持、审批要求</td><td>工具名字像查询，实际触发写入</td></tr>
+</tbody></table></div>
+
+<h2>示例契约</h2><pre><code class="language-json">{
+  "capability_id": "payments.refund.v2",
+  "input": {
+    "order_id": "ORD-42",
+    "amount_minor": 1299,
+    "currency": "CNY",
+    "reason_code": "duplicate"
+  },
+  "execution": {
+    "idempotency_key": "run-8:step-4:refund",
+    "approval_ref": "approval-91",
+    "contract_version": "2.3"
+  }
+}</code></pre><p>敏感凭据、真实 endpoint、租户隔离信息应由执行侧根据可信身份绑定；不能让模型生成。领域约束（可退余额、币种一致、订单归属）必须由权威数据和确定性校验判断。</p>
+
+<h2>Schema 设计规则</h2><ul><li>使用 <code>additionalProperties: false</code> 和明确枚举，减少隐式字段。</li><li>用最小领域参数，不接受拼接后的危险指令；资源引用使用不可混淆的稳定 ID。</li><li>把字符串长度、数组元素数、批量规模和数值范围写入约束，避免资源耗尽。</li><li>输出 schema 包含 <code>status</code>、<code>data</code>、<code>provenance</code> 与 <code>error</code> 的互斥结构。</li><li>危险动作的 capability 应与只读查询分开；不要用一个 <code>mode</code> 把权限差异藏在参数里。</li></ul>
+
+<h2>版本与兼容</h2><div class="table-wrap"><table><thead><tr><th>变化</th><th>兼容性</th><th>做法</th></tr></thead><tbody><tr><td>新增 optional 输出字段</td><td>通常向后兼容</td><td>消费者忽略未知字段；记录契约版本</td></tr><tr><td>收紧输入枚举/必填</td><td>可能破坏旧调用</td><td>新 major capability 或迁移窗口</td></tr><tr><td>副作用或审批等级变化</td><td>安全语义不兼容</td><td>新版本并重新审核，禁止静默切换</td></tr><tr><td>下游 API 变化</td><td>由 adapter 吸收时可保持上层稳定</td><td>契约测试 + canary + rollback</td></tr></tbody></table></div>
+
+<h2>工程要点</h2><ul><li>建立 capability registry，记录 owner、版本、risk、permissions、SLO、schema 指纹和弃用日期。</li><li>契约测试覆盖正常、边界、越权、超限、部分结果与下游错误。</li><li>把模型可见描述与执行权威元数据分离，描述被 prompt injection 污染也不能改变执行策略。</li><li>日志记录 capability/version/schema fingerprint，不记录明文 secret。</li></ul>
+<h2>常见坑</h2><ol><li>把 SDK 函数签名直接当工具契约，遗漏业务语义和错误。</li><li>用自然语言 success message 代替结构化 observation。</li><li>一个万能工具包办查询和写入，最小权限无法成立。</li><li>无版本修改 schema，回放和故障归因失去依据。</li><li>把模型声明的 risk 或 user_id 当可信事实。</li></ol>
+<h2>面试表达</h2><div class="answer-block"><h3>3 分钟结构</h3><p>先定义工具是 capability contract；再讲 input、output、error、effect 四类契约；然后说明模型只产生 ActionIntent，执行侧从注册表解析权威契约并绑定身份凭据；最后补版本演进、契约测试、schema 指纹和越权/副作用防护。</p></div>
+<h2>学习产出</h2><ol><li>为退款能力写四类契约与 6 个类型化错误。</li><li>列出模型绝不能提供的 5 个执行字段。</li><li>设计一次不兼容 schema 迁移与回滚路径。</li></ol>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="index.html">← 课程目录</a><a href="02-call-lifecycle-and-observation.html">单元 02 →</a></nav><footer><span>工具 / 动作层 · 单元 01</span><span>Schema 有效不等于允许执行</span></footer></div></body></html>

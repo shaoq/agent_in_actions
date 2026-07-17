@@ -1,0 +1,12 @@
+flowchart TD
+    A["需要连接外部能力"] --> B{"有稳定、可授权 API?"}
+    B -->|"是"| C["Typed API Adapter<br/>模型侧可用 Function Calling"]
+    B -->|"否"| D{"需要标准化发现与多客户端复用?"}
+    D -->|"是"| E["审核后的 MCP Server / Adapter"]
+    D -->|"否"| F{"只有人机界面且风险可控?"}
+    F -->|"是"| G["受限 Computer Use<br/>隔离 + 逐步观察 + HITL"]
+    F -->|"否"| H["不可自动化<br/>转人工或建设专用 API"]
+    C --> Z["统一内部 Capability Contract"]
+    E --> Z
+    G --> Z
+    Z --> P["Schema + AuthZ + Idempotency<br/>Typed Observation + Trace"]

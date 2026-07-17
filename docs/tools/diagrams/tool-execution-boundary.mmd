@@ -1,0 +1,10 @@
+flowchart LR
+    O["编排控制<br/>校验阶段与推进 Run"] -->|"Validated ActionIntent"| G{"治理策略<br/>授权判定"}
+    G -->|"deny / approval"| O
+    G -->|"allow + decision ref"| T["工具运行时<br/>解析权威契约"]
+    T -->|"最小执行请求"| E["外部系统 / 环境"]
+    E -->|"响应 / effect receipt"| T
+    T -->|"Typed Observation"| O
+    R["推理内核<br/>只提出候选意图"] -.-> O
+    I["基础设施<br/>凭据与隔离能力"] -.-> T
+    M["模型网关<br/>只服务模型访问"] -.-> R

@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant O as 编排控制
+    participant G as 治理 / 审批
+    participant H as 人工审批者
+    participant T as 工具运行时
+    participant I as 隔离基础设施
+    O->>G: subject + action + resource + request_digest
+    G-->>O: require_approval
+    O->>O: 持久化 checkpoint 并暂停
+    O->>H: 展示影响、参数、资源与可逆性
+    H-->>O: approval 绑定 digest / expiry
+    O->>G: 恢复后重验身份、版本与策略
+    G-->>T: allow + approval_ref
+    T->>I: 请求短期凭据、网络与文件策略
+    I-->>T: 最小权限隔离环境
+    T->>T: 执行动作并记录 effect receipt
+    T-->>O: Typed Observation

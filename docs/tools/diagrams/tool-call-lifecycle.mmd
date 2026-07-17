@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant O as 编排控制
+    participant T as 工具运行时
+    participant G as 治理层
+    participant E as 外部系统
+    O->>T: Validated ActionIntent + step context
+    T->>T: Prepare: contract / args / call_id
+    T->>G: Authorize(subject, action, resource, digest)
+    alt deny 或需审批
+        G-->>T: deny / require_approval
+        T-->>O: Typed policy observation
+    else allow
+        G-->>T: allow + decision_ref
+        T->>E: Dispatch(deadline, idempotency_key)
+        alt 收到响应
+            E-->>T: result / typed error
+            T->>T: Observe + validate + redact
+        else 派发后超时
+            T->>T: unknown_outcome
+        end
+        T->>T: Commit call record / effect receipt
+        T-->>O: Typed Observation
+    end

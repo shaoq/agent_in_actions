@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>02 调用生命周期与 Observation · 工具 / 动作层</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" /><link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script></head>
+<body><div class="wrap"><header><div class="eyebrow">L2 · TOOLS / ACTIONS · UNIT 02</div><h1>调用生命周期与 Observation</h1><p class="subtitle">把一次调用拆成可追踪状态，避免“发出请求”被误认成“动作完成”。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="index.html">工具课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+<main class="prose"><h1>02 调用生命周期与 Observation</h1>
+<h2>学习目标</h2><ul><li>解释 prepare、authorize、dispatch、observe、commit 各阶段。</li><li>区分 transport success、tool success 与 business acceptance。</li><li>设计能被推理与编排安全消费的类型化 observation。</li><li>用 trace 识别超时、未知结果、部分结果和污染观察。</li></ul>
+
+<h2>一次调用的状态机</h2><figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/tool-call-lifecycle.mmd"><div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/tool-call-lifecycle.svg" target="_blank" rel="noopener" aria-label="打开工具调用生命周期图原图"><img src="diagrams/tool-call-lifecycle.svg" alt="编排提交已校验意图，工具层准备请求并等待授权，获准后派发外部调用，规范化响应为 observation，持久化调用记录后由编排写回步骤；拒绝、超时和未知结果走类型化分支。" /></a></div><figcaption><span>调用完成必须区分派发、下游响应、结果规范化和证据持久化。</span><span class="learning-diagram__actions"><a href="diagrams/tool-call-lifecycle.mmd">查看 Mermaid 源码</a><a href="diagrams/tool-call-lifecycle.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>阶段</th><th>核心动作</th><th>主要证据</th><th>失败示例</th></tr></thead><tbody>
+<tr><td>Prepare</td><td>解析契约、校验参数、绑定主体/租户、生成 call_id</td><td>contract version、validation result</td><td>参数非法、契约不存在</td></tr>
+<tr><td>Authorize</td><td>把主体、动作、资源、上下文交给治理策略</td><td>policy decision、approval ref</td><td>deny、approval required/expired</td></tr>
+<tr><td>Dispatch</td><td>应用 timeout、credential、network policy 并调用 adapter</td><td>attempt、deadline、endpoint alias</td><td>连接失败、限流、超时</td></tr>
+<tr><td>Observe</td><td>验证下游响应，分类错误，脱敏并生成 provenance</td><td>status、data/error、freshness</td><td>响应不合约、部分结果</td></tr>
+<tr><td>Commit</td><td>持久化去重记录与审计证据，再交回编排</td><td>effect receipt、observation ref</td><td>动作成功但记录失败，结果未知</td></tr>
+</tbody></table></div>
+
+<h2>Observation 不是任意文本</h2><pre><code class="language-json">{
+  "call_id": "call-31",
+  "capability_id": "orders.read_status.v2",
+  "status": "succeeded",
+  "data": { "state": "shipped", "updated_at": "2026-07-17T08:30:00Z" },
+  "provenance": { "system": "orders", "resource": "ORD-42", "observed_at": "..." },
+  "effect_receipt": null,
+  "attempt": 1,
+  "redactions": []
+}</code></pre><p>Observation 必须保留“这是事实、工具错误、策略拒绝还是未知结果”的类型。外部系统返回的文本仍是不可信数据，可能携带 prompt injection；进入模型上下文前应按来源标注、长度限制和内容策略处理。</p>
+
+<h2>三种成功不能混淆</h2><ul><li><strong>Transport success：</strong>HTTP/RPC 成功往返。</li><li><strong>Tool success：</strong>响应符合契约且能力报告操作成功。</li><li><strong>Business acceptance：</strong>编排层用业务条件确认目标达成，例如退款余额变化并取得凭证。</li></ul><p><code>HTTP 200</code> 可能携带业务错误；工具成功也可能只完成一个步骤。工具层返回证据，编排层决定 run 是否推进或完成。</p>
+
+<h2>可观测最小字段</h2><div class="table-wrap"><table><thead><tr><th>类别</th><th>字段</th><th>用途</th></tr></thead><tbody><tr><td>关联</td><td>trace_id、run_id、step_id、decision_id、call_id</td><td>跨组件拼接因果链</td></tr><tr><td>契约</td><td>capability_id、version、schema fingerprint</td><td>回放与变更归因</td></tr><tr><td>执行</td><td>attempt、deadline、latency、result class</td><td>超时/重试诊断</td></tr><tr><td>治理</td><td>subject ref、policy decision ref、approval ref</td><td>审计但不泄露敏感身份</td></tr><tr><td>副作用</td><td>idempotency key、effect receipt、compensation ref</td><td>确认是否已发生真实改变</td></tr></tbody></table></div>
+
+<h2>工程要点</h2><ul><li>使用 monotonic deadline 向下游传播剩余预算，避免每层重新获得完整 timeout。</li><li>保存请求/响应摘要或受控对象引用；敏感 payload 脱敏，密钥永不入 trace。</li><li>区分 <code>timed_out_before_dispatch</code>、<code>timed_out_after_dispatch</code>，后者可能是未知结果。</li><li>流式/长任务返回 job handle，由编排安排轮询或 webhook 恢复，不在单次调用中无限阻塞。</li><li>对 observation schema 做契约验证；坏响应不能伪装成普通事实进入推理。</li></ul>
+<h2>常见坑</h2><ol><li>只记最终文本，丢失 call_id、attempt 与下游状态。</li><li>超时后一律判失败并重试，导致重复副作用。</li><li>把策略 deny 包装成“工具异常”，诱导模型绕过。</li><li>外部页面文本原样注入模型，形成间接 prompt injection。</li><li>工具报告 success 就结束 run，跳过业务验收。</li></ol>
+<h2>面试表达</h2><div class="answer-block"><h3>如何讲调用链</h3><p>按 prepare、authorize、dispatch、observe、commit 五阶段展开，每阶段给出证据和失败类型；强调 transport/tool/business 三种成功；最后说明 observation 要带 provenance、类型化错误和关联 ID，未知结果必须先查询状态而不是盲目重试。</p></div>
+<h2>学习产出</h2><ol><li>画出“请求已发送但客户端超时”的状态与证据缺口。</li><li>为网页抓取 observation 设计 provenance、截断和注入标记。</li><li>列出一条 trace 定位策略拒绝、下游限流和业务拒绝。</li></ol>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="01-tool-contract-and-schema.html">← 单元 01</a><a href="03-permissions-approval-and-sandbox.html">单元 03 →</a></nav><footer><span>工具 / 动作层 · 单元 02</span><span>Observation 是带来源的类型化证据</span></footer></div></body></html>
