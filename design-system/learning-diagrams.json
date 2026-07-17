@@ -386,6 +386,56 @@
       "caption": "线上治理立即控制风险；离线评测从证据中学习并验证修复，两条链路时间尺度不同。",
       "alt": "威胁模型驱动红队在隔离环境运行，失败与脱敏线上 trace 汇入高风险样本库，离线安全回归形成修复反馈，交给正确组件 owner 后受控上线并继续观测。",
       "wide": true
+    },
+    {
+      "id": "model-routing-decision",
+      "type": "flowchart",
+      "page": "docs/model-gateway-infrastructure/01-model-abstraction-routing-and-capability-matching.html",
+      "source": "docs/model-gateway-infrastructure/diagrams/model-routing-decision.mmd",
+      "svg": "docs/model-gateway-infrastructure/diagrams/model-routing-decision.svg",
+      "caption": "先用硬约束排除不合格端点，再优化质量、延迟和成本；路由不是随机挑一个便宜模型。",
+      "alt": "推理内核向模型网关提交统一请求，网关先校验能力、区域、风险和预算硬约束，再按质量、延迟和成本排序候选，选择端点并返回规范化响应与调用证据。",
+      "wide": true
+    },
+    {
+      "id": "resilience-and-degradation",
+      "type": "flowchart",
+      "page": "docs/model-gateway-infrastructure/02-fallback-rate-limiting-and-caching.html",
+      "source": "docs/model-gateway-infrastructure/diagrams/resilience-and-degradation.mmd",
+      "svg": "docs/model-gateway-infrastructure/diagrams/resilience-and-degradation.svg",
+      "caption": "降级的前提是仍满足任务契约；返回更弱但不可信的答案不是高可用。",
+      "alt": "模型请求先经过预算和分层限流，再检查安全缓存与端点健康；失败按未派发、明确失败、部分输出和未知结果分类，只有满足能力与风险下限时才切换候选，否则返回类型化失败。",
+      "wide": true
+    },
+    {
+      "id": "cost-latency-capacity-loop",
+      "type": "flowchart",
+      "page": "docs/model-gateway-infrastructure/03-cost-latency-and-capacity.html",
+      "source": "docs/model-gateway-infrastructure/diagrams/cost-latency-capacity-loop.mmd",
+      "svg": "docs/model-gateway-infrastructure/diagrams/cost-latency-capacity-loop.svg",
+      "caption": "容量计划不是只看平均 QPS；生成时长、token 速率、突发和上游配额共同决定排队。",
+      "alt": "请求预算被拆分为排队、首 token、生成和后处理，运行证据聚合为成本、延迟分位数和饱和度，再驱动路由权重、并发配额、扩缩与过载保护。",
+      "wide": true
+    },
+    {
+      "id": "runtime-storage-network-topology",
+      "type": "flowchart",
+      "page": "docs/model-gateway-infrastructure/04-runtime-storage-and-network.html",
+      "source": "docs/model-gateway-infrastructure/diagrams/runtime-storage-network-topology.mmd",
+      "svg": "docs/model-gateway-infrastructure/diagrams/runtime-storage-network-topology.svg",
+      "caption": "基础设施保证持久性、可达性和隔离原语；业务状态含义与生命周期仍归拥有它的组件。",
+      "alt": "接入流量经身份和网络策略到达无状态编排与模型网关服务，durable run state、队列、对象和审计存储各有独立职责；模型出口和工具沙箱使用不同网络策略与短期凭据。",
+      "wide": true
+    },
+    {
+      "id": "sandbox-tenant-isolation",
+      "type": "sequence",
+      "page": "docs/model-gateway-infrastructure/05-sandbox-tenant-and-execution-isolation.html",
+      "source": "docs/model-gateway-infrastructure/diagrams/sandbox-tenant-isolation.mmd",
+      "svg": "docs/model-gateway-infrastructure/diagrams/sandbox-tenant-isolation.svg",
+      "caption": "策略决定“能不能做”，工具说明“要做什么”，基础设施证明“只能在给定边界内做”。",
+      "alt": "治理层授权并绑定动作摘要，工具层提交规范化执行请求，基础设施按租户创建隔离环境、注入短期凭据、执行资源与网络限制、采集结果和审计，最后撤销凭据并销毁检查残留。",
+      "wide": true
     }
   ]
 }

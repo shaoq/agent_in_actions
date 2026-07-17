@@ -1,0 +1,12 @@
+flowchart LR
+  I["入口<br/>身份 + 网络策略"] --> O["无状态编排运行时"]
+  O --> G["模型网关运行时"]
+  G --> M["模型专用 Egress<br/>Provider allowlist"]
+  O <--> D[("Durable Run State")]
+  O <--> Q[("Queue / Event Log")]
+  O --> A[("Object / Artifact Store")]
+  G --> T[("Trace / Audit Store")]
+  O --> S["工具沙箱运行时"]
+  S --> E["独立默认拒绝 Egress"]
+  B["Secret Broker<br/>短期凭据"] --> G
+  B --> S

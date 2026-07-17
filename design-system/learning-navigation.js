@@ -139,20 +139,34 @@
       ],
     },
     {
-      id: 'l2-planned-components',
-      label: 'L2 · 后续组件',
+      id: 'l2-model-gateway-infrastructure',
+      label: 'L2 · 模型网关 + 基础设施',
       stage: 'L2',
       order: 10,
       items: [
-        { id: 'model-gateway-infra', title: '模型网关与基础设施', path: null, type: 'theory', order: 1, status: 'planned' },
-        { id: 'interaction-access', title: '交互与接入层', path: null, type: 'theory', order: 2, status: 'planned' },
+        { id: 'model-gateway-infrastructure-course', title: '模型网关 + 基础设施课程目录', path: 'docs/model-gateway-infrastructure/index.html', type: 'course', order: 1, status: 'available' },
+        { id: 'model-gateway-abstraction-routing', title: '01 模型抽象、路由与能力匹配', path: 'docs/model-gateway-infrastructure/01-model-abstraction-routing-and-capability-matching.html', type: 'theory', order: 2, status: 'available' },
+        { id: 'model-gateway-resilience-cache', title: '02 降级、限流与缓存', path: 'docs/model-gateway-infrastructure/02-fallback-rate-limiting-and-caching.html', type: 'theory', order: 3, status: 'available' },
+        { id: 'model-gateway-cost-capacity', title: '03 成本、延迟与容量', path: 'docs/model-gateway-infrastructure/03-cost-latency-and-capacity.html', type: 'theory', order: 4, status: 'available' },
+        { id: 'infrastructure-runtime-storage-network', title: '04 运行时、存储与网络', path: 'docs/model-gateway-infrastructure/04-runtime-storage-and-network.html', type: 'theory', order: 5, status: 'available' },
+        { id: 'infrastructure-sandbox-tenant-isolation', title: '05 沙箱、租户与执行隔离', path: 'docs/model-gateway-infrastructure/05-sandbox-tenant-and-execution-isolation.html', type: 'theory', order: 6, status: 'available' },
+        { id: 'model-gateway-infrastructure-checkpoint', title: '模型网关 + 基础设施理论检查点', path: 'assessment/08-model-gateway-infrastructure-theory-checkpoint.html', type: 'checkpoint', order: 7, status: 'available' },
+      ],
+    },
+    {
+      id: 'l2-planned-components',
+      label: 'L2 · 后续组件',
+      stage: 'L2',
+      order: 11,
+      items: [
+        { id: 'interaction-access', title: '交互与接入层', path: null, type: 'theory', order: 1, status: 'planned' },
       ],
     },
     {
       id: 'l3-engineering',
       label: 'L3 · 工程验证',
       stage: 'L3',
-      order: 11,
+      order: 12,
       items: [
         { id: 'agent-loop-lab', title: '最小 Agent Loop', path: 'labs/agent-loop-minimal/README.md', type: 'lab', order: 1, status: 'available' },
         { id: 'orchestration-engineering-check', title: '编排工程考核', path: 'assessment/01-orchestration-checklist.html', type: 'assessment', order: 2, status: 'available' },
@@ -162,7 +176,7 @@
       id: 'l4-interview',
       label: 'L4 · 面试训练',
       stage: 'L4',
-      order: 12,
+      order: 13,
       items: [
         { id: 'interview-question-bank', title: '通用面试题库', path: 'interview/questions.html', type: 'interview', order: 1, status: 'available' },
         { id: 'orchestration-interview', title: '编排面试题', path: 'interview/01-orchestration-questions.html', type: 'interview', order: 2, status: 'available' },

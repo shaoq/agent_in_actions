@@ -1,0 +1,9 @@
+flowchart LR
+  A["请求预算<br/>质量 / 金额 / deadline"] --> B["延迟分解<br/>排队 / TTFT / 生成 / 后处理"]
+  B --> C["调用证据<br/>token / 成本 / 并发 / route"]
+  C --> D["聚合<br/>p95/p99 / 单位成功成本 / 饱和度"]
+  D --> E{"容量与 SLO 健康？"}
+  E -- 是 --> F["保持路由与余量"]
+  E -- 否 --> G["调整路由 / 配额 / 扩缩<br/>或 load shedding"]
+  F --> A
+  G --> A

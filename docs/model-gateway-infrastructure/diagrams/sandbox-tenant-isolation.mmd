@@ -1,0 +1,15 @@
+sequenceDiagram
+  participant Gov as 治理层
+  participant Tool as 工具层
+  participant Infra as 基础设施
+  participant Sandbox as 租户沙箱
+  participant Audit as 审计存储
+  Gov->>Tool: 授权决定 + 动作摘要 + tenant
+  Tool->>Infra: 规范化执行请求 + deadline
+  Infra->>Sandbox: 创建隔离环境与资源/网络边界
+  Infra->>Sandbox: 注入短期 secret lease
+  Sandbox->>Sandbox: 执行并限制文件、进程、网络、配额
+  Sandbox-->>Infra: 结果 / artifact / effect receipt
+  Infra->>Audit: image/policy/tenant/usage/结果证据
+  Infra->>Sandbox: 撤销凭据、终止进程树、销毁并查残留
+  Infra-->>Tool: 规范化结果或 unknown

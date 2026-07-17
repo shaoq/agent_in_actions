@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>模型网关 + 基础设施理论课程 · Agent in Actions</title>
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body><div class="wrap">
+<header><div class="eyebrow">L2 · MODEL GATEWAY + INFRASTRUCTURE</div><h1>模型网关 + 基础设施理论课程</h1><p class="subtitle">用统一模型访问面承接能力路由与韧性，用可验证运行边界承接容量、租户和工具执行隔离。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="../../roadmap/learning-plan.html">学习路线</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+<main class="prose"><h1>模型网关 + 基础设施理论课程</h1>
+<p>模型网关（Model Gateway）是推理内核访问模型的唯一受控入口，把厂商差异、能力匹配、路由、降级、限流、缓存、成本和延迟证据收敛为稳定契约；基础设施（Infrastructure）提供运行时、存储、网络、secret、资源配额以及工具执行所需的真实沙箱与租户隔离。两者共同回答“模型如何稳定可控地被使用，以及代码和数据在哪里以什么边界运行”。</p>
+<h2>学习目标</h2><ol><li>设计厂商无关的模型请求/响应契约，并按能力、风险、数据驻留和 SLO 路由。</li><li>用降级、限流、熔断与语义安全缓存处理依赖故障，不把业务错误伪装成成功。</li><li>把 token、延迟、并发和容量拆成可预算、可观测、可扩缩的工程量。</li><li>解释无状态计算、状态存储、队列和网络边界如何支撑可恢复运行。</li><li>设计租户隔离与工具沙箱，证明凭据、文件、网络和资源不会越界。</li></ol>
+<h2>前置知识与学习顺序</h2><p>前置为<a href="../00-agent-architecture.html">九层架构</a>、<a href="../reasoning/index.html">推理内核</a>、<a href="../tools/index.html">工具 / 动作层</a>、<a href="../governance-observability/index.html">治理与可观测</a>和<a href="../evaluation/index.html">评测层</a>。推荐按顺序完成：</p>
+<div class="table-wrap"><table><thead><tr><th>顺序</th><th>单元</th><th>必须产出</th></tr></thead><tbody><tr><td>01</td><td><a href="01-model-abstraction-routing-and-capability-matching.html">模型抽象、路由与能力匹配</a></td><td>能力目录、统一契约与路由决策表</td></tr><tr><td>02</td><td><a href="02-fallback-rate-limiting-and-caching.html">降级、限流与缓存</a></td><td>故障分类、降级矩阵与缓存键</td></tr><tr><td>03</td><td><a href="03-cost-latency-and-capacity.html">成本、延迟与容量</a></td><td>预算分解、SLO 与容量模型</td></tr><tr><td>04</td><td><a href="04-runtime-storage-and-network.html">运行时、存储与网络</a></td><td>运行拓扑、状态归属与网络策略</td></tr><tr><td>05</td><td><a href="05-sandbox-tenant-and-execution-isolation.html">沙箱、租户与执行隔离</a></td><td>隔离分层、威胁矩阵与销毁证据</td></tr></tbody></table></div>
+<h2>组件边界</h2><div class="callout"><b>两条不可破坏的约束</b> · 推理内核必须统一经模型网关访问模型，不得在业务节点直接持有厂商 SDK 与密钥；治理层决定策略、工具层声明并发起动作，而基础设施实际提供可验证的进程、文件、网络、secret 和资源隔离。</div>
+<div class="table-wrap"><table><thead><tr><th>相邻组件</th><th>它负责</th><th>本组件负责 / 不负责</th></tr></thead><tbody><tr><td>推理内核</td><td>形成结构化决策意图与不确定性信号</td><td>提供统一模型能力；不决定业务下一步</td></tr><tr><td>编排控制</td><td>run 状态、超时、重试、暂停恢复与终止</td><td>报告调用证据和基础资源状态；不推进业务状态机</td></tr><tr><td>治理与可观测</td><td>身份、策略、预算、审计和在线拦截</td><td>强制执行传入的模型/网络/资源策略并产出遥测；不自创授权</td></tr><tr><td>工具 / 动作层</td><td>工具契约、参数规范化、调用与 effect receipt</td><td>提供实际沙箱、短期凭据和销毁；不拥有工具业务语义</td></tr><tr><td>评测层</td><td>离线比较质量、成本、延迟与安全结果</td><td>提供可重放环境和版本证据；不决定评测是否通过</td></tr></tbody></table></div>
+<h2>完成标准</h2><ul><li>能画出“推理内核 → 模型网关 → 厂商端点”的唯一访问链，并解释契约、能力与证据。</li><li>能为超时、429、区域故障、预算耗尽和缓存命中设计不会越权的处理。</li><li>能用延迟分位数、token/请求、并发、队列和配额完成容量估算。</li><li>能证明工具隔离在身份、计算、文件、网络、secret、数据和生命周期七个维度成立。</li><li>完成<a href="../../assessment/08-model-gateway-infrastructure-theory-checkpoint.html">理论检查点</a>：总分至少 80，且五项任务各至少 12/20。</li></ul><p><strong>available 只表示学习资产可用</strong>；个人是否掌握仍以<a href="../../roadmap/progress-tracker.html">进度跟踪</a>中的作答证据与复测记录为准。</p>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="../evaluation/05-safety-red-teaming-and-online-feedback.html">← 评测层末单元</a><a href="01-model-abstraction-routing-and-capability-matching.html">开始单元 01 →</a></nav><footer><span>模型网关 + 基础设施 · L2 理论课程</span><span>统一模型访问 · 可验证执行边界</span></footer>
+</div></body></html>

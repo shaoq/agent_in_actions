@@ -1,0 +1,9 @@
+flowchart LR
+  R["推理内核<br/>统一请求 + 能力要求"] --> G["模型网关<br/>契约校验"]
+  G --> H{"硬约束满足？<br/>能力 / 区域 / 风险 / 预算"}
+  H -- 否 --> F["类型化失败<br/>返回编排"]
+  H -- 是 --> S["候选排序<br/>质量 / 健康 / 延迟 / 成本"]
+  S --> E["选择端点<br/>策略版本 + run 粘性"]
+  E --> P["Provider Adapter<br/>短期凭据"]
+  P --> N["规范化响应<br/>revision / usage / route reason"]
+  N --> R
