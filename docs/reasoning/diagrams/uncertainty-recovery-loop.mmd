@@ -1,0 +1,13 @@
+flowchart TD
+    C["DecisionContext"] --> A["识别已知、未知与约束"]
+    A --> U{"不确定性类型"}
+    U -->|缺少用户偏好| Q["clarify<br/>最小必要问题"]
+    U -->|缺少外部事实| K["提出 retrieve / inspect 意图"]
+    U -->|动作风险过高| H["escalate / request approval"]
+    U -->|模型或契约失败| R["受限 repair / fallback 请求"]
+    U -->|证据充分| D["形成候选 Decision"]
+    Q & K & H & R --> O["交由编排层推进并取得新观察"]
+    O --> C
+    D --> V{"证据、约束与置信是否足够?"}
+    V -->|是| X["返回结构化意图"]
+    V -->|否| S["明确失败<br/>reason_failure + next_safe_step"]

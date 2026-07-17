@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant O as 编排层
+    participant R as 推理内核
+    participant G as 模型网关
+    participant P as Schema 校验器
+    O->>R: DecisionContext + 可用能力摘要
+    R->>G: 模型能力需求 + 结构化输出契约
+    G-->>R: 候选结构化响应
+    R->>P: 解析并校验 Decision
+    alt 语法或 schema 不合法且预算允许
+        P-->>R: validation_error + 字段路径
+        R->>G: 受限修复请求
+        G-->>R: 修复后的候选响应
+        R->>P: 再校验
+    end
+    alt 合法且满足语义约束
+        P-->>R: validated decision
+        R-->>O: 结构化意图 + confidence + evidence_refs
+    else 仍不合法或风险不可接受
+        P-->>R: typed failure
+        R-->>O: reason_failure / clarify / escalate
+    end

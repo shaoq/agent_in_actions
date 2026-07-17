@@ -1,0 +1,12 @@
+flowchart LR
+    O["编排层<br/>构造决策上下文"] --> C["DecisionContext<br/>目标·状态·观察·约束"]
+    C --> R["推理内核<br/>理解·比较·选择"]
+    R --> D{"Decision<br/>判别联合"}
+    D -->|act| I["ActionIntent<br/>工具名·参数·理由"]
+    D -->|respond| A["AnswerIntent<br/>回答·引用需求"]
+    D -->|clarify| Q["ClarifyIntent<br/>缺口·问题"]
+    D -->|escalate| H["EscalationIntent<br/>原因·所需角色"]
+    D -->|finish| F["FinishIntent<br/>候选结果·完成依据"]
+    I & A & Q & H & F --> V["编排层校验并推进生命周期"]
+    V -. "动作授权与执行" .-> T["治理层 + 工具层"]
+    R -. "模型请求" .-> G["模型网关"]

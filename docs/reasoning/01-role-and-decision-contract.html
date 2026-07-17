@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>01 角色、职责与决策契约 · 推理内核</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">L2 · REASONING CORE · UNIT 01</div>
+    <h1>角色、职责与决策契约</h1>
+    <p class="subtitle">先定义可验证的输入与输出，再谈模型、prompt 和推理技巧。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../index.html">学习首页</a><a href="index.html">推理课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+    <h1>01 角色、职责与决策契约</h1>
+    <h2>学习目标</h2>
+    <ul>
+      <li>用“输入—决策—输出—不变量”定义推理内核，而不是用“调用 LLM 的模块”定义它。</li>
+      <li>区分候选决策、授权动作、执行结果和任务终态。</li>
+      <li>设计可演进的 DecisionContext 与 Decision 判别联合。</li>
+      <li>说明为什么推理内核必须经模型网关访问模型、由编排层驱动生命周期。</li>
+    </ul>
+
+    <h2>核心概念：决策面而不是控制面</h2>
+    <p>编排层问的是“当前 run 处于什么状态，下一轮是否允许发生”；推理内核回答的是“基于当前上下文，最合适的下一步意图是什么”。前者拥有控制权，后者提供受约束的决策候选。</p>
+    <p>一个可工程化的推理内核可以写成纯函数式契约：</p>
+    <pre><code class="language-text">decide(DecisionContext) -&gt; Decision | ReasoningFailure
+
+DecisionContext = 当前目标 + 已验证状态 + 观察摘要 + 可用能力 + 策略约束 + 决策预算
+Decision        = act | respond | clarify | escalate | finish
+</code></pre>
+    <p>“纯函数式”是语义目标，不要求实现完全无副作用；它要求相同证据和约束下的决策可被重放、比较和审计，外部动作不得藏在 decide 内部。</p>
+
+    <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/decision-contract-boundary.mmd">
+      <div class="learning-diagram__viewport">
+        <a class="learning-diagram__image-link" href="diagrams/decision-contract-boundary.svg" target="_blank" rel="noopener" aria-label="打开推理内核决策契约边界图原图">
+          <img src="diagrams/decision-contract-boundary.svg" alt="编排层构造决策上下文，推理内核形成 act、respond、clarify、escalate 或 finish 意图；编排层校验后推进生命周期，动作交给治理和工具层，模型访问经过模型网关。" />
+        </a>
+      </div>
+      <figcaption><span>推理内核输出候选意图；生命周期推进、授权和执行仍由相邻组件拥有。</span><span class="learning-diagram__actions"><a href="diagrams/decision-contract-boundary.mmd">查看 Mermaid 源码</a><a href="diagrams/decision-contract-boundary.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+    </figure>
+
+    <h2>输入契约：只给决策所需的上下文</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>字段组</th><th>内容</th><th>工程约束</th><th>反例</th></tr></thead>
+      <tbody>
+        <tr><td>goal</td><td>用户目标、业务成功条件、当前子目标</td><td>区分原始请求和规范化目标；保留来源</td><td>只有一段越来越长的 messages</td></tr>
+        <tr><td>state</td><td>当前阶段、已完成步骤、剩余预算、等待条件</td><td>由编排层提供只读快照并带 schema version</td><td>允许模型自行宣布 run 已完成</td></tr>
+        <tr><td>observations</td><td>工具、检索、记忆或用户返回的已验证观察</td><td>带来源、时间、可信度和截断说明</td><td>把工具错误伪装成正常文本</td></tr>
+        <tr><td>capabilities</td><td>当前允许选择的能力名称、用途和参数摘要</td><td>最小暴露；能力可见不等于动作已获授权</td><td>把生产所有工具完整注入每次请求</td></tr>
+        <tr><td>constraints</td><td>禁止项、风险级别、输出要求、引用要求</td><td>机器可校验约束优先于自然语言提醒</td><td>只写“请安全地处理”</td></tr>
+        <tr><td>budget</td><td>剩余步骤、token、延迟、成本或候选数</td><td>推理可据此选策略，编排负责真正计量和停止</td><td>让模型自行维护真实预算</td></tr>
+      </tbody>
+    </table></div>
+    <p>上下文不是越多越好。无关历史会放大延迟、成本、敏感信息暴露与注意力稀释。编排层应先做确定性筛选和压缩，并明确摘要丢失了什么。</p>
+
+    <h2>输出契约：判别联合与共同字段</h2>
+    <pre><code class="language-json">{
+  "kind": "act | respond | clarify | escalate | finish",
+  "decision_id": "stable-id",
+  "summary": "面向审计的简短决策摘要",
+  "evidence_refs": ["observation:search-7"],
+  "confidence": "high | medium | low",
+  "assumptions": ["客户身份已由接入层验证"],
+  "payload": {}
+}
+</code></pre>
+    <p>共同字段用于回答“决定了什么、依据什么、还有什么假设”，但不应保存完整隐式思维过程。不同 kind 的 payload 必须互斥：</p>
+    <ul>
+      <li><code>act</code>：能力 ID、结构化参数、期望观察；只是动作意图，不是授权。</li>
+      <li><code>respond</code>：可交付回答、引用需求、已知限制；不代表 run 一定结束。</li>
+      <li><code>clarify</code>：阻塞缺口、最小必要问题、不同答案会改变什么。</li>
+      <li><code>escalate</code>：无法安全自主处理的原因、需要的角色、已完成证据。</li>
+      <li><code>finish</code>：候选结果、成功条件证据、未满足项；业务 acceptance 仍由编排或业务规则判断。</li>
+    </ul>
+
+    <h2>必须保持的不变量</h2>
+    <ol>
+      <li><strong>决策不等于执行：</strong><code>act</code> 不能绕过治理校验直接触发副作用。</li>
+      <li><strong>声明完成不等于验收通过：</strong><code>finish</code> 是候选终止意图，编排层依据业务 acceptance 决定终态。</li>
+      <li><strong>上下文只读：</strong>推理内核不能直接修改 run state；状态改变由编排提交事件。</li>
+      <li><strong>模型访问隔离：</strong>推理只表达所需能力、上下文窗和结构化输出要求，由模型网关选择具体模型。</li>
+      <li><strong>失败类型化：</strong>解析错误、策略冲突、上下文不足和模型不可用不能都退化成“模型回答不好”。</li>
+    </ol>
+
+    <h2>工程要点</h2>
+    <ul>
+      <li>为 DecisionContext 和 Decision 独立版本化；新增可选字段优先，破坏性变化需要迁移或双读。</li>
+      <li>记录 <code>decision_id</code>、上下文指纹、契约版本、模型请求 ID 和证据引用，支持离线重放。</li>
+      <li>将领域业务规则提取为确定性 validator；模型负责开放判断，程序负责可判定约束。</li>
+      <li>对工具可见性做能力裁剪，推理只看到当前身份、阶段和策略允许考虑的候选集合。</li>
+      <li>把拒绝、澄清、升级设计成一等输出，避免用空回答、异常或无限重试隐式表达。</li>
+    </ul>
+
+    <h2>常见坑与失败归属</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>现象</th><th>常见误判</th><th>先查证据</th><th>可能归属</th></tr></thead>
+      <tbody>
+        <tr><td>重复提出同一搜索</td><td>模型太笨</td><td>观察是否写回、是否去重、上下文是否截断</td><td>编排 / 推理 / 工具观察</td></tr>
+        <tr><td>模型说退款已完成</td><td>让 prompt 更严格</td><td>Decision kind、工具回执、业务 acceptance</td><td>契约 / 编排 / 工具</td></tr>
+        <tr><td>越权选择管理员工具</td><td>模型安全性不足</td><td>能力裁剪和授权门禁</td><td>治理 / 编排；推理只能减少误选</td></tr>
+        <tr><td>换模型后字段解析失败</td><td>业务逻辑坏了</td><td>契约版本、网关路由、原始响应与 validation error</td><td>推理适配 / 模型网关</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>面试表达</h2>
+    <div class="answer-block"><h3>30 秒回答</h3><p>推理内核是 Agent 的决策面：它消费编排层准备的目标、状态、观察和约束，形成 act、respond、clarify、escalate 或 finish 等结构化意图。它不拥有 run 生命周期、不直接执行工具，也不直连模型厂商。生产设计重点是输入输出契约、证据引用、不确定性和失败类型，而不是把一次 LLM 调用当作整个 Agent。</p></div>
+    <div class="answer-block"><h3>追问：为什么同进程仍要分层？</h3><p>进程是部署边界，职责是控制权边界。即使 decide 和 orchestrate 在一个服务里，也要保证模型结果不能直接改状态或执行副作用；这样才能独立测试、重放、替换模型并准确归因。</p></div>
+
+    <h2>学习产出</h2>
+    <ol>
+      <li>为“企业工单 Agent”写一份 DecisionContext 字段表。</li>
+      <li>写出五类 Decision 的最小 payload，并列出至少六条可自动校验的不变量。</li>
+      <li>画出编排、推理、治理、工具和模型网关的边界，标注谁拥有状态改变。</li>
+    </ol>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="index.html">← 课程入口</a><a href="02-structured-output-and-tool-selection.html">单元 02 →</a></nav>
+  <footer><span>推理内核 · 单元 01</span><span>决策是候选意图，不是执行授权</span></footer>
+</div>
+</body>
+</html>

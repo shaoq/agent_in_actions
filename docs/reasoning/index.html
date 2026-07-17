@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>推理内核理论课程 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">L2 · REASONING CORE</div>
+    <h1>推理内核理论课程</h1>
+    <p class="subtitle">把“模型会想”改造成可校验、可约束、可恢复的工程决策能力。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../index.html">学习首页</a>
+      <a href="../../roadmap/learning-plan.html">学习路线</a>
+      <a href="../../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../00-agent-architecture.html">九层架构</a>
+    </nav>
+  </header>
+  <main class="prose">
+    <h1>推理内核理论课程</h1>
+    <p>推理内核（Reasoning Core）是 Agent 的<strong>决策面</strong>：它读取由编排层准备的决策上下文，识别目标、约束、证据与缺口，选择下一步，并返回可被程序验证的结构化意图。它不是整个 Agent，也不拥有任务生命周期、工具执行或模型厂商连接。</p>
+
+    <h2>学习目标</h2>
+    <p>完成本课程后，你应能：</p>
+    <ol>
+      <li>把自然语言目标转成稳定的决策输入、输出与不变量，而不是只讨论 prompt。</li>
+      <li>设计判别联合（discriminated union）形式的 Decision schema，区分 act、respond、clarify、escalate 与 finish。</li>
+      <li>根据任务可枚举性、观察依赖、风险和预算选择 Direct、Routing、Plan-and-Execute、有限 ReAct 或自检模式。</li>
+      <li>把不确定性显式化，并在补充信息、检索、修复、降级和转人工之间选择安全出口。</li>
+      <li>依据 trace 区分推理失败、编排失败、工具失败与模型网关失败，提出可验证的修复。</li>
+    </ol>
+
+    <h2>前置知识</h2>
+    <ol>
+      <li>通过<a href="../../assessment/00-agent-foundations-theory-checkpoint.html">L0 Agent 基础理论检查点</a>。</li>
+      <li>完成<a href="../00-agent-architecture.html">L1 九层 Agent 架构</a>并通过<a href="../../assessment/01-agent-architecture-checkpoint.html">架构检查点</a>。</li>
+      <li>完成<a href="../orchestration/index.html">编排控制层理论课程</a>。本课程默认你已理解 run、state、step、observation 和终止条件。</li>
+    </ol>
+    <div class="callout"><b>学习顺序</b> · 编排先于推理，是因为必须先知道“谁驱动循环、谁拥有状态”，才能把模型决策放进正确边界。</div>
+
+    <h2>四个理论单元</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>顺序</th><th>单元</th><th>核心问题</th><th>学习证据</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><a href="01-role-and-decision-contract.html">角色、职责与决策契约</a></td><td>推理内核收到什么、保证什么、明确不做什么？</td><td>边界表 + Decision contract</td></tr>
+        <tr><td>2</td><td><a href="02-structured-output-and-tool-selection.html">结构化输出与工具选择</a></td><td>如何让模型建议变成可校验的动作意图？</td><td>schema + 校验与修复流程</td></tr>
+        <tr><td>3</td><td><a href="03-reasoning-patterns-and-tradeoffs.html">推理模式及取舍</a></td><td>何时一步判断，何时规划、观察或自检？</td><td>模式选择矩阵</td></tr>
+        <tr><td>4</td><td><a href="04-uncertainty-failure-and-recovery.html">不确定性、失败与恢复</a></td><td>不知道、做不到或证据不足时如何安全退出？</td><td>失败归因表 + 恢复策略</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>组件边界</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>组件</th><th>拥有的职责</th><th>与推理内核的接口</th><th>不得混入推理内核</th></tr></thead>
+      <tbody>
+        <tr><td>编排控制层</td><td>run 生命周期、状态推进、预算、重试、终止与恢复</td><td>传入 DecisionContext；接收 Decision 后校验并推进</td><td>while loop、checkpoint、任务终态写入</td></tr>
+        <tr><td>推理内核</td><td>理解当前问题、比较候选、选择意图、表达不确定性</td><td>输入上下文；输出结构化候选决策及证据引用</td><td>直接执行副作用、越权改变生命周期</td></tr>
+        <tr><td>治理与可观测层</td><td>策略、权限、审计、trace、敏感信息与人在回路</td><td>向决策上下文注入约束；验证高风险意图</td><td>把“模型觉得安全”当成授权</td></tr>
+        <tr><td>工具 / 动作层</td><td>工具 schema、调用、超时、幂等、结果与类型化错误</td><td>推理只选择能力并提出参数；工具层产生 observation</td><td>在推理代码里直接发邮件、退款或写数据库</td></tr>
+        <tr><td>模型网关</td><td>供应商适配、模型路由、fallback、配额、缓存与调用观测</td><td>推理提交能力需求，不绑定厂商 SDK</td><td>推理内核直连任一模型厂商</td></tr>
+      </tbody>
+    </table></div>
+    <p>这些组件可以部署在同一进程，但语义必须分开。进程边界决定部署，职责边界决定谁能改变什么状态、谁应为失败负责。</p>
+
+    <h2>学习方法</h2>
+    <ol>
+      <li><strong>第一次阅读：</strong>只画输入、输出、不变量和非职责。</li>
+      <li><strong>第二次阅读：</strong>为“企业工单助手”写一份 Decision schema，并故意构造三个非法输出。</li>
+      <li><strong>场景迁移：</strong>分别为客服分类、开放调研和高风险退款选择模式，写出拒绝替代方案的理由。</li>
+      <li><strong>失败复盘：</strong>严格分开 trace 事实、原因假设、补充证据、修复层和回归用例。</li>
+      <li><strong>口述训练：</strong>用 30 秒定义、3 分钟方案、两轮追问表达同一套边界。</li>
+    </ol>
+
+    <h2>完成标准</h2>
+    <p>“页面可用”不等于“个人掌握”。课程资产标为 available 只说明你现在可以学习；完成需同时满足：</p>
+    <ul>
+      <li>读完四个单元，并提交每个单元要求的学习证据。</li>
+      <li>能脱稿解释推理内核与编排、工具、治理、模型网关的边界。</li>
+      <li>完成<a href="../../assessment/02-reasoning-core-theory-checkpoint.html">推理内核理论检查点</a>，总分至少 80，且每项至少达到该项 60%。</li>
+      <li>把首次结果、缺口、补学动作和复测结果登记到<a href="../../roadmap/progress-tracker.html">进度跟踪</a>。</li>
+    </ul>
+
+    <h2>课程范围</h2>
+    <ul>
+      <li>本课程讨论工具选择的决策语义，不展开 MCP、工具注册、权限执行、重试与幂等实现。</li>
+      <li>讨论模型能力需求与失败，不展开模型路由、缓存和厂商 fallback 实现。</li>
+      <li>讨论推理 trace 的必要证据，不记录或要求暴露模型私有 chain-of-thought。</li>
+      <li>不包含 L3 可运行实验和 L4 独立面试题库。</li>
+    </ul>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../orchestration/index.html">← 前置：编排课程</a>
+    <a href="01-role-and-decision-contract.html">开始单元 01 →</a>
+  </nav>
+  <footer>
+    <span>推理内核理论课程 · Agent in Actions</span>
+    <span>资产可用不代表个人已掌握 · 以门禁证据为准</span>
+  </footer>
+</div>
+</body>
+</html>

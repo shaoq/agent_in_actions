@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>02 结构化输出与工具选择 · 推理内核</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body><div class="wrap">
+  <header><div class="eyebrow">L2 · REASONING CORE · UNIT 02</div><h1>结构化输出与工具选择</h1><p class="subtitle">让自然语言判断通过 schema、语义约束和策略门禁进入可靠控制流。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="index.html">推理课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+  <main class="prose">
+    <h1>02 结构化输出与工具选择</h1>
+    <h2>学习目标</h2>
+    <ul><li>区分语法有效、schema 有效、语义有效和策略允许四层条件。</li><li>把工具选择建模为受约束分类，而不是把工具描述全部塞进 prompt。</li><li>设计有限修复、降级与类型化失败，避免无限“再试一次”。</li><li>解释工具意图、授权、执行和 observation 的组件边界。</li></ul>
+
+    <h2>为什么结构化输出仍然会失败</h2>
+    <p>JSON 只是编码形式。一个响应可以是合法 JSON，却选择不存在的工具、漏掉业务必填字段、引用过期证据，甚至提出当前身份无权执行的动作。生产链路至少包含四层验证：</p>
+    <ol>
+      <li><strong>解析（parse）：</strong>字节能否解码为目标格式。</li>
+      <li><strong>结构（schema）：</strong>kind、字段、类型、枚举和互斥关系是否合法。</li>
+      <li><strong>语义（semantic）：</strong>参数是否符合领域规则，证据是否支持该选择，当前阶段是否允许。</li>
+      <li><strong>策略（policy）：</strong>当前主体、风险、租户和审批状态是否允许考虑或执行该动作。</li>
+    </ol>
+    <div class="callout"><b>关键边界</b> · 推理内核可以减少不合理选择，并返回结构化 ActionIntent；治理与编排仍必须在执行前独立授权。模型输出永远不是权限凭证。</div>
+
+    <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/structured-decision-validation.mmd">
+      <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/structured-decision-validation.svg" target="_blank" rel="noopener" aria-label="打开结构化决策校验时序图原图"><img src="diagrams/structured-decision-validation.svg" alt="编排层传入决策上下文，推理内核经模型网关取得候选响应并交给 schema 校验器；合法时返回结构化意图，非法时受限修复或返回类型化失败。" /></a></div>
+      <figcaption><span>结构化输出必须校验；修复次数受预算约束，失败应显式返回给编排层。</span><span class="learning-diagram__actions"><a href="diagrams/structured-decision-validation.mmd">查看 Mermaid 源码</a><a href="diagrams/structured-decision-validation.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+    </figure>
+
+    <h2>Decision schema 设计</h2>
+    <p>优先使用判别联合，让每个 kind 只有自己的 payload。以下示例强调契约，不绑定具体 SDK：</p>
+    <pre><code class="language-json">{
+  "kind": "act",
+  "decision_id": "dec-1042",
+  "summary": "需要查询订单当前状态",
+  "evidence_refs": ["user-message:18", "identity-check:7"],
+  "confidence": "high",
+  "assumptions": [],
+  "payload": {
+    "capability_id": "orders.read_status.v2",
+    "arguments": { "order_id": "ORD-42" },
+    "expected_observation": "订单状态与最后更新时间"
+  }
+}
+</code></pre>
+    <p>推荐约束：</p>
+    <ul>
+      <li><code>additionalProperties: false</code>，阻止模型悄悄创造未定义字段。</li>
+      <li>capability 使用稳定 ID 而非自然语言名字；版本变化可以显式迁移。</li>
+      <li>参数不接受自由拼接的 shell、SQL 或 URL；使用最小领域字段。</li>
+      <li><code>evidence_refs</code> 只能引用当前 DecisionContext 中存在的证据。</li>
+      <li>敏感值和密钥由执行侧注入，不进入模型上下文或 ActionIntent。</li>
+    </ul>
+
+    <h2>工具选择是一个漏斗</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>阶段</th><th>问题</th><th>主要负责人</th><th>输出</th></tr></thead>
+      <tbody>
+        <tr><td>能力裁剪</td><td>哪些能力与当前租户、身份、阶段相关？</td><td>编排 + 治理</td><td>可考虑的最小能力集合</td></tr>
+        <tr><td>意图匹配</td><td>哪个能力最可能产生缺失观察？</td><td>推理内核</td><td>capability_id + 参数候选</td></tr>
+        <tr><td>结构校验</td><td>字段、类型、枚举与条件约束是否合法？</td><td>确定性 validator</td><td>validated intent / validation error</td></tr>
+        <tr><td>授权决策</td><td>这个主体现在是否可执行？是否要审批？</td><td>治理层</td><td>allow / deny / require approval</td></tr>
+        <tr><td>真实执行</td><td>如何超时、重试、幂等并产生类型化结果？</td><td>工具 / 动作层</td><td>observation / tool error</td></tr>
+      </tbody>
+    </table></div>
+    <p>能力描述要写“何时使用、输入含义、返回证据、失败类型、禁止场景”，而不是营销式功能说明。相似工具需要互斥提示，例如 <code>orders.read_status</code> 只读，<code>orders.refund</code> 有副作用且需审批。</p>
+
+    <h2>语义校验与业务约束</h2>
+    <p>可判定规则应尽量放在确定性代码中。例如：</p>
+    <pre><code class="language-text">if decision.kind == "act":
+  capability MUST be in visible_capabilities
+  arguments MUST satisfy capability.input_schema
+  evidence_refs MUST exist in current_context
+  requested_effect MUST match current_run_phase
+
+if decision.kind == "finish":
+  acceptance_evidence MUST NOT be empty
+  unresolved_blockers MUST be explicit
+</code></pre>
+    <p>不要要求模型在自然语言里“保证订单金额小于 500 元”。让模型提供 amount 和证据引用，再由 validator 使用权威业务数据判断。</p>
+
+    <h2>修复、重试与降级</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>失败类型</th><th>是否适合修复</th><th>修复输入</th><th>停止条件</th></tr></thead>
+      <tbody>
+        <tr><td>JSON 截断 / 类型错误</td><td>通常可以一次受限修复</td><td>validation error 的字段路径，不泄露额外敏感上下文</td><td>最多 N 次或预算不足</td></tr>
+        <tr><td>未知 capability_id</td><td>可以重新选择</td><td>允许集合与最小差异</td><td>重复同一非法选择即停止</td></tr>
+        <tr><td>缺少业务证据</td><td>不应靠格式修复</td><td>转为 clarify 或提出只读查询意图</td><td>无法取得证据则 escalate</td></tr>
+        <tr><td>策略拒绝</td><td>不得通过改写参数绕过</td><td>只允许选择安全替代或转审批</td><td>明确 deny 时终止该动作路径</td></tr>
+        <tr><td>模型网关不可用</td><td>由网关做受控 fallback</td><td>能力与 SLA 需求</td><td>超时 / 成本 / 降级边界</td></tr>
+      </tbody>
+    </table></div>
+    <p>修复请求应携带机器生成的错误摘要，而不是把整个失败对话再次堆入上下文。每次修复都记录 attempt、契约版本、错误码和候选响应指纹，便于发现循环。</p>
+
+    <h2>结构化输出不解决什么</h2>
+    <ul>
+      <li>不保证事实正确；需要权威观察、grounding 和引用验证。</li>
+      <li>不保证动作获授权；需要治理层策略和审批。</li>
+      <li>不保证执行幂等；需要工具层幂等键和副作用控制。</li>
+      <li>不保证任务完成；需要编排层的业务 acceptance。</li>
+      <li>不保证模型路由稳定；需要模型网关的版本、fallback 与观测。</li>
+    </ul>
+
+    <h2>工程要点</h2>
+    <ul>
+      <li>同时保留原始模型响应的受控引用、解析结果和 validation errors；敏感内容按治理策略脱敏。</li>
+      <li>把 schema conformance、非法工具率、修复成功率、重复决策率和澄清率作为可观测指标。</li>
+      <li>构建 golden cases：合法 act、缺参、错工具、越权、证据不足、finish 过早、不可解析。</li>
+      <li>模型或 prompt 升级时，用相同 DecisionContext 回放并比较结构化差异，而不只看最终文本。</li>
+    </ul>
+
+    <h2>常见坑</h2>
+    <ol>
+      <li><strong>一个巨型 schema：</strong>所有 kind 字段都 optional，导致无法判断哪些组合有效。</li>
+      <li><strong>工具描述越多越好：</strong>扩大混淆面、token 成本和越权暴露；应先裁剪。</li>
+      <li><strong>解析失败就无限重试：</strong>可能是契约不兼容或输出截断，重试只烧预算。</li>
+      <li><strong>模型参数直接执行：</strong>跳过语义校验、授权和幂等，是高风险副作用入口。</li>
+      <li><strong>把拒绝当模型错误：</strong>策略 deny 是合法业务结果，不应让模型尝试规避。</li>
+    </ol>
+
+    <h2>面试表达</h2>
+    <div class="answer-block"><h3>3 分钟结构</h3><p>先把输出设计为 act、respond、clarify、escalate、finish 的判别联合；再讲四层验证：解析、schema、语义、策略；然后讲工具选择漏斗：治理和编排先裁剪，推理选择，validator 校验，治理授权，工具层执行；最后补充有限修复、类型化失败、回放指标以及结构化输出仍不能替代事实、授权、幂等和业务验收。</p></div>
+    <div class="answer-block"><h3>追问：function calling 是否已经解决可靠性？</h3><p>它改善了结构约束和调用接口，但不自动保证工具选择正确、参数符合业务语义、主体有权限、执行幂等或结果真实。仍需要能力裁剪、validator、授权、执行隔离和 acceptance。</p></div>
+
+    <h2>学习产出</h2>
+    <ol><li>为订单场景写一个三分支 Decision schema：查询、澄清、升级。</li><li>构造“JSON 合法但业务非法”的五个案例，并标注由哪层拦截。</li><li>设计最多两次修复的状态表，说明何时停止并返回类型化失败。</li></ol>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="01-role-and-decision-contract.html">← 单元 01</a><a href="03-reasoning-patterns-and-tradeoffs.html">单元 03 →</a></nav>
+  <footer><span>推理内核 · 单元 02</span><span>结构合法只是可靠决策的第一层</span></footer>
+</div></body></html>

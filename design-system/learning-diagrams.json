@@ -106,6 +106,46 @@
       "caption": "Lead Agent 定义子任务契约并并行委派，Worker 返回带证据的结果，Evaluator 对合成结果给出通过或缺口，再决定交付或继续工作。",
       "alt": "Orchestrator-Workers 时序：用户目标交给 Lead Agent，两个 Worker 并行返回证据，Lead 合成后交给 Evaluator 检查并向用户返回结果。",
       "wide": true
+    },
+    {
+      "id": "decision-contract-boundary",
+      "type": "flowchart",
+      "page": "docs/reasoning/01-role-and-decision-contract.html",
+      "source": "docs/reasoning/diagrams/decision-contract-boundary.mmd",
+      "svg": "docs/reasoning/diagrams/decision-contract-boundary.svg",
+      "caption": "推理内核输出候选意图；生命周期推进、授权和执行仍由相邻组件拥有。",
+      "alt": "编排层构造决策上下文，推理内核形成 act、respond、clarify、escalate 或 finish 意图；编排层校验后推进生命周期，动作交给治理和工具层，模型访问经过模型网关。",
+      "wide": true
+    },
+    {
+      "id": "structured-decision-validation",
+      "type": "sequence",
+      "page": "docs/reasoning/02-structured-output-and-tool-selection.html",
+      "source": "docs/reasoning/diagrams/structured-decision-validation.mmd",
+      "svg": "docs/reasoning/diagrams/structured-decision-validation.svg",
+      "caption": "结构化输出必须校验；修复次数受预算约束，失败应显式返回给编排层。",
+      "alt": "编排层传入决策上下文，推理内核经模型网关取得候选响应并交给 schema 校验器；合法时返回结构化意图，非法时受限修复或返回类型化失败。",
+      "wide": true
+    },
+    {
+      "id": "reasoning-pattern-selection",
+      "type": "flowchart",
+      "page": "docs/reasoning/03-reasoning-patterns-and-tradeoffs.html",
+      "source": "docs/reasoning/diagrams/reasoning-pattern-selection.mmd",
+      "svg": "docs/reasoning/diagrams/reasoning-pattern-selection.svg",
+      "caption": "先问能否确定性解决，再为剩余不确定性选择最小充分的推理模式。",
+      "alt": "根据路径可枚举性、是否只需一步判断、计划是否稳定以及是否依赖观察，选择 Workflow、Direct、Plan-and-Execute、有限 ReAct 或自检；所有模式都受结构化决策、证据、预算和风险约束。",
+      "wide": true
+    },
+    {
+      "id": "uncertainty-recovery-loop",
+      "type": "flowchart",
+      "page": "docs/reasoning/04-uncertainty-failure-and-recovery.html",
+      "source": "docs/reasoning/diagrams/uncertainty-recovery-loop.mmd",
+      "svg": "docs/reasoning/diagrams/uncertainty-recovery-loop.svg",
+      "caption": "降低不确定性需要新证据或新权限；无进展的重复推理不是恢复。",
+      "alt": "推理内核识别目标、事实、风险或模型契约方面的不确定性，分别提出澄清、查询、升级或修复意图；编排层取得新观察后重新决策，证据充分时输出意图，否则显式失败。",
+      "wide": true
     }
   ]
 }

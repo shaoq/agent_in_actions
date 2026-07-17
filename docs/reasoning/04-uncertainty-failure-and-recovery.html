@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>04 不确定性、失败与恢复 · 推理内核</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body><div class="wrap">
+  <header><div class="eyebrow">L2 · REASONING CORE · UNIT 04</div><h1>不确定性、失败与恢复</h1><p class="subtitle">可靠的推理不是永远给答案，而是知道证据缺口、失败边界与下一步安全动作。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="index.html">推理课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+  <main class="prose">
+    <h1>04 不确定性、失败与恢复</h1>
+    <h2>学习目标</h2>
+    <ul><li>区分信息缺失、证据冲突、任务歧义、能力不足、策略阻塞和模型故障。</li><li>把置信与证据充分性分开，设计 clarify、retrieve、repair、fallback 和 escalate 出口。</li><li>基于 trace 做事实—假设—补证—修复—回归的分层归因。</li><li>说明推理恢复与编排重试、网关 fallback、工具补偿和治理响应的边界。</li></ul>
+
+    <h2>不确定性不是一个分数</h2>
+    <p>单个 <code>confidence=0.82</code> 很容易产生虚假精确感。工程上更重要的是说明“不确定在哪里、缺什么证据、什么动作能降低不确定性、错误代价如何”。</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>类型</th><th>例子</th><th>可降低方式</th><th>安全出口</th></tr></thead>
+      <tbody>
+        <tr><td>目标歧义</td><td>“取消它”不知道指订单还是订阅</td><td>最小必要澄清</td><td>clarify，不猜测实体</td></tr>
+        <tr><td>事实缺失</td><td>没有订单当前状态</td><td>提出只读查询或检索意图</td><td>act(read)；不可取得则 escalate</td></tr>
+        <tr><td>证据冲突</td><td>CRM 与支付系统状态不同</td><td>比较来源权威性、时间和一致性</td><td>报告冲突并暂停高风险动作</td></tr>
+        <tr><td>能力边界</td><td>当前工具只能读，不能退款</td><td>不能通过“更聪明”解决</td><td>escalate 或安全替代</td></tr>
+        <tr><td>策略阻塞</td><td>退款超额需要人工审批</td><td>取得审批，不是改写理由</td><td>request approval / escalate</td></tr>
+        <tr><td>模型 / 契约故障</td><td>响应截断、schema 不兼容</td><td>受限 repair 或网关 fallback</td><td>typed failure，保留上下文以便恢复</td></tr>
+      </tbody>
+    </table></div>
+
+    <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/uncertainty-recovery-loop.mmd">
+      <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/uncertainty-recovery-loop.svg" target="_blank" rel="noopener" aria-label="打开不确定性恢复循环图原图"><img src="diagrams/uncertainty-recovery-loop.svg" alt="推理内核识别目标、事实、风险或模型契约方面的不确定性，分别提出澄清、查询、升级或修复意图；编排层取得新观察后重新决策，证据充分时输出意图，否则显式失败。" /></a></div>
+      <figcaption><span>降低不确定性需要新证据或新权限；无进展的重复推理不是恢复。</span><span class="learning-diagram__actions"><a href="diagrams/uncertainty-recovery-loop.mmd">查看 Mermaid 源码</a><a href="diagrams/uncertainty-recovery-loop.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+    </figure>
+
+    <h2>证据充分性优先于自报置信</h2>
+    <p>可交付决策应同时说明：</p>
+    <ul><li><strong>claim：</strong>准备采取或交付什么结论。</li><li><strong>evidence_refs：</strong>哪些当前观察支持它，来源和时效如何。</li><li><strong>assumptions：</strong>哪些条件尚未直接验证。</li><li><strong>counterevidence：</strong>是否存在冲突证据或未解决阻塞。</li><li><strong>impact：</strong>判断错误的损害与可逆性。</li><li><strong>next_safe_step：</strong>证据不足时最小、可逆、可授权的下一步。</li></ul>
+    <p>置信可作为路由信号，但阈值必须在代表性数据上校准。例如“high”不应只表示模型语气肯定，而应与错误率、覆盖率和风险桶对应。</p>
+
+    <h2>失败分类</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>失败码</th><th>证据特征</th><th>推理内核动作</th><th>相邻组件动作</th></tr></thead>
+      <tbody>
+        <tr><td>CONTEXT_INSUFFICIENT</td><td>必需实体或事实不存在</td><td>clarify / 提出只读查询</td><td>编排取得新观察</td></tr>
+        <tr><td>CONTEXT_CONTRADICTORY</td><td>权威来源冲突且无法裁定</td><td>显式冲突与影响</td><td>治理或人工裁定，禁止高风险执行</td></tr>
+        <tr><td>DECISION_INVALID</td><td>schema 或语义 validator 失败</td><td>有限 repair；保留 validation path</td><td>编排计数并执行停止规则</td></tr>
+        <tr><td>NO_SAFE_ACTION</td><td>候选均违反约束或风险不可接受</td><td>escalate / safe refusal</td><td>治理提供审批或替代路径</td></tr>
+        <tr><td>MODEL_UNAVAILABLE</td><td>网关超时、容量或兼容性失败</td><td>不伪造答案；返回能力需求</td><td>模型网关 fallback，编排决定等待或失败</td></tr>
+        <tr><td>NO_PROGRESS</td><td>相同意图、相同观察、无新证据循环</td><td>停止重复并说明阻塞</td><td>编排终止、降级或转人工</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>恢复策略及所有权</h2>
+    <ol>
+      <li><strong>澄清（clarify）：</strong>推理提出对决策有信息增益的最小问题；交互层呈现，编排等待并恢复。</li>
+      <li><strong>补证（retrieve / inspect）：</strong>推理提出需要的观察；治理授权，工具或知识层执行，编排写回 observation。</li>
+      <li><strong>结构修复（repair）：</strong>仅针对可修复的输出错误，携带字段路径，限制次数；不能用于绕过策略拒绝。</li>
+      <li><strong>模型降级（fallback）：</strong>推理声明能力需求，模型网关选择兼容模型；若降级会破坏 schema 或质量门槛，应失败而不是静默继续。</li>
+      <li><strong>重规划（replan）：</strong>推理基于新证据提出新计划和差异；编排保存版本并决定哪些已执行步骤需要核对。</li>
+      <li><strong>转人工（escalate）：</strong>携带问题、已验证事实、冲突、已尝试动作和建议选项，避免让人工重新调查全部上下文。</li>
+    </ol>
+    <div class="callout"><b>副作用边界</b> · 已执行动作的撤销或补偿属于编排与工具层。推理可以提出补偿意图，但不能假设外部世界会随重新推理自动回滚。</div>
+
+    <h2>Trace：记录决策证据，不记录私有思维过程</h2>
+    <pre><code class="language-text">decision_id=dec-44  strategy=limited-react  context_fingerprint=ctx-a81
+kind=act  capability=orders.read_status.v2  evidence_refs=[user:18]
+confidence=medium  assumptions=[order_id_resolved]
+validation=passed  policy=allowed  model_request_id=gw-902
+progress_key=missing_order_status  stop_reason=-
+</code></pre>
+    <p>建议记录结构化摘要、输入/契约版本、证据引用、模型请求关联 ID、校验结果、策略、预算与停止原因。不要默认记录密钥、完整 PII 或模型私有 chain-of-thought。调试需要的是可重放的控制证据，不是未经治理的内部文本。</p>
+
+    <h2>Trace 归因方法</h2>
+    <p>面对失败时按五列写，不跳步：</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>事实</th><th>假设</th><th>缺少证据</th><th>修复候选</th><th>回归验证</th></tr></thead>
+      <tbody><tr><td>连续三轮 capability 和参数相同；observation 指纹相同；最终 max_steps</td><td>上下文未写回、检索返回重复、progress 判断缺失或推理忽略证据</td><td>context fingerprint、观察 provenance、prompt/schema 版本、decision summary</td><td>重复检测、观察去重、明确进展字段；不能直接断言换模型</td><td>构造重复观察用例，期望第二次停止、改策略或升级</td></tr></tbody>
+    </table></div>
+
+    <h2>安全与 Prompt Injection 的边界</h2>
+    <p>检索文档或工具结果中的指令属于<strong>不可信数据</strong>，不能提升为系统约束。推理内核应保留 provenance、区分 data 与 instruction，并拒绝把外部文本当授权。但完整防线分布在：</p>
+    <ul><li>治理层：输入分类、策略、权限、审计和敏感数据处理。</li><li>推理内核：遵循指令优先级，显式标记冲突与不可信证据。</li><li>工具层与沙箱：即使推理受骗，也限制可执行能力和副作用。</li><li>评测层：用注入和越权数据集持续回归。</li></ul>
+
+    <h2>工程要点</h2>
+    <ul><li>为 clarification rate、abstention/escalation、证据覆盖、置信校准、非法决策和无进展循环建立分桶指标。</li><li>恢复前核对 DecisionContext 版本、权限、外部状态和已发生副作用；不要只重放旧模型输出。</li><li>把 retryable 与 non-retryable 写进类型，重试必须有新信息、退避或不同能力，否则只是重复。</li><li>为失败出口定义用户可理解的反馈，不暴露内部敏感信息，也不伪装成成功。</li></ul>
+
+    <h2>常见坑</h2>
+    <ol><li><strong>“不确定就多调用几次”：</strong>没有新证据时，多次调用只改变采样。</li><li><strong>把 confidence 当概率：</strong>未经校准的数字不能直接决定高风险动作。</li><li><strong>任何错误都 fallback：</strong>策略拒绝、证据不足和工具副作用不能靠换模型解决。</li><li><strong>恢复等于重跑：</strong>必须核对版本、权限和外部状态，避免重复副作用。</li><li><strong>记录全部思维文本：</strong>增加隐私、合规和噪声风险，却未必提高可诊断性。</li></ol>
+
+    <h2>面试表达</h2>
+    <div class="answer-block"><h3>3 分钟结构</h3><p>我先把不确定性分类为目标歧义、事实缺失、证据冲突、能力边界、策略阻塞和模型契约故障；再按类型选择澄清、补证、受限修复、网关 fallback、重规划或转人工。置信只做经过校准的路由信号，关键决策依赖 evidence refs、假设和影响。调试时严格分开 trace 事实与原因假设，并用补证和回归用例验证修复。</p></div>
+    <div class="answer-block"><h3>追问：如何避免模型“自信地错”？</h3><p>不用语气判断可信度。要求引用当前上下文中的权威证据，确定性验证 schema 和业务规则，对置信做离线校准，高风险动作由独立策略与人工门禁控制，证据冲突时允许 abstain 或 escalate。</p></div>
+
+    <h2>学习产出</h2>
+    <ol><li>为退款调查场景写六类不确定性及各自安全出口。</li><li>分析一个重复工具调用 trace，分开事实、四个假设、补充字段、修复和回归。</li><li>设计一次暂停后恢复核对表，覆盖契约、权限、外部状态和副作用。</li></ol>
+
+    <h2>下一步：理论检查点</h2>
+    <p>四个单元完成后，进入<a href="../../assessment/02-reasoning-core-theory-checkpoint.html">推理内核理论检查点</a>。首次未通过时按缺口返回对应单元补学，再使用新案例复测。</p>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="03-reasoning-patterns-and-tradeoffs.html">← 单元 03</a><a href="../../assessment/02-reasoning-core-theory-checkpoint.html">理论检查点 →</a></nav>
+  <footer><span>推理内核 · 单元 04</span><span>证据不足时，安全退出也是正确决策</span></footer>
+</div></body></html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>推理内核理论检查点 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" /><script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body><div class="wrap">
+  <header><div class="eyebrow">ASSESSMENT · L2 REASONING CORE</div><h1>推理内核理论检查点</h1><p class="subtitle">用契约、模式、失败证据和系统设计验证推理内核的工程理解。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../docs/index.html">学习首页</a><a href="../docs/reasoning/index.html">推理课程</a><a href="../roadmap/progress-tracker.html">进度跟踪</a><a href="rubric.html">评分规则</a></nav></header>
+  <main class="prose">
+    <h1>推理内核理论检查点</h1>
+    <h2>目的与前置</h2>
+    <p>本检查点验证你能否把模型能力放进清晰的决策契约，正确选择推理模式，处理不确定性，并依据证据归因失败。它不要求代码，也不以框架 API 代替架构解释。</p>
+    <p>开始前应完成<a href="../docs/reasoning/index.html">推理内核四单元课程</a>。建议闭卷完成初稿，再回看资料补充引用；把两种颜色或两个版本分开，保留真实掌握证据。</p>
+
+    <h2>通过规则</h2>
+    <ul>
+      <li>总分 100 分；五项任务各 20 分。</li>
+      <li>总分必须<strong>不低于 80 分</strong>。</li>
+      <li>每项任务必须<strong>不低于 12 分</strong>（该项满分的 60%）。总分达标但任一单项低于 12，仍不通过。</li>
+      <li>建议时限 120 分钟；时限只用于复盘，不替代能力门禁。</li>
+      <li>必须提交作答正文和证据链接；口述任务需保留提纲、录音或同伴追问记录。</li>
+    </ul>
+    <div class="callout"><b>评分快照</b> · “available”只表示检查点资产已经可用；只有实际提交、评分并达到双门槛，才能在 progress tracker 记录为理论通过。</div>
+
+    <h2>任务一：边界与决策契约（20 分）</h2>
+    <p>为“企业工单 Agent”设计一次 <code>decide</code> 调用：</p>
+    <ol><li>画出编排层、推理内核、治理层、工具层和模型网关的数据流与控制边界。</li><li>定义 DecisionContext 的至少六组字段及来源。</li><li>定义 act、respond、clarify、escalate、finish 五类 Decision 及共同字段。</li><li>列出至少六条不变量，必须覆盖状态、授权、执行、完成和模型访问。</li><li>回答：为什么这些模块同进程部署时仍需语义分层？</li></ol>
+    <div class="table-wrap"><table><thead><tr><th>区间</th><th>评分锚点</th></tr></thead><tbody>
+      <tr><td>0–7</td><td>把推理内核等同于整个 Agent 或一次 LLM 调用；控制与副作用混在模型输出中。</td></tr>
+      <tr><td>8–11</td><td>主链路基本正确，但 finish/acceptance、授权或模型网关边界缺失。</td></tr>
+      <tr><td>12–16</td><td>输入、判别联合和五层边界正确；不变量可验证。</td></tr>
+      <tr><td>17–20</td><td>补充版本、证据引用、上下文最小化、失败类型与替代部署说明。</td></tr>
+    </tbody></table></div>
+    <p><strong>参考答案要点：</strong>推理只产出候选意图；编排拥有 run 与状态提交；治理拥有授权；工具拥有执行；模型网关拥有厂商访问。finish 必须再经业务 acceptance。</p>
+
+    <h2>任务二：结构化输出与工具选择（20 分）</h2>
+    <p>审查以下候选决策：</p>
+    <pre><code class="language-json">{
+  "kind": "act",
+  "tool": "refund_order",
+  "arguments": {"order_id": "42", "amount": 800},
+  "message": "用户很着急，我已退款"
+}
+</code></pre>
+    <p>已知：当前只验证了订单号；金额和支付状态未知；用户身份是客服访客；退款超过 500 元需财务审批。要求：</p>
+    <ol><li>指出至少八个契约、证据、语义、权限或状态问题。</li><li>给出正确的 Decision 判别联合和一个合法的下一步候选。</li><li>按“能力裁剪—意图选择—结构校验—语义校验—授权—执行”说明负责人。</li><li>设计解析失败、未知工具、证据不足、策略拒绝四类错误的修复或停止策略。</li></ol>
+    <div class="table-wrap"><table><thead><tr><th>区间</th><th>评分锚点</th></tr></thead><tbody>
+      <tr><td>0–7</td><td>只把字段改成合法 JSON，仍直接执行退款。</td></tr>
+      <tr><td>8–11</td><td>发现缺参和审批，但没有分开选择、授权与执行。</td></tr>
+      <tr><td>12–16</td><td>四层验证、能力裁剪、合法查询或澄清意图和有限修复基本完整。</td></tr>
+      <tr><td>17–20</td><td>能处理 evidence refs、稳定 capability ID、敏感值注入、错误码、修复预算和回归指标。</td></tr>
+    </tbody></table></div>
+    <p><strong>参考答案要点：</strong>合法下一步通常是 clarify 身份/金额或提出只读订单查询，不是退款；策略 deny 不能靠重试或改写参数绕过。</p>
+
+    <h2>任务三：推理模式选择（20 分）</h2>
+    <p>为以下五个场景分别选择 Direct/Router、Decomposition、Plan-and-Execute、有限 ReAct、候选比较，或明确交给确定性 Workflow：</p>
+    <ol><li>客服单意图分类。</li><li>规则稳定的发票字段校验。</li><li>需要多来源证据的竞品研究。</li><li>先审批计划再批量修复生产数据。</li><li>证据冲突且影响重大的合规判断。</li></ol>
+    <p>每题必须写：选择理由、不选至少两个替代方案的理由、结构化产物、预算/停止条件、升级或降级信号。另解释“推理模式”和“编排模式”的区别。</p>
+    <div class="table-wrap"><table><thead><tr><th>区间</th><th>评分锚点</th></tr></thead><tbody>
+      <tr><td>0–7</td><td>以“复杂就用 ReAct/Multi-Agent”作答，没有停止条件。</td></tr>
+      <tr><td>8–11</td><td>大体选对，但缺少替代取舍、风险或成本。</td></tr>
+      <tr><td>12–16</td><td>按可枚举性、观察依赖、计划稳定性、风险与预算做出可执行选择。</td></tr>
+      <tr><td>17–20</td><td>给出简单基线、动态路由、分桶评测和上线回退条件。</td></tr>
+    </tbody></table></div>
+    <p><strong>参考答案要点：</strong>发票稳定规则优先 Workflow；研究适合计划加有限观察；生产修复适合可审批计划与确定性执行；高影响合规不能用同源模型投票替代权威规则或人工。</p>
+
+    <h2>任务四：不确定性与 Trace 归因（20 分）</h2>
+    <pre><code class="language-text">run=R7 strategy=limited-react contract=v3
+step=1 decision=act capability=search_orders args_hash=a9 confidence=high
+step=1 observation=result result_hash=z2 docs=[order-42]
+step=2 decision=act capability=search_orders args_hash=a9 confidence=high
+step=2 observation=result result_hash=z2 docs=[order-42]
+step=3 decision=act capability=search_orders args_hash=a9 confidence=high
+step=3 terminate=max_steps
+</code></pre>
+    <p>要求：</p>
+    <ol><li>列出 trace 已证明的事实，不得夹带原因断言。</li><li>提出至少四个跨组件假设，并指出验证每个假设需要的字段。</li><li>识别这里的置信问题和不确定性类型。</li><li>给出推理、编排、工具/知识和网关各层可能的修复边界。</li><li>设计三个回归用例，至少一个验证无进展停止。</li></ol>
+    <div class="table-wrap"><table><thead><tr><th>区间</th><th>评分锚点</th></tr></thead><tbody>
+      <tr><td>0–7</td><td>直接断言模型能力不足并建议换更大模型。</td></tr>
+      <tr><td>8–11</td><td>识别重复，但事实、假设和修复混在一起。</td></tr>
+      <tr><td>12–16</td><td>能分层补证，设计重复检测、显式失败和针对性回归。</td></tr>
+      <tr><td>17–20</td><td>进一步讨论上下文指纹、观察 provenance、校准、恢复核对和隐私安全 trace。</td></tr>
+    </tbody></table></div>
+    <p><strong>参考答案要点：</strong>已证明相同工具与参数产生相同结果并耗尽步数；未证明是模型、上下文写回、搜索或 progress 规则中的哪一层。</p>
+
+    <h2>任务五：系统设计与口述（20 分）</h2>
+    <p>设计一个“高风险退款调查 Agent”的推理内核，提交架构图和 8 分钟口述：</p>
+    <ol><li>定义成功条件、DecisionContext、Decision schema 与不变量。</li><li>说明能力裁剪、结构/语义校验、权限和执行链路。</li><li>为调查、澄清、审批和完成选择推理模式及停止条件。</li><li>处理目标歧义、证据冲突、模型不可用、策略拒绝和恢复后的外部状态变化。</li><li>设计 trace、离线评测指标、上线门槛和回退方案。</li></ol>
+    <p>至少接受两轮追问：为什么不让模型直接退款？为什么不记录完整思维过程？换模型时如何验证契约？模型说完成但业务未验收怎么办？</p>
+    <div class="table-wrap"><table><thead><tr><th>区间</th><th>评分锚点</th></tr></thead><tbody>
+      <tr><td>0–7</td><td>主要讲 prompt 或模型，没有契约、失败和权限。</td></tr>
+      <tr><td>8–11</td><td>正常路径可理解，但边界、恢复或评测不完整。</td></tr>
+      <tr><td>12–16</td><td>契约、模式、证据、失败、安全和评测形成闭环。</td></tr>
+      <tr><td>17–20</td><td>能说明假设、替代方案、演进条件、校准和成本/延迟取舍，并稳定应对追问。</td></tr>
+    </tbody></table></div>
+
+    <h2>作答与证据模板</h2>
+    <pre><code class="language-md"># 推理内核理论检查点作答
+检查日期:
+闭卷初稿用时:
+
+## 任务一 边界与决策契约
+作答:
+证据链接(架构图 / schema):
+
+## 任务二 结构化输出与工具选择
+作答:
+证据链接(错误表 / 修复流程):
+
+## 任务三 推理模式选择
+作答:
+证据链接(选择矩阵):
+
+## 任务四 不确定性与 Trace
+事实:
+假设:
+补充证据:
+修复与回归:
+
+## 任务五 系统设计与口述
+作答:
+证据链接(设计图 / 录音 / 追问记录):
+</code></pre>
+
+    <h2>评分与首次记录</h2>
+    <pre><code class="language-text">首次日期:
+任务一: __/20   任务二: __/20   任务三: __/20
+任务四: __/20   任务五: __/20   总分: __/100
+五项是否均 >= 12: 是 / 否
+结论: 通过 / 补学后复测
+
+证据缺口:
+最薄弱的边界:
+评分者反馈:
+</code></pre>
+
+    <h2>失败补学映射</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>低于门槛的任务</th><th>返回学习</th><th>必须补交</th><th>复测变化</th></tr></thead>
+      <tbody>
+        <tr><td>任务一</td><td><a href="../docs/reasoning/01-role-and-decision-contract.html">单元 01</a></td><td>重画边界图；重写五类 Decision 与六条不变量</td><td>换成订单或合规场景</td></tr>
+        <tr><td>任务二</td><td><a href="../docs/reasoning/02-structured-output-and-tool-selection.html">单元 02</a></td><td>四层验证表 + 非法输出用例 + 有限修复状态表</td><td>换一组权限和工具 schema</td></tr>
+        <tr><td>任务三</td><td><a href="../docs/reasoning/03-reasoning-patterns-and-tradeoffs.html">单元 03</a></td><td>每题补两个拒绝理由、预算和评测基线</td><td>使用未见过的五个场景</td></tr>
+        <tr><td>任务四</td><td><a href="../docs/reasoning/04-uncertainty-failure-and-recovery.html">单元 04</a></td><td>重写事实/假设/补证/修复/回归五列表</td><td>使用新的失败 trace</td></tr>
+        <tr><td>任务五</td><td><a href="../docs/reasoning/index.html">四单元综合</a></td><td>重新录制 8 分钟方案并接受两轮新追问</td><td>更换高风险业务场景</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>复测记录</h2>
+    <pre><code class="language-text">复测日期:
+新案例 / 新 trace:
+针对的首次缺口:
+补学证据:
+
+任务一: __/20   任务二: __/20   任务三: __/20
+任务四: __/20   任务五: __/20   总分: __/100
+五项是否均 >= 12: 是 / 否
+复测结论: 通过 / 继续补学
+
+相较首次的可验证变化:
+下一次间隔复测日期:
+</code></pre>
+
+    <h2>完成后的动作</h2>
+    <ol><li>把分数、证据和复测日期登记到<a href="../roadmap/progress-tracker.html">进度跟踪</a>；不要因为资产 available 自动填为掌握。</li><li>若通过，进入下一组件“工具 / 动作层”的 L2 理论学习；当前该资产仍按共享目录状态为准。</li><li>推理内核 L3 实验与 L4 面试题需在独立变更中建设，本检查点不替代它们。</li></ol>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="../docs/reasoning/04-uncertainty-failure-and-recovery.html">← 返回单元 04</a><a href="../roadmap/progress-tracker.html">登记门禁证据 →</a></nav>
+  <footer><span>推理内核理论检查点 · 100 分</span><span>总分 ≥ 80 且每项 ≥ 12</span></footer>
+</div></body></html>
