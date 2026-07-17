@@ -1,0 +1,9 @@
+flowchart LR
+    I[用户输入与身份] --> S[Session Context]
+    S --> R[Run State]
+    R --> C[Memory Candidate]
+    C --> G{同意 验证 策略门禁}
+    G -- 拒绝 --> X[丢弃或仅会话保留]
+    G -- 接受 --> M[(Long-term Memory)]
+    K[(External Knowledge RAG)] -. 外部资料独立检索 .-> R
+    M -. 授权后回忆 .-> R

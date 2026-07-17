@@ -1,0 +1,8 @@
+flowchart LR
+    W[Working 当前任务] --> E[Episodic 可追溯事件]
+    E --> V{重复 确认 来源}
+    V --> S[Semantic 稳定声明]
+    E --> P{成功 可复现 权限校验}
+    P --> PR[Procedural 适用程序]
+    V -- 不足 --> Q[保留候选或请求确认]
+    P -- 不足 --> Q

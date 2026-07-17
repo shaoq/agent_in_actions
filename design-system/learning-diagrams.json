@@ -246,6 +246,46 @@
       "caption": "先证明正确证据在哪一步消失，再选择修复点。",
       "alt": "依次检查语料覆盖、索引可检索性、Top-K 召回、重排保留、声明支持和引用策略，以定位 RAG 失败阶段。",
       "wide": true
+    },
+    {
+      "id": "state-session-memory-boundary",
+      "type": "flowchart",
+      "page": "docs/memory/01-state-session-and-memory-boundaries.html",
+      "source": "docs/memory/diagrams/state-session-memory-boundary.mmd",
+      "svg": "docs/memory/diagrams/state-session-memory-boundary.svg",
+      "caption": "跨生命周期持久化必须经过显式晋升，不是把 transcript 全量搬家。",
+      "alt": "运行状态随 run 生命周期存在，会话上下文跨多个 run，只有经同意、验证和策略门禁的候选才进入长期记忆；外部知识保持独立。",
+      "wide": true
+    },
+    {
+      "id": "memory-types-and-promotion",
+      "type": "flowchart",
+      "page": "docs/memory/02-memory-types.html",
+      "source": "docs/memory/diagrams/memory-types-and-promotion.mmd",
+      "svg": "docs/memory/diagrams/memory-types-and-promotion.svg",
+      "caption": "类型之间可以晋升，但必须保留来源并重新验证，不能靠一次模型摘要跳级。",
+      "alt": "工作记忆支撑当前任务，事件形成情景候选，重复且确认的事实可整合为语义记忆，验证过的成功操作可形成程序记忆。",
+      "wide": true
+    },
+    {
+      "id": "memory-lifecycle",
+      "type": "flowchart",
+      "page": "docs/memory/03-read-write-consolidation-and-forgetting.html",
+      "source": "docs/memory/diagrams/memory-lifecycle.mmd",
+      "svg": "docs/memory/diagrams/memory-lifecycle.svg",
+      "caption": "写入、读取与遗忘共享同一身份、版本和审计主线。",
+      "alt": "经历产生候选记忆，经同意、分类、验证、去重和冲突整合后发布；读取经过身份范围过滤与相关性排序；过期、撤回或删除请求触发遗忘和审计。",
+      "wide": true
+    },
+    {
+      "id": "memory-governance-gates",
+      "type": "flowchart",
+      "page": "docs/memory/04-privacy-poisoning-and-governance.html",
+      "source": "docs/memory/diagrams/memory-governance-gates.mmd",
+      "svg": "docs/memory/diagrams/memory-governance-gates.svg",
+      "caption": "写时安全不代替读时授权；低风险写入也不自动获得高风险使用权。",
+      "alt": "不可信输入经敏感信息、授权、来源、投毒和风险门禁后才能进入隔离候选区；读取时再次按身份目的过滤，高风险使用需要确认，审计与删除贯穿全链路。",
+      "wide": true
     }
   ]
 }
