@@ -518,9 +518,9 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
 @media (max-width:1120px){
   .course-menu{
     top:0;bottom:0;left:0;width:min(320px,88vw);border-width:0 1px 0 0;border-radius:0;
-    transform:translateX(-102%);transition:transform .2s ease;
+    visibility:hidden;transform:translateX(-102%);transition:transform .2s ease,visibility 0s linear .2s;
   }
-  .course-menu-open .course-menu{transform:translateX(0)}
+  .course-menu-open .course-menu{visibility:visible;transform:translateX(0);transition-delay:0s}
   .course-menu__close{display:grid;place-items:center}
   .course-menu-toggle{display:flex}
   .course-menu-open .course-menu-overlay{display:block}
