@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>工具 / 动作层总览 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Agent · L2 Component Overview</div>
+    <h1>工具 / 动作层 <em>Tools & Actions</em></h1>
+    <p class="subtitle">把结构化动作意图转换为受授权、受隔离、可审计的环境交互，并返回可供编排判断的 Observation。</p>
+    <div class="meta"><span><b>版本</b> v1.0 · 组件总览</span><span><b>更新</b> 2026-07-17</span><span><b>架构层</b> ④ 工具 / 动作层</span><span class="tag">POSITION · FLOW · FAILURE · TRADE-OFF</span></div>
+    <nav class="learning-nav" aria-label="工具 / 动作层学习导航">
+      <a href="index.html">学习首页</a><a href="00-agent-architecture.html">九层架构</a><a href="tools/index.html">课程目录</a><a href="../roadmap/progress-tracker.html">进度跟踪</a>
+    </nav>
+  </header>
+  <main>
+    <section id="contract">
+      <div class="sec-head"><span class="idx">UNIT.01</span><h2>学习契约</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Understand</span><h3>理解</h3><p>解释工具契约、治理授权和执行隔离的分工。</p></article>
+        <article class="concept-panel"><span class="label">Design</span><h3>设计</h3><p>设计 schema、版本、错误与 Observation 契约。</p></article>
+        <article class="concept-panel"><span class="label">Debug</span><h3>调试</h3><p>处理重试、幂等、未知结果和补偿。</p></article>
+        <article class="concept-panel"><span class="label">Explain</span><h3>表达</h3><p>比较 Function Calling、MCP 与 Computer Use 的适用边界。</p></article>
+      </div>
+      <div class="callout"><b>总览与目录分工</b> · 本页建立组件心智模型；<a href="tools/index.html">课程目录</a>组织理论单元与检查点。总览可独立阅读，但通过门禁仍需完成全部单元。</div>
+    </section>
+    <section id="boundary">
+      <div class="sec-head"><span class="idx">UNIT.02</span><h2>架构位置与边界</h2><span class="rule"></span></div>
+      <div class="callout"><b>职责边界</b> · 推理内核提出动作意图，编排负责调用时机与状态，治理层决定能否执行，基础设施提供沙箱和短期凭据；工具层拥有动作适配、结果规范化和副作用语义。</div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>契约面</th><th>组件级定义</th></tr></thead>
+        <tbody>
+          <tr><td>输入</td><td>tool name、版本化参数、actor、risk、idempotency key</td></tr>
+          <tr><td>输出</td><td>result / typed error、外部引用、耗时、副作用状态和审计证据</td></tr>
+          <tr><td>上游</td><td>编排提交通过结构校验的动作意图，治理附带授权决定</td></tr>
+          <tr><td>下游</td><td>API、数据库、文件、浏览器或隔离运行时</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="flow">
+      <div class="sec-head"><span class="idx">FIG.01</span><h2>主数据流</h2><span class="rule"></span></div>
+      <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/tools-actions-overview.mmd">
+        <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/tools-actions-overview.svg" target="_blank" rel="noopener" aria-label="在新窗口打开工具 / 动作层主数据流原图"><img src="diagrams/tools-actions-overview.svg" alt="工具动作总览：结构化动作经过参数校验和治理决定，在沙箱内执行，外部结果规范化为 Observation 回写编排。" /></a></div>
+        <figcaption><span>动作意图经过 schema、授权和隔离后才触达外部系统，结果以带副作用状态和证据的 Observation 返回编排。</span><span class="learning-diagram__actions"><a href="diagrams/tools-actions-overview.mmd">查看 Mermaid 源码</a><a href="diagrams/tools-actions-overview.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+      </figure>
+    </section>
+    <section id="patterns">
+      <div class="sec-head"><span class="idx">UNIT.03</span><h2>模式与取舍</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">MODE 1</span><h3>函数调用</h3><p>结构化 API 且边界清晰；可靠、易审计。</p></article>
+        <article class="concept-panel"><span class="label">MODE 2</span><h3>MCP</h3><p>跨客户端发现资源与工具；统一协议但仍需本地授权。</p></article>
+        <article class="concept-panel"><span class="label">MODE 3</span><h3>Computer Use</h3><p>缺少 API 的视觉界面；覆盖广但脆弱、风险高。</p></article>
+        <article class="concept-panel"><span class="label">MODE 4</span><h3>异步作业</h3><p>长任务或外部排队；需状态查询、回调和幂等。</p></article>
+      </div>
+    </section>
+    <section id="failures">
+      <div class="sec-head"><span class="idx">UNIT.04</span><h2>失败归因矩阵</h2><span class="rule"></span></div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>表现</th><th>定位阶段</th><th>常见原因</th><th>优先修复</th></tr></thead>
+        <tbody>
+          <tr><td>参数校验失败</td><td><code>pre-execute</code></td><td>schema/版本不匹配</td><td>执行前拒绝并返回字段级错误</td></tr>
+          <tr><td>超时后重复副作用</td><td><code>unknown result</code></td><td>把超时当明确失败</td><td>先对账，再用同一幂等键有界重试</td></tr>
+          <tr><td>权限绕过</td><td><code>authorization</code></td><td>工具内部默认信任模型</td><td>绑定主体、资源、动作和审批摘要</td></tr>
+          <tr><td>Observation 无法利用</td><td><code>observe</code></td><td>只返回自然语言或丢失证据</td><td>规范化结果、错误、引用和副作用状态</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="engineering">
+      <div class="sec-head"><span class="idx">UNIT.05</span><h2>生产工程约束</h2><span class="rule"></span></div>
+      <ul class="reference-list">
+        <li>工具描述、参数、错误码和版本必须可测试。</li>
+        <li>高风险动作在副作用前授权，恢复后重新校验。</li>
+        <li>区分未提交、已提交、未知和补偿完成状态。</li>
+        <li>凭据最小权限、短生命周期，不进入模型上下文或日志。</li>
+      </ul>
+    </section>
+    <section id="interview">
+      <div class="sec-head"><span class="idx">UNIT.06</span><h2>面试表达</h2><span class="rule"></span></div>
+      <div class="answer-block"><h3>30 秒回答</h3><p>工具层把结构化意图变成真实环境动作。生产重点不是函数能否调用，而是契约、授权、隔离、幂等、副作用状态和 Observation 证据；编排控制生命周期，治理决定权限，基础设施限制执行边界。</p></div>
+      <div class="answer-block"><h3>3 分钟回答结构</h3><p>从 tool schema 和版本开始，讲清授权与沙箱，再描述 submitted、unknown、committed 的副作用生命周期；比较 Function Calling、MCP 和 Computer Use；最后说明如何用调用 ID、幂等键、对账和类型化错误定位失败。</p></div>
+      <div class="callout"><b>表达检查</b> · 不要只报框架或产品名；必须讲清输入输出、owner、证据、失败归因和为什么选择该模式。</div>
+    </section>
+    <section id="next">
+      <div class="sec-head"><span class="idx">NEXT</span><h2>练习与下一步</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Explain</span><h3>闭卷讲解</h3><p>不看文档，用两分钟画出主数据流，并明确至少两个非职责边界。</p></article>
+        <article class="concept-panel"><span class="label">Diagnose</span><h3>失败归因</h3><p>从一个失败表现开始，指出所需 trace 证据、组件 owner 与优先修复。</p></article>
+        <article class="concept-panel"><span class="label">Continue</span><h3>进入课程</h3><p>打开<a href="tools/index.html">工具 / 动作层课程目录</a>，按顺序完成理论单元和检查点。</p></article>
+        <article class="concept-panel"><span class="label">Compare</span><h3>跨层对照</h3><p>回到<a href="00-agent-architecture.html">九层架构总览</a>，说明本组件和相邻两层的交接契约。</p></article>
+      </div>
+    </section>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="reasoning/index.html">← 上一步</a><a href="tools/index.html">下一步 →</a></nav>
+  <footer><span>工具 / 动作层总览 · Blueprint v1.0 · 2026-07-17</span><span>学习顺序 03 · 九层位置 ④ 工具 / 动作层</span></footer>
+</div>
+</body>
+</html>

@@ -486,6 +486,86 @@
       "caption": "UI 承载问题与决定，run 的暂停、恢复和完成仍由编排层拥有。",
       "alt": "用户的模糊请求经交互层校验身份后交给编排；编排请求澄清，信息足够时继续并返回结果，需要人工时固化检查点并生成最小必要移交包，人工决定通过绑定主体的恢复令牌回到编排。",
       "wide": true
+    },
+    {
+      "id": "reasoning-core-overview",
+      "type": "flowchart",
+      "page": "docs/02-reasoning-core.html",
+      "source": "docs/diagrams/reasoning-core-overview.mmd",
+      "svg": "docs/diagrams/reasoning-core-overview.svg",
+      "caption": "推理内核把编排提供的上下文转换为结构化意图，经模型网关访问模型，并把动作、检索或交互决定交回编排路由。",
+      "alt": "推理内核总览：编排提供目标、状态、观察和能力，推理经模型网关形成结构化意图，工具与检索返回证据到编排。",
+      "wide": true
+    },
+    {
+      "id": "tools-actions-overview",
+      "type": "flowchart",
+      "page": "docs/03-tools-actions.html",
+      "source": "docs/diagrams/tools-actions-overview.mmd",
+      "svg": "docs/diagrams/tools-actions-overview.svg",
+      "caption": "动作意图经过 schema、授权和隔离后才触达外部系统，结果以带副作用状态和证据的 Observation 返回编排。",
+      "alt": "工具动作总览：结构化动作经过参数校验和治理决定，在沙箱内执行，外部结果规范化为 Observation 回写编排。",
+      "wide": true
+    },
+    {
+      "id": "knowledge-rag-overview",
+      "type": "flowchart",
+      "page": "docs/04-knowledge-rag.html",
+      "source": "docs/diagrams/knowledge-rag-overview.mmd",
+      "svg": "docs/diagrams/knowledge-rag-overview.svg",
+      "caption": "RAG 从外部资料建立索引并按身份检索证据；它与保存 Agent 经历的记忆系统具有不同语义。",
+      "alt": "知识检索总览：外部资料经过摄取索引，任务查询经过召回重排形成带来源证据，再用于 Grounding 和推理。",
+      "wide": true
+    },
+    {
+      "id": "memory-system-overview",
+      "type": "flowchart",
+      "page": "docs/05-memory-system.html",
+      "source": "docs/diagrams/memory-system-overview.mmd",
+      "svg": "docs/diagrams/memory-system-overview.svg",
+      "caption": "经历先通过价值、同意和风险门禁再沉淀；未来任务只按主体和用途检索有来源的候选记忆。",
+      "alt": "记忆系统总览：运行事件通过写入门禁进入记忆存储，经整合遗忘后按主体检索，外部知识 RAG 保持独立。",
+      "wide": true
+    },
+    {
+      "id": "governance-observability-overview",
+      "type": "flowchart",
+      "page": "docs/06-governance-observability.html",
+      "source": "docs/diagrams/governance-observability-overview.mmd",
+      "svg": "docs/diagrams/governance-observability-overview.svg",
+      "caption": "在线治理实施允许、审批、拒绝和降级，可观测证据支持实时检测，并以脱敏 trace 连接离线评测。",
+      "alt": "治理可观测总览：身份请求经过策略控制进入编排，trace 日志指标支持在线检测、人工审批、阻断和离线评测反馈。",
+      "wide": true
+    },
+    {
+      "id": "evaluation-overview",
+      "type": "flowchart",
+      "page": "docs/07-evaluation.html",
+      "source": "docs/diagrams/evaluation-overview.mmd",
+      "svg": "docs/diagrams/evaluation-overview.svg",
+      "caption": "版本化数据和固定环境产生可比较的结果与轨迹评分，回归门禁连接灰度发布，线上失败继续回灌。",
+      "alt": "评测层总览：目标风险形成数据集，固定运行产生结果轨迹，多方法评分驱动回归门禁、灰度与失败归因反馈。",
+      "wide": true
+    },
+    {
+      "id": "model-gateway-infrastructure-overview",
+      "type": "flowchart",
+      "page": "docs/08-model-gateway-infrastructure.html",
+      "source": "docs/diagrams/model-gateway-infrastructure-overview.mmd",
+      "svg": "docs/diagrams/model-gateway-infrastructure-overview.svg",
+      "caption": "模型网关统一推理的模型访问；基础设施用租户、凭据、网络和资源边界隔离工具执行。",
+      "alt": "模型网关和基础设施总览：推理请求经网关路由模型并返回证据，工具执行请求进入隔离沙箱访问外部环境。",
+      "wide": true
+    },
+    {
+      "id": "interaction-access-overview",
+      "type": "flowchart",
+      "page": "docs/09-interaction-access.html",
+      "source": "docs/diagrams/interaction-access-overview.mmd",
+      "svg": "docs/diagrams/interaction-access-overview.svg",
+      "caption": "交互层把渠道、身份、会话和同意规范化后交给编排，再把澄清、进度、结果和移交适配回用户。",
+      "alt": "交互接入总览：用户渠道进入交互层形成规范化请求交给编排，编排返回澄清、流式结果或人工移交事件。",
+      "wide": true
     }
   ]
 }

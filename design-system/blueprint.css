@@ -584,6 +584,11 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   .prose table,.prose blockquote,.prose pre{
     background:#fff !important;border-color:#9bb !important;box-shadow:none !important;
   }
+  .matrix-wrap{overflow:visible;border-color:#9bb !important;background:#fff !important;box-shadow:none !important}
+  .matrix{min-width:0;background:#fff !important;color:#172b3f !important}
+  .matrix th,.matrix td{color:#172b3f !important;border-color:#b8c5cf !important;background:#fff !important}
+  .matrix th{color:#075985 !important;font-weight:700}
+  .matrix td:first-child{color:#0b1a2c !important}
   .prose pre code{
     min-width:0;color:#075985 !important;background:#fff !important;white-space:pre-wrap;
   }

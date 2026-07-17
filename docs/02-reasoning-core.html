@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>推理内核总览 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Agent · L2 Component Overview</div>
+    <h1>推理内核 <em>Reasoning Core</em></h1>
+    <p class="subtitle">把目标、状态与证据转换为可校验的下一步意图；负责决策，不拥有运行生命周期，也不直接绑定模型厂商。</p>
+    <div class="meta"><span><b>版本</b> v1.0 · 组件总览</span><span><b>更新</b> 2026-07-17</span><span><b>架构层</b> ③ 推理内核</span><span class="tag">POSITION · FLOW · FAILURE · TRADE-OFF</span></div>
+    <nav class="learning-nav" aria-label="推理内核学习导航">
+      <a href="index.html">学习首页</a><a href="00-agent-architecture.html">九层架构</a><a href="reasoning/index.html">课程目录</a><a href="../roadmap/progress-tracker.html">进度跟踪</a>
+    </nav>
+  </header>
+  <main>
+    <section id="contract">
+      <div class="sec-head"><span class="idx">UNIT.01</span><h2>学习契约</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Understand</span><h3>理解</h3><p>解释推理内核与编排、工具、模型网关的边界。</p></article>
+        <article class="concept-panel"><span class="label">Design</span><h3>设计</h3><p>设计 act / finish / clarify / escalate 的结构化决策契约。</p></article>
+        <article class="concept-panel"><span class="label">Debug</span><h3>调试</h3><p>从 trace 识别幻觉动作、证据不足与不确定性失控。</p></article>
+        <article class="concept-panel"><span class="label">Explain</span><h3>表达</h3><p>用模式、约束和恢复策略讲清工程取舍。</p></article>
+      </div>
+      <div class="callout"><b>总览与目录分工</b> · 本页建立组件心智模型；<a href="reasoning/index.html">课程目录</a>组织理论单元与检查点。总览可独立阅读，但通过门禁仍需完成全部单元。</div>
+    </section>
+    <section id="boundary">
+      <div class="sec-head"><span class="idx">UNIT.02</span><h2>架构位置与边界</h2><span class="rule"></span></div>
+      <div class="callout"><b>职责边界</b> · 输入是编排整理的决策上下文，输出是结构化意图。编排决定何时调用、是否接受和如何推进；模型调用统一经过模型网关；工具层只执行已校验动作。</div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>契约面</th><th>组件级定义</th></tr></thead>
+        <tbody>
+          <tr><td>输入</td><td>目标、当前状态、Observation、可用能力、预算与治理约束</td></tr>
+          <tr><td>输出</td><td>act / finish / clarify / escalate，以及参数、证据、置信与理由摘要</td></tr>
+          <tr><td>上游</td><td>编排控制层准备上下文并持有运行状态</td></tr>
+          <tr><td>下游</td><td>模型网关提供模型访问；编排把意图路由到工具、RAG 或交互层</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="flow">
+      <div class="sec-head"><span class="idx">FIG.01</span><h2>主数据流</h2><span class="rule"></span></div>
+      <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/reasoning-core-overview.mmd">
+        <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/reasoning-core-overview.svg" target="_blank" rel="noopener" aria-label="在新窗口打开推理内核主数据流原图"><img src="diagrams/reasoning-core-overview.svg" alt="推理内核总览：编排提供目标、状态、观察和能力，推理经模型网关形成结构化意图，工具与检索返回证据到编排。" /></a></div>
+        <figcaption><span>推理内核把编排提供的上下文转换为结构化意图，经模型网关访问模型，并把动作、检索或交互决定交回编排路由。</span><span class="learning-diagram__actions"><a href="diagrams/reasoning-core-overview.mmd">查看 Mermaid 源码</a><a href="diagrams/reasoning-core-overview.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+      </figure>
+    </section>
+    <section id="patterns">
+      <div class="sec-head"><span class="idx">UNIT.03</span><h2>模式与取舍</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">MODE 1</span><h3>直接决策</h3><p>短任务、上下文明确；延迟低，但复杂任务容易遗漏约束。</p></article>
+        <article class="concept-panel"><span class="label">MODE 2</span><h3>ReAct</h3><p>观察会改变下一步；适应性高，但需循环预算与重复检测。</p></article>
+        <article class="concept-panel"><span class="label">MODE 3</span><h3>Plan-and-Execute</h3><p>依赖可提前分解；便于审计，但计划过时需要重规划。</p></article>
+        <article class="concept-panel"><span class="label">MODE 4</span><h3>受约束解码</h3><p>高风险或强 schema；可验证性高，但不能替代业务验收。</p></article>
+      </div>
+    </section>
+    <section id="failures">
+      <div class="sec-head"><span class="idx">UNIT.04</span><h2>失败归因矩阵</h2><span class="rule"></span></div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>表现</th><th>定位阶段</th><th>常见原因</th><th>优先修复</th></tr></thead>
+        <tbody>
+          <tr><td>不存在的工具或参数</td><td><code>decision validation</code></td><td>能力清单过期或 schema 不清</td><td>拒绝意图并带校验错误重决策</td></tr>
+          <tr><td>证据不足却 finish</td><td><code>acceptance</code></td><td>把语言流畅等同任务完成</td><td>加入证据字段和确定性验收</td></tr>
+          <tr><td>反复选择同一动作</td><td><code>trajectory</code></td><td>Observation 无信息增益</td><td>检测重复轨迹并澄清或升级</td></tr>
+          <tr><td>模型不可用</td><td><code>gateway call</code></td><td>端点故障或配额耗尽</td><td>由网关降级，编排接收类型化失败</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="engineering">
+      <div class="sec-head"><span class="idx">UNIT.05</span><h2>生产工程约束</h2><span class="rule"></span></div>
+      <ul class="reference-list">
+        <li>决策对象必须版本化并经过 schema 校验。</li>
+        <li>上下文只携带完成决策所需的最小充分证据。</li>
+        <li>不确定性要转成澄清、检索或升级，而不是隐藏在措辞中。</li>
+        <li>记录模型、prompt、输入摘要、决策与校验错误以支持回放。</li>
+      </ul>
+    </section>
+    <section id="interview">
+      <div class="sec-head"><span class="idx">UNIT.06</span><h2>面试表达</h2><span class="rule"></span></div>
+      <div class="answer-block"><h3>30 秒回答</h3><p>推理内核是 Agent 的决策面：它根据编排提供的目标、状态、观察和约束，形成结构化的下一步意图。它不维护生命周期、不直接执行工具，也不直接调用模型厂商；模型访问走网关，意图由编排校验和路由。</p></div>
+      <div class="answer-block"><h3>3 分钟回答结构</h3><p>先定义决策契约，再讲输入来自编排状态；随后说明模型网关、结构化输出和业务验收边界；用直接决策、ReAct、计划执行说明模式取舍；最后落到证据不足、重复轨迹、预算和降级的 trace 诊断。</p></div>
+      <div class="callout"><b>表达检查</b> · 不要只报框架或产品名；必须讲清输入输出、owner、证据、失败归因和为什么选择该模式。</div>
+    </section>
+    <section id="next">
+      <div class="sec-head"><span class="idx">NEXT</span><h2>练习与下一步</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Explain</span><h3>闭卷讲解</h3><p>不看文档，用两分钟画出主数据流，并明确至少两个非职责边界。</p></article>
+        <article class="concept-panel"><span class="label">Diagnose</span><h3>失败归因</h3><p>从一个失败表现开始，指出所需 trace 证据、组件 owner 与优先修复。</p></article>
+        <article class="concept-panel"><span class="label">Continue</span><h3>进入课程</h3><p>打开<a href="reasoning/index.html">推理内核课程目录</a>，按顺序完成理论单元和检查点。</p></article>
+        <article class="concept-panel"><span class="label">Compare</span><h3>跨层对照</h3><p>回到<a href="00-agent-architecture.html">九层架构总览</a>，说明本组件和相邻两层的交接契约。</p></article>
+      </div>
+    </section>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="01-orchestration.html">← 上一步</a><a href="reasoning/index.html">下一步 →</a></nav>
+  <footer><span>推理内核总览 · Blueprint v1.0 · 2026-07-17</span><span>学习顺序 02 · 九层位置 ③ 推理内核</span></footer>
+</div>
+</body>
+</html>

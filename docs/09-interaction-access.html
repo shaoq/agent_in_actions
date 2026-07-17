@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>交互与接入层总览 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Agent · L2 Component Overview</div>
+    <h1>交互与接入层 <em>Interaction & Access</em></h1>
+    <p class="subtitle">把不同渠道的输入、身份、会话、同意和能力规范化为编排可消费的请求，并把进度、澄清、结果与移交适配回用户。</p>
+    <div class="meta"><span><b>版本</b> v1.0 · 组件总览</span><span><b>更新</b> 2026-07-17</span><span><b>架构层</b> ① 交互与接入层</span><span class="tag">POSITION · FLOW · FAILURE · TRADE-OFF</span></div>
+    <nav class="learning-nav" aria-label="交互与接入层学习导航">
+      <a href="index.html">学习首页</a><a href="00-agent-architecture.html">九层架构</a><a href="interaction-access/index.html">课程目录</a><a href="../roadmap/progress-tracker.html">进度跟踪</a>
+    </nav>
+  </header>
+  <main>
+    <section id="contract">
+      <div class="sec-head"><span class="idx">UNIT.01</span><h2>学习契约</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Understand</span><h3>理解</h3><p>解释渠道适配、身份会话和编排控制的边界。</p></article>
+        <article class="concept-panel"><span class="label">Design</span><h3>设计</h3><p>设计流式、多模态、澄清和错误恢复事件契约。</p></article>
+        <article class="concept-panel"><span class="label">Debug</span><h3>调试</h3><p>把 HITL 与人工移交绑定到正确主体和检查点。</p></article>
+        <article class="concept-panel"><span class="label">Explain</span><h3>表达</h3><p>落实同意、隐私、可访问性和可理解错误。</p></article>
+      </div>
+      <div class="callout"><b>总览与目录分工</b> · 本页建立组件心智模型；<a href="interaction-access/index.html">课程目录</a>组织理论单元与检查点。总览可独立阅读，但通过门禁仍需完成全部单元。</div>
+    </section>
+    <section id="boundary">
+      <div class="sec-head"><span class="idx">UNIT.02</span><h2>架构位置与边界</h2><span class="rule"></span></div>
+      <div class="callout"><b>职责边界</b> · 交互层拥有协议、身份上下文、会话呈现和用户体验，不拥有任务执行生命周期；它把规范化意图交给编排，并呈现编排事件。HITL 的界面在交互层，暂停与恢复状态由编排拥有。</div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>契约面</th><th>组件级定义</th></tr></thead>
+        <tbody>
+          <tr><td>输入</td><td>渠道事件、actor、session、内容、多模态附件、locale、consent</td></tr>
+          <tr><td>规范化输出</td><td>intent、identity context、channel capabilities、correlation ID</td></tr>
+          <tr><td>编排返回</td><td>progress、clarification、result、error、approval、handoff 事件</td></tr>
+          <tr><td>用户呈现</td><td>流式文本、结构化卡片、可访问替代、恢复与撤销入口</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="flow">
+      <div class="sec-head"><span class="idx">FIG.01</span><h2>主数据流</h2><span class="rule"></span></div>
+      <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/interaction-access-overview.mmd">
+        <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/interaction-access-overview.svg" target="_blank" rel="noopener" aria-label="在新窗口打开交互与接入层主数据流原图"><img src="diagrams/interaction-access-overview.svg" alt="交互接入总览：用户渠道进入交互层形成规范化请求交给编排，编排返回澄清、流式结果或人工移交事件。" /></a></div>
+        <figcaption><span>交互层把渠道、身份、会话和同意规范化后交给编排，再把澄清、进度、结果和移交适配回用户。</span><span class="learning-diagram__actions"><a href="diagrams/interaction-access-overview.mmd">查看 Mermaid 源码</a><a href="diagrams/interaction-access-overview.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+      </figure>
+    </section>
+    <section id="patterns">
+      <div class="sec-head"><span class="idx">UNIT.03</span><h2>模式与取舍</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">MODE 1</span><h3>同步对话</h3><p>短任务和快速反馈；简单但易受超时限制。</p></article>
+        <article class="concept-panel"><span class="label">MODE 2</span><h3>流式事件</h3><p>长生成与进度；体验好但需顺序、重连和去重。</p></article>
+        <article class="concept-panel"><span class="label">MODE 3</span><h3>澄清循环</h3><p>信息不足或高风险；降低误执行但增加轮次。</p></article>
+        <article class="concept-panel"><span class="label">MODE 4</span><h3>人工移交</h3><p>需要判断、授权或情绪处理；需最小充分上下文。</p></article>
+      </div>
+    </section>
+    <section id="failures">
+      <div class="sec-head"><span class="idx">UNIT.04</span><h2>失败归因矩阵</h2><span class="rule"></span></div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>表现</th><th>定位阶段</th><th>常见原因</th><th>优先修复</th></tr></thead>
+        <tbody>
+          <tr><td>同一事件重复执行</td><td><code>delivery</code></td><td>重连或渠道重复投递</td><td>event ID 去重，编排保持幂等</td></tr>
+          <tr><td>身份与会话串线</td><td><code>identity binding</code></td><td>只信客户端 session ID</td><td>服务端绑定 actor/tenant/channel</td></tr>
+          <tr><td>流式内容顺序错乱</td><td><code>stream</code></td><td>缺 sequence 和 resume token</td><td>事件序号、断点续传和最终态</td></tr>
+          <tr><td>移交泄露过多上下文</td><td><code>handoff</code></td><td>直接转发完整 trace</td><td>最小必要摘要、脱敏和访问审计</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="engineering">
+      <div class="sec-head"><span class="idx">UNIT.05</span><h2>生产工程约束</h2><span class="rule"></span></div>
+      <ul class="reference-list">
+        <li>输入大小、类型和附件在边缘校验并恶意内容隔离。</li>
+        <li>任何审批或恢复动作绑定主体、动作摘要、版本和过期时间。</li>
+        <li>错误信息对用户可理解，对工程侧保留关联 ID。</li>
+        <li>支持键盘、屏幕阅读器、字幕、对比度和非流式降级。</li>
+      </ul>
+    </section>
+    <section id="interview">
+      <div class="sec-head"><span class="idx">UNIT.06</span><h2>面试表达</h2><span class="rule"></span></div>
+      <div class="answer-block"><h3>30 秒回答</h3><p>交互与接入层是协议和信任边界：它规范化渠道、身份、会话、同意和多模态输入，将请求交给编排，再把进度、澄清、结果或人工移交适配回用户；它不是隐藏在 UI 里的第二个编排器。</p></div>
+      <div class="answer-block"><h3>3 分钟回答结构</h3><p>从渠道和身份规范化开始，说明流式事件、重连和多模态能力；再讲澄清与 HITL 中 UI 和编排状态的分工；最后落到同意、错误恢复、移交最小化和无障碍，并用事件 ID 与关联 ID 支撑诊断。</p></div>
+      <div class="callout"><b>表达检查</b> · 不要只报框架或产品名；必须讲清输入输出、owner、证据、失败归因和为什么选择该模式。</div>
+    </section>
+    <section id="next">
+      <div class="sec-head"><span class="idx">NEXT</span><h2>练习与下一步</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Explain</span><h3>闭卷讲解</h3><p>不看文档，用两分钟画出主数据流，并明确至少两个非职责边界。</p></article>
+        <article class="concept-panel"><span class="label">Diagnose</span><h3>失败归因</h3><p>从一个失败表现开始，指出所需 trace 证据、组件 owner 与优先修复。</p></article>
+        <article class="concept-panel"><span class="label">Continue</span><h3>进入课程</h3><p>打开<a href="interaction-access/index.html">交互与接入层课程目录</a>，按顺序完成理论单元和检查点。</p></article>
+        <article class="concept-panel"><span class="label">Compare</span><h3>跨层对照</h3><p>回到<a href="00-agent-architecture.html">九层架构总览</a>，说明本组件和相邻两层的交接契约。</p></article>
+      </div>
+    </section>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="model-gateway-infrastructure/index.html">← 上一步</a><a href="interaction-access/index.html">下一步 →</a></nav>
+  <footer><span>交互与接入层总览 · Blueprint v1.0 · 2026-07-17</span><span>学习顺序 09 · 九层位置 ① 交互与接入层</span></footer>
+</div>
+</body>
+</html>

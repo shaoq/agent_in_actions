@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>评测层总览 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Agent · L2 Component Overview</div>
+    <h1>评测层 <em>Evaluation</em></h1>
+    <p class="subtitle">在版本化数据、固定环境和可解释评分上验证结果与轨迹，把失败反馈给正确组件，并形成上线门禁与持续回归。</p>
+    <div class="meta"><span><b>版本</b> v1.0 · 组件总览</span><span><b>更新</b> 2026-07-17</span><span><b>架构层</b> ⑧ 评测层</span><span class="tag">POSITION · FLOW · FAILURE · TRADE-OFF</span></div>
+    <nav class="learning-nav" aria-label="评测层学习导航">
+      <a href="index.html">学习首页</a><a href="00-agent-architecture.html">九层架构</a><a href="evaluation/index.html">课程目录</a><a href="../roadmap/progress-tracker.html">进度跟踪</a>
+    </nav>
+  </header>
+  <main>
+    <section id="contract">
+      <div class="sec-head"><span class="idx">UNIT.01</span><h2>学习契约</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Understand</span><h3>理解</h3><p>从业务目标和风险构建可代表的数据集与基线。</p></article>
+        <article class="concept-panel"><span class="label">Design</span><h3>设计</h3><p>同时评测最终结果、执行轨迹、安全和成本。</p></article>
+        <article class="concept-panel"><span class="label">Debug</span><h3>调试</h3><p>组合规则、人工与 LLM-as-a-Judge 并识别偏差。</p></article>
+        <article class="concept-panel"><span class="label">Explain</span><h3>表达</h3><p>建立回归门禁、灰度、线上反馈和失败归因闭环。</p></article>
+      </div>
+      <div class="callout"><b>总览与目录分工</b> · 本页建立组件心智模型；<a href="evaluation/index.html">课程目录</a>组织理论单元与检查点。总览可独立阅读，但通过门禁仍需完成全部单元。</div>
+    </section>
+    <section id="boundary">
+      <div class="sec-head"><span class="idx">UNIT.02</span><h2>架构位置与边界</h2><span class="rule"></span></div>
+      <div class="callout"><b>职责边界</b> · 评测主要离线消费结果与 trace，不参与每个在线请求的即时授权；在线治理负责实时控制。评测发现问题后反馈编排、工具、RAG、记忆、网关或交互 owner，而不是只换模型。</div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>契约面</th><th>组件级定义</th></tr></thead>
+        <tbody>
+          <tr><td>输入</td><td>版本化任务、期望、rubric、环境、结果、trajectory</td></tr>
+          <tr><td>输出</td><td>指标、置信区间、失败分类、样例证据和门禁决定</td></tr>
+          <tr><td>上游</td><td>线上脱敏 trace、人工反馈、红队发现与业务风险</td></tr>
+          <tr><td>下游</td><td>发布系统、编排策略和各组件修复 backlog</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="flow">
+      <div class="sec-head"><span class="idx">FIG.01</span><h2>主数据流</h2><span class="rule"></span></div>
+      <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/evaluation-overview.mmd">
+        <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/evaluation-overview.svg" target="_blank" rel="noopener" aria-label="在新窗口打开评测层主数据流原图"><img src="diagrams/evaluation-overview.svg" alt="评测层总览：目标风险形成数据集，固定运行产生结果轨迹，多方法评分驱动回归门禁、灰度与失败归因反馈。" /></a></div>
+        <figcaption><span>版本化数据和固定环境产生可比较的结果与轨迹评分，回归门禁连接灰度发布，线上失败继续回灌。</span><span class="learning-diagram__actions"><a href="diagrams/evaluation-overview.mmd">查看 Mermaid 源码</a><a href="diagrams/evaluation-overview.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+      </figure>
+    </section>
+    <section id="patterns">
+      <div class="sec-head"><span class="idx">UNIT.03</span><h2>模式与取舍</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">MODE 1</span><h3>规则评分</h3><p>格式、约束、确定事实；稳定但覆盖有限。</p></article>
+        <article class="concept-panel"><span class="label">MODE 2</span><h3>人工评分</h3><p>主观质量与高风险判断；可信但昂贵慢。</p></article>
+        <article class="concept-panel"><span class="label">MODE 3</span><h3>LLM Judge</h3><p>规模化语义评估；灵活但有偏差和泄漏风险。</p></article>
+        <article class="concept-panel"><span class="label">MODE 4</span><h3>混合裁决</h3><p>规则筛选、Judge 扩展、人工仲裁；生产更稳健。</p></article>
+      </div>
+    </section>
+    <section id="failures">
+      <div class="sec-head"><span class="idx">UNIT.04</span><h2>失败归因矩阵</h2><span class="rule"></span></div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>表现</th><th>定位阶段</th><th>常见原因</th><th>优先修复</th></tr></thead>
+        <tbody>
+          <tr><td>离线高分线上退化</td><td><code>dataset shift</code></td><td>数据集不代表真实分布</td><td>按切片监测并回灌线上失败</td></tr>
+          <tr><td>Judge 偏爱长答案</td><td><code>evaluator bias</code></td><td>rubric 模糊或同源偏差</td><td>校准集、盲测和人工审计</td></tr>
+          <tr><td>只评最终答案</td><td><code>trajectory blind</code></td><td>忽略越权、浪费和偶然成功</td><td>加入动作、证据、成本与安全轨迹</td></tr>
+          <tr><td>回归波动误判</td><td><code>variance</code></td><td>单次运行和非固定环境</td><td>重复运行、置信区间和环境锁定</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="engineering">
+      <div class="sec-head"><span class="idx">UNIT.05</span><h2>生产工程约束</h2><span class="rule"></span></div>
+      <ul class="reference-list">
+        <li>数据、prompt、模型、工具和环境版本必须可复现。</li>
+        <li>门禁指标包含总体、关键切片和硬安全约束。</li>
+        <li>评测样本与生产隐私策略一致，避免训练/测试泄漏。</li>
+        <li>失败必须带证据并归因到可行动的组件 owner。</li>
+      </ul>
+    </section>
+    <section id="interview">
+      <div class="sec-head"><span class="idx">UNIT.06</span><h2>面试表达</h2><span class="rule"></span></div>
+      <div class="answer-block"><h3>30 秒回答</h3><p>评测层离线验证 Agent 的结果和轨迹，用版本化数据、规则、人工或 Judge 形成指标与上线门禁。它消费线上 trace 并反馈编排和各组件，但不替代在线治理的实时授权与阻断。</p></div>
+      <div class="answer-block"><h3>3 分钟回答结构</h3><p>先从业务目标、风险和数据集代表性讲起，再区分 outcome 与 trajectory；解释规则、人工、Judge 的组合和校准；随后讲统计波动、回归门禁、灰度与回滚；最后用失败归因闭环连接线上反馈。</p></div>
+      <div class="callout"><b>表达检查</b> · 不要只报框架或产品名；必须讲清输入输出、owner、证据、失败归因和为什么选择该模式。</div>
+    </section>
+    <section id="next">
+      <div class="sec-head"><span class="idx">NEXT</span><h2>练习与下一步</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Explain</span><h3>闭卷讲解</h3><p>不看文档，用两分钟画出主数据流，并明确至少两个非职责边界。</p></article>
+        <article class="concept-panel"><span class="label">Diagnose</span><h3>失败归因</h3><p>从一个失败表现开始，指出所需 trace 证据、组件 owner 与优先修复。</p></article>
+        <article class="concept-panel"><span class="label">Continue</span><h3>进入课程</h3><p>打开<a href="evaluation/index.html">评测层课程目录</a>，按顺序完成理论单元和检查点。</p></article>
+        <article class="concept-panel"><span class="label">Compare</span><h3>跨层对照</h3><p>回到<a href="00-agent-architecture.html">九层架构总览</a>，说明本组件和相邻两层的交接契约。</p></article>
+      </div>
+    </section>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="governance-observability/index.html">← 上一步</a><a href="evaluation/index.html">下一步 →</a></nav>
+  <footer><span>评测层总览 · Blueprint v1.0 · 2026-07-17</span><span>学习顺序 07 · 九层位置 ⑧ 评测层</span></footer>
+</div>
+</body>
+</html>

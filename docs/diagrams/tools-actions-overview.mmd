@@ -1,0 +1,10 @@
+flowchart LR
+    I["结构化动作意图<br/>name・args・risk"] --> V["Schema 校验<br/>身份・参数・版本"]
+    V --> A{"治理决策"}
+    A -->|允许| S["隔离执行<br/>短期凭据・网络边界"]
+    A -->|审批| H["HITL 等待"]
+    A -->|拒绝| O["类型化拒绝"]
+    H -->|批准| S
+    S --> E["外部系统副作用"]
+    E --> R["Observation<br/>result・error・evidence"]
+    R --> C["编排写回状态<br/>重试・补偿・终止"]

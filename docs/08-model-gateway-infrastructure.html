@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>模型网关 + 基础设施总览 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Agent · L2 Component Overview</div>
+    <h1>模型网关 + 基础设施 <em>Model Gateway & Infrastructure</em></h1>
+    <p class="subtitle">用统一模型协议、能力路由和调用证据屏蔽厂商差异，并以运行时、存储、网络和沙箱提供可验证的平台边界。</p>
+    <div class="meta"><span><b>版本</b> v1.0 · 组件总览</span><span><b>更新</b> 2026-07-17</span><span><b>架构层</b> ⑨ 模型网关 + 基础设施</span><span class="tag">POSITION · FLOW · FAILURE · TRADE-OFF</span></div>
+    <nav class="learning-nav" aria-label="模型网关 + 基础设施学习导航">
+      <a href="index.html">学习首页</a><a href="00-agent-architecture.html">九层架构</a><a href="model-gateway-infrastructure/index.html">课程目录</a><a href="../roadmap/progress-tracker.html">进度跟踪</a>
+    </nav>
+  </header>
+  <main>
+    <section id="contract">
+      <div class="sec-head"><span class="idx">UNIT.01</span><h2>学习契约</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Understand</span><h3>理解</h3><p>解释推理内核为何必须经模型网关访问模型。</p></article>
+        <article class="concept-panel"><span class="label">Design</span><h3>设计</h3><p>设计能力、区域、风险、预算优先的模型路由。</p></article>
+        <article class="concept-panel"><span class="label">Debug</span><h3>调试</h3><p>处理限流、降级、缓存、成本与容量。</p></article>
+        <article class="concept-panel"><span class="label">Explain</span><h3>表达</h3><p>区分业务语义、平台持久性和工具执行隔离。</p></article>
+      </div>
+      <div class="callout"><b>总览与目录分工</b> · 本页建立组件心智模型；<a href="model-gateway-infrastructure/index.html">课程目录</a>组织理论单元与检查点。总览可独立阅读，但通过门禁仍需完成全部单元。</div>
+    </section>
+    <section id="boundary">
+      <div class="sec-head"><span class="idx">UNIT.02</span><h2>架构位置与边界</h2><span class="rule"></span></div>
+      <div class="callout"><b>职责边界</b> · 模型网关拥有模型访问抽象、路由、韧性和用量证据；推理内核拥有决策语义。基础设施提供计算、存储、网络和隔离原语，但不拥有编排状态、记忆或知识的业务含义。</div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>契约面</th><th>组件级定义</th></tr></thead>
+        <tbody>
+          <tr><td>模型输入</td><td>统一 messages/input、能力要求、区域、风险、预算和 trace context</td></tr>
+          <tr><td>模型输出</td><td>规范化内容/工具意图、用量、延迟、端点和错误分类</td></tr>
+          <tr><td>执行输入</td><td>租户、镜像、资源、网络、短期凭据和授权摘要</td></tr>
+          <tr><td>执行输出</td><td>结果、审计、资源用量、销毁与残留检查证据</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="flow">
+      <div class="sec-head"><span class="idx">FIG.01</span><h2>主数据流</h2><span class="rule"></span></div>
+      <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/model-gateway-infrastructure-overview.mmd">
+        <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/model-gateway-infrastructure-overview.svg" target="_blank" rel="noopener" aria-label="在新窗口打开模型网关 + 基础设施主数据流原图"><img src="diagrams/model-gateway-infrastructure-overview.svg" alt="模型网关和基础设施总览：推理请求经网关路由模型并返回证据，工具执行请求进入隔离沙箱访问外部环境。" /></a></div>
+        <figcaption><span>模型网关统一推理的模型访问；基础设施用租户、凭据、网络和资源边界隔离工具执行。</span><span class="learning-diagram__actions"><a href="diagrams/model-gateway-infrastructure-overview.mmd">查看 Mermaid 源码</a><a href="diagrams/model-gateway-infrastructure-overview.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+      </figure>
+    </section>
+    <section id="patterns">
+      <div class="sec-head"><span class="idx">UNIT.03</span><h2>模式与取舍</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">MODE 1</span><h3>能力路由</h3><p>先满足工具、多模态、区域和风险硬约束。</p></article>
+        <article class="concept-panel"><span class="label">MODE 2</span><h3>弹性降级</h3><p>候选仍满足最低任务契约时切换。</p></article>
+        <article class="concept-panel"><span class="label">MODE 3</span><h3>安全缓存</h3><p>确定性、无敏感泄漏且版本键完整时使用。</p></article>
+        <article class="concept-panel"><span class="label">MODE 4</span><h3>隔离执行</h3><p>每租户/任务沙箱；成本更高但限制爆炸半径。</p></article>
+      </div>
+    </section>
+    <section id="failures">
+      <div class="sec-head"><span class="idx">UNIT.04</span><h2>失败归因矩阵</h2><span class="rule"></span></div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>表现</th><th>定位阶段</th><th>常见原因</th><th>优先修复</th></tr></thead>
+        <tbody>
+          <tr><td>便宜模型不满足能力</td><td><code>routing</code></td><td>只按价格或随机权重</td><td>硬约束过滤后再优化成本延迟</td></tr>
+          <tr><td>故障切换改变语义</td><td><code>fallback</code></td><td>候选能力或版本不等价</td><td>返回降级标记并重新验收</td></tr>
+          <tr><td>缓存跨租户泄漏</td><td><code>cache key</code></td><td>缺主体、策略或版本维度</td><td>敏感默认禁用并完整键控</td></tr>
+          <tr><td>沙箱可访问内网</td><td><code>network policy</code></td><td>默认出口过宽</td><td>deny-by-default、允许列表和短期凭据</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="engineering">
+      <div class="sec-head"><span class="idx">UNIT.05</span><h2>生产工程约束</h2><span class="rule"></span></div>
+      <ul class="reference-list">
+        <li>统一错误分类区分限流、超时、内容拒绝和未知结果。</li>
+        <li>路由记录候选、选择理由、端点版本和用量。</li>
+        <li>容量观察 p95/p99、队列、token 速率、突发与上游配额。</li>
+        <li>沙箱限制 CPU、内存、时间、文件、网络和秘密，并证明销毁。</li>
+      </ul>
+    </section>
+    <section id="interview">
+      <div class="sec-head"><span class="idx">UNIT.06</span><h2>面试表达</h2><span class="rule"></span></div>
+      <div class="answer-block"><h3>30 秒回答</h3><p>模型网关是推理内核访问模型的唯一平台边界，负责统一协议、能力路由、韧性和用量证据；基础设施提供运行、存储、网络与沙箱隔离，但不拥有上层状态和记忆的业务语义。</p></div>
+      <div class="answer-block"><h3>3 分钟回答结构</h3><p>先讲统一请求与硬约束路由，再说明限流、降级和缓存必须保持任务契约；接着用成本、延迟、队列和 token 速率解释容量；最后讲租户、网络、凭据和资源隔离如何约束工具执行。</p></div>
+      <div class="callout"><b>表达检查</b> · 不要只报框架或产品名；必须讲清输入输出、owner、证据、失败归因和为什么选择该模式。</div>
+    </section>
+    <section id="next">
+      <div class="sec-head"><span class="idx">NEXT</span><h2>练习与下一步</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Explain</span><h3>闭卷讲解</h3><p>不看文档，用两分钟画出主数据流，并明确至少两个非职责边界。</p></article>
+        <article class="concept-panel"><span class="label">Diagnose</span><h3>失败归因</h3><p>从一个失败表现开始，指出所需 trace 证据、组件 owner 与优先修复。</p></article>
+        <article class="concept-panel"><span class="label">Continue</span><h3>进入课程</h3><p>打开<a href="model-gateway-infrastructure/index.html">模型网关 + 基础设施课程目录</a>，按顺序完成理论单元和检查点。</p></article>
+        <article class="concept-panel"><span class="label">Compare</span><h3>跨层对照</h3><p>回到<a href="00-agent-architecture.html">九层架构总览</a>，说明本组件和相邻两层的交接契约。</p></article>
+      </div>
+    </section>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="evaluation/index.html">← 上一步</a><a href="model-gateway-infrastructure/index.html">下一步 →</a></nav>
+  <footer><span>模型网关 + 基础设施总览 · Blueprint v1.0 · 2026-07-17</span><span>学习顺序 08 · 九层位置 ⑨ 模型网关 + 基础设施</span></footer>
+</div>
+</body>
+</html>

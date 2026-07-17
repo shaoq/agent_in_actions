@@ -1,0 +1,11 @@
+flowchart LR
+    O["编排控制<br/>目标・状态・预算"] --> C["决策上下文<br/>目标・观察・能力"]
+    C --> R["推理内核<br/>解释・选择・结构化"]
+    R --> G["模型网关<br/>模型访问与调用证据"]
+    G --> R
+    R --> D{"结构化意图"}
+    D -->|act| T["工具 / 动作层"]
+    D -->|retrieve| K["知识 / RAG"]
+    D -->|finish / clarify / escalate| O
+    T -->|Observation| O
+    K -->|Evidence| O

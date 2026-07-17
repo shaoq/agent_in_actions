@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>记忆系统总览 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Agent · L2 Component Overview</div>
+    <h1>记忆系统 <em>Memory System</em></h1>
+    <p class="subtitle">有选择地沉淀 Agent 经历，在正确主体、范围和时间边界内检索，并通过整合、衰减和遗忘控制长期影响。</p>
+    <div class="meta"><span><b>版本</b> v1.0 · 组件总览</span><span><b>更新</b> 2026-07-17</span><span><b>架构层</b> ⑤ 记忆系统</span><span class="tag">POSITION · FLOW · FAILURE · TRADE-OFF</span></div>
+    <nav class="learning-nav" aria-label="记忆系统学习导航">
+      <a href="index.html">学习首页</a><a href="00-agent-architecture.html">九层架构</a><a href="memory/index.html">课程目录</a><a href="../roadmap/progress-tracker.html">进度跟踪</a>
+    </nav>
+  </header>
+  <main>
+    <section id="contract">
+      <div class="sec-head"><span class="idx">UNIT.01</span><h2>学习契约</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Understand</span><h3>理解</h3><p>区分运行状态、会话上下文、长期记忆和外部知识。</p></article>
+        <article class="concept-panel"><span class="label">Design</span><h3>设计</h3><p>设计记忆写入、检索、整合、遗忘的生命周期。</p></article>
+        <article class="concept-panel"><span class="label">Debug</span><h3>调试</h3><p>处理隐私、同意、投毒、错误归因与可删除性。</p></article>
+        <article class="concept-panel"><span class="label">Explain</span><h3>表达</h3><p>用命中质量和任务增益评估记忆价值。</p></article>
+      </div>
+      <div class="callout"><b>总览与目录分工</b> · 本页建立组件心智模型；<a href="memory/index.html">课程目录</a>组织理论单元与检查点。总览可独立阅读，但通过门禁仍需完成全部单元。</div>
+    </section>
+    <section id="boundary">
+      <div class="sec-head"><span class="idx">UNIT.02</span><h2>架构位置与边界</h2><span class="rule"></span></div>
+      <div class="callout"><b>职责边界</b> · 记忆记录主体相关的经历、偏好和已验证经验；RAG 检索外部资料；Run State 控制一次执行。存储介质相同不代表语义相同，生命周期、权限与删除策略必须按语义归属。</div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>契约面</th><th>组件级定义</th></tr></thead>
+        <tbody>
+          <tr><td>写入输入</td><td>事件、主体、来源、同意、价值、敏感度和保留期</td></tr>
+          <tr><td>读取输出</td><td>候选记忆、来源、时间、置信、适用范围和冲突信息</td></tr>
+          <tr><td>上游</td><td>编排/交互产生经历，治理执行同意与隐私策略</td></tr>
+          <tr><td>下游</td><td>推理使用候选记忆，但不得把历史偏好当事实指令</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="flow">
+      <div class="sec-head"><span class="idx">FIG.01</span><h2>主数据流</h2><span class="rule"></span></div>
+      <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/memory-system-overview.mmd">
+        <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/memory-system-overview.svg" target="_blank" rel="noopener" aria-label="在新窗口打开记忆系统主数据流原图"><img src="diagrams/memory-system-overview.svg" alt="记忆系统总览：运行事件通过写入门禁进入记忆存储，经整合遗忘后按主体检索，外部知识 RAG 保持独立。" /></a></div>
+        <figcaption><span>经历先通过价值、同意和风险门禁再沉淀；未来任务只按主体和用途检索有来源的候选记忆。</span><span class="learning-diagram__actions"><a href="diagrams/memory-system-overview.mmd">查看 Mermaid 源码</a><a href="diagrams/memory-system-overview.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+      </figure>
+    </section>
+    <section id="patterns">
+      <div class="sec-head"><span class="idx">UNIT.03</span><h2>模式与取舍</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">MODE 1</span><h3>工作记忆</h3><p>单次决策窗口；快速但随运行结束。</p></article>
+        <article class="concept-panel"><span class="label">MODE 2</span><h3>情景记忆</h3><p>具体经历与结果；可追溯但易积累噪声。</p></article>
+        <article class="concept-panel"><span class="label">MODE 3</span><h3>语义记忆</h3><p>从多次经历整合的稳定偏好；紧凑但需证据门槛。</p></article>
+        <article class="concept-panel"><span class="label">MODE 4</span><h3>程序记忆</h3><p>已验证流程与策略；复用强但版本和权限风险高。</p></article>
+      </div>
+    </section>
+    <section id="failures">
+      <div class="sec-head"><span class="idx">UNIT.04</span><h2>失败归因矩阵</h2><span class="rule"></span></div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>表现</th><th>定位阶段</th><th>常见原因</th><th>优先修复</th></tr></thead>
+        <tbody>
+          <tr><td>错误主体记忆泄漏</td><td><code>scope</code></td><td>tenant/user key 绑定错误</td><td>读取前校验主体与用途</td></tr>
+          <tr><td>一次异常被长期固化</td><td><code>write gate</code></td><td>缺少价值和验证门槛</td><td>候选区、复核和多证据整合</td></tr>
+          <tr><td>旧偏好压过新意图</td><td><code>recency/conflict</code></td><td>无时效和冲突策略</td><td>显式时间、覆盖与用户确认</td></tr>
+          <tr><td>无法删除敏感经历</td><td><code>governance</code></td><td>派生副本不可追踪</td><td>来源链、TTL、删除传播和审计</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="engineering">
+      <div class="sec-head"><span class="idx">UNIT.05</span><h2>生产工程约束</h2><span class="rule"></span></div>
+      <ul class="reference-list">
+        <li>默认不写入，先评估价值、同意、敏感度和保留期。</li>
+        <li>每条记忆保留来源、主体、时间、版本和置信。</li>
+        <li>检索结果视为候选上下文，需与当前指令和证据冲突检查。</li>
+        <li>支持查看、更正、导出、遗忘和删除传播。</li>
+      </ul>
+    </section>
+    <section id="interview">
+      <div class="sec-head"><span class="idx">UNIT.06</span><h2>面试表达</h2><span class="rule"></span></div>
+      <div class="answer-block"><h3>30 秒回答</h3><p>记忆系统保存的是 Agent 经历，而不是外部知识。它通过写入门禁、主体隔离、检索、整合、衰减和遗忘，在未来任务中提供有来源的候选经验，同时必须支持隐私控制、纠错和删除。</p></div>
+      <div class="answer-block"><h3>3 分钟回答结构</h3><p>先区分 state、session、memory 和 RAG，再讲四类记忆及生命周期；用写入价值、主体范围、时效冲突和投毒防护说明治理；最后用命中率之外的任务增益、误用率和删除可验证性评估。</p></div>
+      <div class="callout"><b>表达检查</b> · 不要只报框架或产品名；必须讲清输入输出、owner、证据、失败归因和为什么选择该模式。</div>
+    </section>
+    <section id="next">
+      <div class="sec-head"><span class="idx">NEXT</span><h2>练习与下一步</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Explain</span><h3>闭卷讲解</h3><p>不看文档，用两分钟画出主数据流，并明确至少两个非职责边界。</p></article>
+        <article class="concept-panel"><span class="label">Diagnose</span><h3>失败归因</h3><p>从一个失败表现开始，指出所需 trace 证据、组件 owner 与优先修复。</p></article>
+        <article class="concept-panel"><span class="label">Continue</span><h3>进入课程</h3><p>打开<a href="memory/index.html">记忆系统课程目录</a>，按顺序完成理论单元和检查点。</p></article>
+        <article class="concept-panel"><span class="label">Compare</span><h3>跨层对照</h3><p>回到<a href="00-agent-architecture.html">九层架构总览</a>，说明本组件和相邻两层的交接契约。</p></article>
+      </div>
+    </section>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="knowledge-rag/index.html">← 上一步</a><a href="memory/index.html">下一步 →</a></nav>
+  <footer><span>记忆系统总览 · Blueprint v1.0 · 2026-07-17</span><span>学习顺序 05 · 九层位置 ⑤ 记忆系统</span></footer>
+</div>
+</body>
+</html>

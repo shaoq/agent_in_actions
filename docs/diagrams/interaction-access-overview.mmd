@@ -1,0 +1,12 @@
+flowchart LR
+    U["用户 / 渠道<br/>Web・App・IM・Voice"] --> A["交互与接入层<br/>协议・身份・会话・能力"]
+    A --> N["规范化请求<br/>intent・actor・context・consent"]
+    N --> O["编排控制层"]
+    O --> E{"交互事件"}
+    E -->|clarify| Q["澄清问题"]
+    E -->|progress / result| R["流式呈现"]
+    E -->|handoff| H["人工移交"]
+    Q --> A
+    R --> A
+    H --> A
+    A --> U

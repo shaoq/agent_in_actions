@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>治理与可观测总览 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Agent · L2 Component Overview</div>
+    <h1>治理与可观测 <em>Governance & Observability</em></h1>
+    <p class="subtitle">把身份、权限、风险、预算和人在回路作为在线控制面，并用可关联的 trace、log、metric 留下可诊断证据。</p>
+    <div class="meta"><span><b>版本</b> v1.0 · 组件总览</span><span><b>更新</b> 2026-07-17</span><span><b>架构层</b> ⑦ 治理与可观测层</span><span class="tag">POSITION · FLOW · FAILURE · TRADE-OFF</span></div>
+    <nav class="learning-nav" aria-label="治理与可观测学习导航">
+      <a href="index.html">学习首页</a><a href="00-agent-architecture.html">九层架构</a><a href="governance-observability/index.html">课程目录</a><a href="../roadmap/progress-tracker.html">进度跟踪</a>
+    </nav>
+  </header>
+  <main>
+    <section id="contract">
+      <div class="sec-head"><span class="idx">UNIT.01</span><h2>学习契约</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Understand</span><h3>理解</h3><p>解释在线治理、可观测、离线评测和沙箱隔离的分工。</p></article>
+        <article class="concept-panel"><span class="label">Design</span><h3>设计</h3><p>设计身份到动作的授权与审计链。</p></article>
+        <article class="concept-panel"><span class="label">Debug</span><h3>调试</h3><p>建立 trace/log/metric 的关联模型。</p></article>
+        <article class="concept-panel"><span class="label">Explain</span><h3>表达</h3><p>对注入、PII、预算和事件响应设置控制点。</p></article>
+      </div>
+      <div class="callout"><b>总览与目录分工</b> · 本页建立组件心智模型；<a href="governance-observability/index.html">课程目录</a>组织理论单元与检查点。总览可独立阅读，但通过门禁仍需完成全部单元。</div>
+    </section>
+    <section id="boundary">
+      <div class="sec-head"><span class="idx">UNIT.02</span><h2>架构位置与边界</h2><span class="rule"></span></div>
+      <div class="callout"><b>职责边界</b> · 治理在实时请求上允许、拒绝、审批或降级；可观测记录事实。离线评测消费脱敏 trace 学习质量规律；基础设施沙箱执行隔离。安全不是一个独立万能层，而是三处协同。</div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>契约面</th><th>组件级定义</th></tr></thead>
+        <tbody>
+          <tr><td>输入</td><td>actor、tenant、请求、资源、动作摘要、风险、预算</td></tr>
+          <tr><td>控制输出</td><td>allow / deny / require_approval / degrade 与策略版本</td></tr>
+          <tr><td>证据输出</td><td>trace/span、结构化日志、指标、审计事件和关联 ID</td></tr>
+          <tr><td>反馈</td><td>线上告警触发处置；脱敏证据进入离线评测</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="flow">
+      <div class="sec-head"><span class="idx">FIG.01</span><h2>主数据流</h2><span class="rule"></span></div>
+      <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/governance-observability-overview.mmd">
+        <div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/governance-observability-overview.svg" target="_blank" rel="noopener" aria-label="在新窗口打开治理与可观测主数据流原图"><img src="diagrams/governance-observability-overview.svg" alt="治理可观测总览：身份请求经过策略控制进入编排，trace 日志指标支持在线检测、人工审批、阻断和离线评测反馈。" /></a></div>
+        <figcaption><span>在线治理实施允许、审批、拒绝和降级，可观测证据支持实时检测，并以脱敏 trace 连接离线评测。</span><span class="learning-diagram__actions"><a href="diagrams/governance-observability-overview.mmd">查看 Mermaid 源码</a><a href="diagrams/governance-observability-overview.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+      </figure>
+    </section>
+    <section id="patterns">
+      <div class="sec-head"><span class="idx">UNIT.03</span><h2>模式与取舍</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">MODE 1</span><h3>策略即代码</h3><p>规则稳定、需审计；确定性强但维护成本高。</p></article>
+        <article class="concept-panel"><span class="label">MODE 2</span><h3>风险分级</h3><p>按动作和数据分类；体验与安全平衡，但需持续校准。</p></article>
+        <article class="concept-panel"><span class="label">MODE 3</span><h3>HITL 门禁</h3><p>不可逆或高影响动作；安全但会增加等待与运营成本。</p></article>
+        <article class="concept-panel"><span class="label">MODE 4</span><h3>全链路 Trace</h3><p>跨模型、工具与检索；诊断强但需采样和脱敏。</p></article>
+      </div>
+    </section>
+    <section id="failures">
+      <div class="sec-head"><span class="idx">UNIT.04</span><h2>失败归因矩阵</h2><span class="rule"></span></div>
+      <div class="matrix-wrap"><table class="matrix">
+        <thead><tr><th>表现</th><th>定位阶段</th><th>常见原因</th><th>优先修复</th></tr></thead>
+        <tbody>
+          <tr><td>有日志无法串联</td><td><code>telemetry</code></td><td>缺 trace/run/action ID</td><td>统一上下文传播和事件 schema</td></tr>
+          <tr><td>模型内容绕过授权</td><td><code>policy</code></td><td>把自然语言当权限证明</td><td>授权绑定主体、资源和结构化动作</td></tr>
+          <tr><td>PII 进入 trace</td><td><code>redaction</code></td><td>采集先于分类脱敏</td><td>边缘分类、字段级脱敏和访问审计</td></tr>
+          <tr><td>告警风暴</td><td><code>incident</code></td><td>阈值无基线且重复事件</td><td>聚合、抑制、SLO 和分级响应</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section id="engineering">
+      <div class="sec-head"><span class="idx">UNIT.05</span><h2>生产工程约束</h2><span class="rule"></span></div>
+      <ul class="reference-list">
+        <li>控制决定和策略版本必须写入不可抵赖审计。</li>
+        <li>敏感内容最小采集，日志与 trace 分级访问。</li>
+        <li>预算覆盖 token、步骤、时间、并发和副作用次数。</li>
+        <li>事件响应包含检测、限制、恢复、复盘和回归验证。</li>
+      </ul>
+    </section>
+    <section id="interview">
+      <div class="sec-head"><span class="idx">UNIT.06</span><h2>面试表达</h2><span class="rule"></span></div>
+      <div class="answer-block"><h3>30 秒回答</h3><p>治理与可观测是在线横切控制面：治理决定请求和动作能否继续，可观测留下跨组件证据。它不替代离线评测，也不替代基础设施沙箱；三者分别负责实时控制、离线学习和执行隔离。</p></div>
+      <div class="answer-block"><h3>3 分钟回答结构</h3><p>从身份和策略决策链开始，说明 trace/log/metric 的不同用途与关联 ID；再讲注入、PII、HITL 和预算；最后说明告警、事件响应如何产生脱敏样本并反馈评测与编排。</p></div>
+      <div class="callout"><b>表达检查</b> · 不要只报框架或产品名；必须讲清输入输出、owner、证据、失败归因和为什么选择该模式。</div>
+    </section>
+    <section id="next">
+      <div class="sec-head"><span class="idx">NEXT</span><h2>练习与下一步</h2><span class="rule"></span></div>
+      <div class="learning-grid">
+        <article class="concept-panel"><span class="label">Explain</span><h3>闭卷讲解</h3><p>不看文档，用两分钟画出主数据流，并明确至少两个非职责边界。</p></article>
+        <article class="concept-panel"><span class="label">Diagnose</span><h3>失败归因</h3><p>从一个失败表现开始，指出所需 trace 证据、组件 owner 与优先修复。</p></article>
+        <article class="concept-panel"><span class="label">Continue</span><h3>进入课程</h3><p>打开<a href="governance-observability/index.html">治理与可观测课程目录</a>，按顺序完成理论单元和检查点。</p></article>
+        <article class="concept-panel"><span class="label">Compare</span><h3>跨层对照</h3><p>回到<a href="00-agent-architecture.html">九层架构总览</a>，说明本组件和相邻两层的交接契约。</p></article>
+      </div>
+    </section>
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航"><a href="memory/index.html">← 上一步</a><a href="governance-observability/index.html">下一步 →</a></nav>
+  <footer><span>治理与可观测总览 · Blueprint v1.0 · 2026-07-17</span><span>学习顺序 06 · 九层位置 ⑦ 治理与可观测层</span></footer>
+</div>
+</body>
+</html>
