@@ -196,6 +196,56 @@
       "caption": "优先选择最稳定、最小权限和最可验证的接口；Computer Use 是受限兜底，不是默认自动化方式。",
       "alt": "稳定且可集成的系统优先使用 typed API，由 Function Calling 表达模型侧结构化意图；需要标准化发现与连接时可通过 MCP adapter；只有缺少可靠 API 且可接受高脆弱性时才选择受限 Computer Use。",
       "wide": true
+    },
+    {
+      "id": "rag-online-pipeline",
+      "type": "flowchart",
+      "page": "docs/knowledge-rag/01-boundary-and-pipeline.html",
+      "source": "docs/knowledge-rag/diagrams/rag-online-pipeline.mmd",
+      "svg": "docs/knowledge-rag/diagrams/rag-online-pipeline.svg",
+      "caption": "在线链路必须携带身份、资源范围和证据引用；记忆只通过独立策略接入。",
+      "alt": "知识检索在线流水线：问题经编排、访问策略、检索、重排、证据组装、生成和引用校验后返回；Agent 经历记忆保持独立。",
+      "wide": true
+    },
+    {
+      "id": "ingestion-indexing-pipeline",
+      "type": "flowchart",
+      "page": "docs/knowledge-rag/02-ingestion-chunking-and-indexing.html",
+      "source": "docs/knowledge-rag/diagrams/ingestion-indexing-pipeline.mmd",
+      "svg": "docs/knowledge-rag/diagrams/ingestion-indexing-pipeline.svg",
+      "caption": "索引发布是带质量门禁的版本切换，不是在原索引上不可逆覆盖。",
+      "alt": "权威数据源经连接、解析、权限元数据、结构感知切分、特征生成和版本化索引，质量门禁后发布或回滚。",
+      "wide": true
+    },
+    {
+      "id": "retrieval-reranking-funnel",
+      "type": "flowchart",
+      "page": "docs/knowledge-rag/03-retrieval-and-reranking.html",
+      "source": "docs/knowledge-rag/diagrams/retrieval-reranking-funnel.mmd",
+      "svg": "docs/knowledge-rag/diagrams/retrieval-reranking-funnel.svg",
+      "caption": "召回、重排和最终生成有不同优化目标，必须分别留 trace 和评测。",
+      "alt": "查询经改写后并行执行向量、关键词与结构化检索，候选合并去重和重排，最后形成证据集或受控降级。",
+      "wide": true
+    },
+    {
+      "id": "grounded-answer-control",
+      "type": "sequence",
+      "page": "docs/knowledge-rag/04-grounding-citations-and-access-control.html",
+      "source": "docs/knowledge-rag/diagrams/grounded-answer-control.mmd",
+      "svg": "docs/knowledge-rag/diagrams/grounded-answer-control.svg",
+      "caption": "检索前强制授权缩小数据面，输出前复核声明、引用和敏感信息。",
+      "alt": "编排先取得允许资源过滤，再检索带来源与权限的证据，推理生成声明和引用，治理层复核后允许、脱敏或拒答。",
+      "wide": true
+    },
+    {
+      "id": "rag-failure-diagnosis",
+      "type": "flowchart",
+      "page": "docs/knowledge-rag/05-evaluation-and-failure-diagnosis.html",
+      "source": "docs/knowledge-rag/diagrams/rag-failure-diagnosis.mmd",
+      "svg": "docs/knowledge-rag/diagrams/rag-failure-diagnosis.svg",
+      "caption": "先证明正确证据在哪一步消失，再选择修复点。",
+      "alt": "依次检查语料覆盖、索引可检索性、Top-K 召回、重排保留、声明支持和引用策略，以定位 RAG 失败阶段。",
+      "wide": true
     }
   ]
 }

@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant O as 编排控制
+    participant G as 治理层
+    participant R as 知识检索
+    participant P as 推理内核
+    O->>G: subject + query + resource scope
+    G-->>O: allowed filters / deny
+    O->>R: query + enforced filters
+    R-->>O: chunks + source_id + version + ACL
+    O->>P: instructions + authorized evidence
+    P-->>O: claims + citation refs + uncertainty
+    O->>G: verify citation coverage / output policy
+    G-->>O: allow / redact / abstain

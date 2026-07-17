@@ -1,0 +1,12 @@
+flowchart TD
+    F[回答失败] --> Q{语料中存在可用证据?}
+    Q -- 否 --> C[Coverage / Freshness]
+    Q -- 是 --> I{索引中可检索?}
+    I -- 否 --> N[Parsing / Chunking / Indexing]
+    I -- 是 --> R{候选 Top-K 命中?}
+    R -- 否 --> V[Query / Recall / ACL Filter]
+    R -- 是 --> K{重排后保留?}
+    K -- 否 --> E[Rerank / Threshold / Diversity]
+    K -- 是 --> G{声明被证据支持?}
+    G -- 否 --> A[Context Packing / Generation]
+    G -- 是 --> Z[Citation / Rendering / Policy]
