@@ -7,9 +7,21 @@ sequenceDiagram
     O->>O: build high-risk action intent
     O->>C: persist state before side effect
     O->>H: request approval with evidence
-    H-->>O: approve / reject / edit
-    O->>C: load checkpoint + new decision
-    O->>O: verify version, identity, permission
-    O->>T: execute with idempotency key
-    T-->>O: observation
-    O->>C: persist committed result
+    alt approved
+        H-->>O: approve
+        O->>C: load checkpoint + approval
+        O->>O: verify version, identity, permission and environment
+        alt resume context valid
+            O->>T: execute with idempotency key
+            T-->>O: observation / typed error
+            O->>C: persist committed result or recoverable state
+        else stale or unauthorized
+            O->>C: persist waiting / failed control result
+        end
+    else rejected
+        H-->>O: reject
+        O->>C: persist rejected / cancelled result
+    else edit requested
+        H-->>O: edited intent or constraints
+        O->>C: persist new decision and return to planning
+    end

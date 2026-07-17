@@ -116,10 +116,10 @@
 <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/orchestrator-workers-sequence.mmd">
   <div class="learning-diagram__viewport">
     <a class="learning-diagram__image-link" href="diagrams/orchestrator-workers-sequence.svg" target="_blank" rel="noopener" aria-label="在新窗口打开 Orchestrator-Workers 时序原图">
-      <img src="diagrams/orchestrator-workers-sequence.svg" alt="Orchestrator-Workers 时序：用户目标交给 Lead Agent，两个 Worker 并行返回证据，Lead 合成后交给 Evaluator 检查并向用户返回结果。" />
+      <img src="diagrams/orchestrator-workers-sequence.svg" alt="Orchestrator-Workers 时序：用户目标交给 Lead Agent，两个 Worker 并行返回证据，Lead 合成后交给 Evaluator；通过则交付，发现缺口则在剩余预算内重新规划或返回带缺口的部分结果。" />
     </a>
   </div>
-  <figcaption><span>Lead Agent 定义子任务契约并并行委派，Worker 返回带证据的结果，Evaluator 对合成结果给出通过或缺口，再决定交付或继续工作。</span><span class="learning-diagram__actions"><a href="diagrams/orchestrator-workers-sequence.mmd">查看 Mermaid 源码</a><a href="diagrams/orchestrator-workers-sequence.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+  <figcaption><span>Lead Agent 定义子任务契约并并行委派；Evaluator 通过时交付，发现缺口时在剩余预算内重新规划，或显式返回部分结果与缺口。</span><span class="learning-diagram__actions"><a href="diagrams/orchestrator-workers-sequence.mmd">查看 Mermaid 源码</a><a href="diagrams/orchestrator-workers-sequence.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
 </figure>
 <p>每个 worker 应有独立 sub-run ID、预算、工具权限和输出契约。Lead 不能只收到自然语言总结而丢失来源和失败状态。</p>
 <h2>5. 上下文隔离与共享状态</h2>

@@ -5,5 +5,8 @@ flowchart LR
     A --> H{High-risk Action?}
     H -->|yes| P[Human Approval]
     H -->|no| G[Business Acceptance]
-    P --> G
+    P -->|approved| G
+    P -->|rejected or edited| X{Replan?}
+    X -->|yes| A
+    X -->|no| Z[Stopped]
     W --> G

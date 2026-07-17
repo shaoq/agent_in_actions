@@ -12,7 +12,17 @@ sequenceDiagram
     R->>M: model request
     M-->>R: decision
     R-->>O: act / finish / ask
-    O->>G: authorize action
-    G->>A: permitted call
-    A-->>O: observation
+    alt action intent
+        O->>G: identity + action + risk + budget
+        alt action allowed
+            G-->>O: allow
+            O->>A: permitted capability call
+            A-->>O: observation / typed error
+        else denied or approval required
+            G-->>O: typed control result
+            O->>O: record waiting / denied state
+        end
+    else finish / ask / escalate
+        O->>O: acceptance / wait / terminate
+    end
     O-->>U: progress / result / escalation

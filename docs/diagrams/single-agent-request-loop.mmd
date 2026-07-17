@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant U as User / Channel
+    participant O as Orchestrator
+    participant S as Run State
+    participant R as Reasoning Core
+    participant G as Governance
+    participant T as Tool Runtime
+
+    U->>O: task + identity + constraints
+    O->>S: initialize goal, budget, status and trace
+    loop bounded by step / time / cost
+        O->>S: read current state and observations
+        O->>R: decision context + available capabilities
+        R-->>O: act / finish / clarify / escalate
+        alt action intent
+            O->>G: validate identity, permission, risk and budget
+            alt action allowed
+                G-->>O: allow
+                O->>T: execute validated action
+                T-->>O: observation / typed error
+                O->>S: append observation and trace
+            else denied or approval required
+                G-->>O: typed control result
+                O->>S: record waiting / denied / failed
+            end
+        else finish candidate
+            O->>O: run business acceptance
+            O->>S: completed or replan
+        else clarification or escalation
+            O->>S: record waiting / escalated
+        end
+    end
+    O-->>U: progress / accepted result / failure / handoff

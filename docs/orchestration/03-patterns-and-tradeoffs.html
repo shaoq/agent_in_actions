@@ -111,10 +111,10 @@
 <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/hybrid-orchestration.mmd">
   <div class="learning-diagram__viewport">
     <a class="learning-diagram__image-link" href="diagrams/hybrid-orchestration.svg" target="_blank" rel="noopener" aria-label="在新窗口打开混合编排原图">
-      <img src="diagrams/hybrid-orchestration.svg" alt="混合编排：身份和输入校验后按复杂度选择固定流程或有限 Agent 循环，动态路径的高风险动作需人工审批，最终统一验收。" />
+      <img src="diagrams/hybrid-orchestration.svg" alt="混合编排：身份和输入校验后按复杂度选择固定流程或有限 Agent 循环，动态路径的高风险动作需人工审批；批准后验收，拒绝或编辑后重新规划或停止。" />
     </a>
   </div>
-  <figcaption><span>混合编排用确定性边界包围有限 Agent loop，高风险动作必须经人工审批，固定与动态路径都接受业务验收。</span><span class="learning-diagram__actions"><a href="diagrams/hybrid-orchestration.mmd">查看 Mermaid 源码</a><a href="diagrams/hybrid-orchestration.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+  <figcaption><span>混合编排用确定性边界包围有限 Agent loop；高风险动作只有获批才进入业务验收，拒绝或编辑会重新规划或停止。</span><span class="learning-diagram__actions"><a href="diagrams/hybrid-orchestration.mmd">查看 Mermaid 源码</a><a href="diagrams/hybrid-orchestration.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
 </figure>
 <p>混合模式的价值是把不确定性限制在真正需要它的局部,关键边界仍然确定化。</p>
 <h2>7. 对比矩阵</h2>

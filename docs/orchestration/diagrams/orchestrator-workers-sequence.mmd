@@ -14,5 +14,11 @@ sequenceDiagram
         W2-->>L: findings + evidence + status
     end
     L->>E: synthesized result + provenance
-    E-->>L: pass / gaps
-    L-->>U: result or further work
+    alt acceptance passed
+        E-->>L: pass + evidence
+        L-->>U: accepted result + provenance
+    else gaps found
+        E-->>L: gaps + failed criteria + evidence
+        L->>L: replan within remaining budget
+        L-->>U: continue work or return partial result + gaps
+    end

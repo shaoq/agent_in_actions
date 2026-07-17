@@ -4,10 +4,13 @@ stateDiagram-v2
     Running --> Waiting: need user / approval /<br/>external event
     Waiting --> Running: resume with<br/>new input
     Running --> Completed: business acceptance<br/>passed
+    Running --> Recovering: recoverable error<br/>and checkpoint exists
+    Recovering --> Running: restore then revalidate<br/>identity and environment
+    Recovering --> Failed: restore or<br/>revalidation failed
     Running --> Failed: unrecoverable<br/>error
     Running --> Cancelled: user or policy<br/>cancellation
     Running --> Exhausted: time / step /<br/>cost limit
-    Failed --> Running: recover from<br/>checkpoint
     Completed --> [*]
+    Failed --> [*]
     Cancelled --> [*]
     Exhausted --> [*]

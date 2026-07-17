@@ -7,7 +7,11 @@ sequenceDiagram
     O->>R: state + available capabilities
     R-->>O: structured action intent
     O->>G: identity + action + risk
-    G-->>O: allow / deny / require approval
-    O->>T: validated action request
-    T-->>O: observation / typed error
+    alt action allowed
+        G-->>O: allow
+        O->>T: validated action request
+        T-->>O: observation / typed error
+    else denied or approval required
+        G-->>O: typed control result
+    end
     O->>O: update state and route

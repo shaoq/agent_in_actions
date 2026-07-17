@@ -255,6 +255,14 @@
 <p>这张图是项目参考架构,不是唯一实现。生产系统可以把部分治理放在网关、中间件或工具服务中,但相应职责不能消失。</p>
 <h3>5.2 离线反馈流</h3>
 <p>在线 trace 被评测层消费,形成成功率、失败分类、安全结果和回归信号,再反馈给编排策略、工具定义、检索配置或模型路由。离线 eval 不应被误画成每次请求必经的同步节点。</p>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/offline-evaluation-feedback-loop.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/offline-evaluation-feedback-loop.svg" target="_blank" rel="noopener" aria-label="在新窗口打开离线评测反馈闭环原图">
+      <img src="diagrams/offline-evaluation-feedback-loop.svg" alt="离线评测反馈闭环：在线运行产生受治理的 trace，离线评测形成指标、失败分类与安全发现，变更通过版本化评测和发布门禁后再部署回线上。" />
+    </a>
+  </div>
+  <figcaption><span>离线评测异步消费线上 trace；发现退化或风险后更新编排策略及相关能力配置，变更只有通过版本化评测和发布门禁才回到线上。</span><span class="learning-diagram__actions"><a href="diagrams/offline-evaluation-feedback-loop.mmd">查看 Mermaid 源码</a><a href="diagrams/offline-evaluation-feedback-loop.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <h2>6. 场景分类</h2>
 <div class="table-wrap"><table>
 <thead>

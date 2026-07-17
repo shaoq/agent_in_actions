@@ -6,7 +6,11 @@ flowchart TD
     B -->|否| F{能先形成稳定计划?}
     F -->|是| G[Plan-and-Execute]
     F -->|否| H[Bounded ReAct]
+    D --> I{存在高风险边界?}
+    E --> I
     G --> I{存在高风险边界?}
     H --> I
     I -->|是| J[Hybrid + Guard + HITL]
-    I -->|否| K[Measure and iterate]
+    I -->|否| K[Adopt Selected Mode]
+    J --> L[Measure and Iterate]
+    K --> L

@@ -104,10 +104,10 @@
 <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/run-lifecycle.mmd">
   <div class="learning-diagram__viewport">
     <a class="learning-diagram__image-link" href="diagrams/run-lifecycle.svg" target="_blank" rel="noopener" aria-label="在新窗口打开 Agent Run 生命周期原图">
-      <img src="diagrams/run-lifecycle.svg" alt="Agent Run 生命周期状态图：Created 进入 Running，Running 可等待后恢复，或完成、失败、取消、耗尽；Failed 可从检查点回到 Running。" />
+      <img src="diagrams/run-lifecycle.svg" alt="Agent Run 生命周期状态图：Created 进入 Running，Running 可等待后恢复；可恢复错误先进入 Recovering 并尝试恢复，不可恢复错误、恢复失败、取消与预算耗尽进入不同终态。" />
     </a>
   </div>
-  <figcaption><span>Run 从创建进入运行，可等待并恢复，也可因业务验收、不可恢复错误、取消或预算耗尽进入终态；失败后可从检查点恢复。</span><span class="learning-diagram__actions"><a href="diagrams/run-lifecycle.mmd">查看 Mermaid 源码</a><a href="diagrams/run-lifecycle.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+  <figcaption><span>Run 从创建进入运行；等待可恢复，可恢复错误先进入 Recovering，只有恢复并重新校验成功才回到运行，Failed 保持为终态。</span><span class="learning-diagram__actions"><a href="diagrams/run-lifecycle.mmd">查看 Mermaid 源码</a><a href="diagrams/run-lifecycle.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
 </figure>
 <p>关键原则:</p>
 <ul>
@@ -131,10 +131,10 @@
 <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/pause-resume-sequence.mmd">
   <div class="learning-diagram__viewport">
     <a class="learning-diagram__image-link" href="diagrams/pause-resume-sequence.svg" target="_blank" rel="noopener" aria-label="在新窗口打开暂停与恢复时序原图">
-      <img src="diagrams/pause-resume-sequence.svg" alt="暂停与恢复时序：编排在副作用前保存检查点并等待人工决定，恢复后校验上下文，以幂等键执行工具并保存结果。" />
+      <img src="diagrams/pause-resume-sequence.svg" alt="暂停与恢复时序：编排在副作用前保存检查点并等待人工决定；批准后重新校验上下文再执行，拒绝、编辑或上下文失效分别进入显式控制状态。" />
     </a>
   </div>
-  <figcaption><span>高风险动作先持久化检查点并请求人工审批，恢复时重新校验版本、身份和权限，再使用幂等键执行并提交结果。</span><span class="learning-diagram__actions"><a href="diagrams/pause-resume-sequence.mmd">查看 Mermaid 源码</a><a href="diagrams/pause-resume-sequence.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+  <figcaption><span>高风险动作先持久化检查点并请求人工审批；只有批准且恢复上下文重新校验通过时才以幂等键执行，拒绝与编辑不会落入执行分支。</span><span class="learning-diagram__actions"><a href="diagrams/pause-resume-sequence.mmd">查看 Mermaid 源码</a><a href="diagrams/pause-resume-sequence.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
 </figure>
 <p>恢复前至少重新检查:</p>
 <ol>

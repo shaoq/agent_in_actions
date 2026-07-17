@@ -1,0 +1,16 @@
+flowchart TD
+    A[Online Runs] --> T[Governance + Trace]
+    T --> E[Offline Evaluation]
+    E --> F[Metrics + Failure Taxonomy + Safety Findings]
+    F --> R{Regression or Risk Found?}
+    R -->|yes| O[Update Orchestration Policy]
+    R -->|yes| C[Update Tools / Retrieval / Model Routing]
+    O --> G[Versioned Evaluation + Release Gate]
+    C --> G
+    G -->|pass| D[Deploy]
+    G -->|fail| X[Revise Candidate Changes]
+    X --> O
+    X --> C
+    D --> A
+    R -->|no| B[Keep Baseline + Continue Monitoring]
+    B --> A

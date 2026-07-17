@@ -65,21 +65,14 @@
 
     <section id="loop">
       <div class="sec-head"><span class="idx">FIG.02</span><h2>单 Agent 请求时序</h2><span class="rule"></span></div>
-      <div class="sequence">
-        <article class="sequence-step"><h3>Decide</h3><p>把任务、观察历史和约束交给决策器，得到结构化的 act 或 finish。这里负责提出意图，不直接执行副作用。</p></article>
-        <article class="sequence-step"><h3>Act</h3><p>验证动作后交给执行器。生产环境还要经过权限、预算、人在回路和沙箱，本实验只保留受控接口。</p></article>
-        <article class="sequence-step"><h3>Observe</h3><p>把动作结果写回显式状态。下一轮决策必须基于新观察，而不是依赖隐藏的进程内偶然状态。</p></article>
-        <article class="sequence-step"><h3>Terminate</h3><p>遇到最终回答、最大步数、失败阈值或人工接管时停止。无法停止的 loop 不是自治，而是失控。</p></article>
-      </div>
-      <pre class="code-flow">task + constraints
-       │
-       ▼
-  [ LoopState ] ──► decide ──► Decision(act | finish)
-       ▲                          │
-       │                          ▼
-  observation ◄──── observe ◄── action executor
-       │
-       └──── next step / terminate / fail</pre>
+      <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/single-agent-request-loop.mmd">
+        <div class="learning-diagram__viewport">
+          <a class="learning-diagram__image-link" href="diagrams/single-agent-request-loop.svg" target="_blank" rel="noopener" aria-label="在新窗口打开单 Agent 请求时序原图">
+            <img src="diagrams/single-agent-request-loop.svg" alt="单 Agent 请求时序：编排初始化并读取运行状态，推理返回结构化意图；动作经治理允许后执行并回写观察，完成候选接受业务验收，澄清、升级与拒绝进入显式控制状态。" />
+          </a>
+        </div>
+        <figcaption><span>编排在有界循环中读取显式状态并请求结构化决策；只有通过治理的动作才会执行，观察写回状态，finish 仍需业务验收。</span><span class="learning-diagram__actions"><a href="diagrams/single-agent-request-loop.mmd">查看 Mermaid 源码</a><a href="diagrams/single-agent-request-loop.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+      </figure>
     </section>
 
     <section id="state">

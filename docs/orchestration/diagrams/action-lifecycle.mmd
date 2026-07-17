@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> IntentCreated
+    IntentCreated --> Authorized: policy allow or valid approval
+    IntentCreated --> Rejected: policy deny or approval rejected
+    Authorized --> Submitted: send with idempotency key
+    Submitted --> Committed: confirmed success
+    Submitted --> Unknown: timeout or response lost
+    Unknown --> Committed: reconciliation confirms effect
+    Unknown --> NotCommitted: reconciliation confirms no effect
+    Unknown --> ManualReview: cannot reconcile automatically
+    NotCommitted --> Submitted: bounded retry with same key
+    ManualReview --> Committed: evidence confirms effect
+    ManualReview --> NotCommitted: evidence confirms no effect
+    Rejected --> [*]
+    Committed --> [*]

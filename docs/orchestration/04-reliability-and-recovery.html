@@ -59,10 +59,10 @@
 <figure class="learning-diagram" data-diagram-source="diagrams/completion-acceptance.mmd">
   <div class="learning-diagram__viewport">
     <a class="learning-diagram__image-link" href="diagrams/completion-acceptance.svg" target="_blank" rel="noopener" aria-label="在新窗口打开完成与业务验收流程原图">
-      <img src="diagrams/completion-acceptance.svg" alt="完成判定流程：Model finish 进入 Acceptance check，通过则完成，可恢复则重新规划，需要判断则人工复核，不可恢复则失败。" />
+      <img src="diagrams/completion-acceptance.svg" alt="完成判定流程：Model finish 进入 Acceptance check，通过则完成，可恢复则重新规划，不可恢复则失败；需要人工判断时，复核结果也必须进入完成、重新规划或失败。" />
     </a>
   </div>
-  <figcaption><span>模型声明 finish 后仍需业务验收；验收结果才能把任务置为完成、重新规划、交给人工或判定失败。</span><span class="learning-diagram__actions"><a href="diagrams/completion-acceptance.mmd">查看 Mermaid 源码</a><a href="diagrams/completion-acceptance.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+  <figcaption><span>模型声明 finish 后仍需业务验收；自动验收或人工复核都必须产生明确的完成、重新规划或失败结果。</span><span class="learning-diagram__actions"><a href="diagrams/completion-acceptance.mmd">查看 Mermaid 源码</a><a href="diagrams/completion-acceptance.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
 </figure>
 <h2>3. 有界终止</h2>
 <div class="table-wrap"><table>
@@ -158,10 +158,14 @@
 <p>工具层可处理传输级短重试;编排层负责跨步骤业务决策。两层需要共享错误分类和 action ID。</p>
 <h2>6. 幂等和动作状态</h2>
 <p>对有副作用动作,至少跟踪:</p>
-<pre><code class="language-text">intent_created -&gt; authorized -&gt; submitted -&gt; committed
-                         \-&gt; rejected
-submitted -&gt; unknown -&gt; reconciled(committed | not_committed)
-</code></pre>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/action-lifecycle.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/action-lifecycle.svg" target="_blank" rel="noopener" aria-label="在新窗口打开副作用动作生命周期原图">
+      <img src="diagrams/action-lifecycle.svg" alt="副作用动作生命周期：动作意图经授权后提交，明确成功进入 Committed；响应丢失进入 Unknown，必须对账后确认已提交或未提交，无法自动对账时转人工复核。" />
+    </a>
+  </div>
+  <figcaption><span>副作用动作不能把超时直接当失败重试；Submitted 后结果不明必须先对账，只有确认未生效时才使用同一幂等键进行有界重试。</span><span class="learning-diagram__actions"><a href="diagrams/action-lifecycle.mmd">查看 Mermaid 源码</a><a href="diagrams/action-lifecycle.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>幂等键用于让重复请求返回同一业务结果,但前提是下游支持该契约。若下游不支持,需要查询、锁、去重表、补偿或人工处理。</p>
 <h2>7. 补偿不是回滚</h2>
 <p>分布式副作用通常无法真正回滚。补偿是新的业务动作,例如:</p>

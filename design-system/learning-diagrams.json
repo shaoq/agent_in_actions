@@ -21,6 +21,26 @@
       "wide": true
     },
     {
+      "id": "offline-evaluation-feedback-loop",
+      "type": "flowchart",
+      "page": "docs/foundations/01-agent-basics.html",
+      "source": "docs/foundations/diagrams/offline-evaluation-feedback-loop.mmd",
+      "svg": "docs/foundations/diagrams/offline-evaluation-feedback-loop.svg",
+      "caption": "离线评测异步消费线上 trace；发现退化或风险后更新编排策略及相关能力配置，变更只有通过版本化评测和发布门禁才回到线上。",
+      "alt": "离线评测反馈闭环：在线运行产生受治理的 trace，离线评测形成指标、失败分类与安全发现，变更通过版本化评测和发布门禁后再部署回线上。",
+      "wide": true
+    },
+    {
+      "id": "single-agent-request-loop",
+      "type": "sequence",
+      "page": "docs/01-orchestration.html",
+      "source": "docs/diagrams/single-agent-request-loop.mmd",
+      "svg": "docs/diagrams/single-agent-request-loop.svg",
+      "caption": "编排在有界循环中读取显式状态并请求结构化决策；只有通过治理的动作才会执行，观察写回状态，finish 仍需业务验收。",
+      "alt": "单 Agent 请求时序：编排初始化并读取运行状态，推理返回结构化意图；动作经治理允许后执行并回写观察，完成候选接受业务验收，澄清、升级与拒绝进入显式控制状态。",
+      "wide": true
+    },
+    {
       "id": "workflow-agent-hybrid",
       "type": "flowchart",
       "page": "docs/orchestration/01-responsibilities-and-boundaries.html",
@@ -45,8 +65,8 @@
       "page": "docs/orchestration/02-state-and-lifecycle.html",
       "source": "docs/orchestration/diagrams/run-lifecycle.mmd",
       "svg": "docs/orchestration/diagrams/run-lifecycle.svg",
-      "caption": "Run 从创建进入运行，可等待并恢复，也可因业务验收、不可恢复错误、取消或预算耗尽进入终态；失败后可从检查点恢复。",
-      "alt": "Agent Run 生命周期状态图：Created 进入 Running，Running 可等待后恢复，或完成、失败、取消、耗尽；Failed 可从检查点回到 Running。",
+      "caption": "Run 从创建进入运行；等待可恢复，可恢复错误先进入 Recovering，只有恢复并重新校验成功才回到运行，Failed 保持为终态。",
+      "alt": "Agent Run 生命周期状态图：Created 进入 Running，Running 可等待后恢复；可恢复错误先进入 Recovering 并尝试恢复，不可恢复错误、恢复失败、取消与预算耗尽进入不同终态。",
       "wide": true
     },
     {
@@ -55,8 +75,8 @@
       "page": "docs/orchestration/02-state-and-lifecycle.html",
       "source": "docs/orchestration/diagrams/pause-resume-sequence.mmd",
       "svg": "docs/orchestration/diagrams/pause-resume-sequence.svg",
-      "caption": "高风险动作先持久化检查点并请求人工审批，恢复时重新校验版本、身份和权限，再使用幂等键执行并提交结果。",
-      "alt": "暂停与恢复时序：编排在副作用前保存检查点并等待人工决定，恢复后校验上下文，以幂等键执行工具并保存结果。",
+      "caption": "高风险动作先持久化检查点并请求人工审批；只有批准且恢复上下文重新校验通过时才以幂等键执行，拒绝与编辑不会落入执行分支。",
+      "alt": "暂停与恢复时序：编排在副作用前保存检查点并等待人工决定；批准后重新校验上下文再执行，拒绝、编辑或上下文失效分别进入显式控制状态。",
       "wide": true
     },
     {
@@ -74,8 +94,8 @@
       "page": "docs/orchestration/03-patterns-and-tradeoffs.html",
       "source": "docs/orchestration/diagrams/hybrid-orchestration.mmd",
       "svg": "docs/orchestration/diagrams/hybrid-orchestration.svg",
-      "caption": "混合编排用确定性边界包围有限 Agent loop，高风险动作必须经人工审批，固定与动态路径都接受业务验收。",
-      "alt": "混合编排：身份和输入校验后按复杂度选择固定流程或有限 Agent 循环，动态路径的高风险动作需人工审批，最终统一验收。",
+      "caption": "混合编排用确定性边界包围有限 Agent loop；高风险动作只有获批才进入业务验收，拒绝或编辑会重新规划或停止。",
+      "alt": "混合编排：身份和输入校验后按复杂度选择固定流程或有限 Agent 循环，动态路径的高风险动作需人工审批；批准后验收，拒绝或编辑后重新规划或停止。",
       "wide": true
     },
     {
@@ -94,8 +114,18 @@
       "page": "docs/orchestration/04-reliability-and-recovery.html",
       "source": "docs/orchestration/diagrams/completion-acceptance.mmd",
       "svg": "docs/orchestration/diagrams/completion-acceptance.svg",
-      "caption": "模型声明 finish 后仍需业务验收；验收结果才能把任务置为完成、重新规划、交给人工或判定失败。",
-      "alt": "完成判定流程：Model finish 进入 Acceptance check，通过则完成，可恢复则重新规划，需要判断则人工复核，不可恢复则失败。"
+      "caption": "模型声明 finish 后仍需业务验收；自动验收或人工复核都必须产生明确的完成、重新规划或失败结果。",
+      "alt": "完成判定流程：Model finish 进入 Acceptance check，通过则完成，可恢复则重新规划，不可恢复则失败；需要人工判断时，复核结果也必须进入完成、重新规划或失败。"
+    },
+    {
+      "id": "action-lifecycle",
+      "type": "state",
+      "page": "docs/orchestration/04-reliability-and-recovery.html",
+      "source": "docs/orchestration/diagrams/action-lifecycle.mmd",
+      "svg": "docs/orchestration/diagrams/action-lifecycle.svg",
+      "caption": "副作用动作不能把超时直接当失败重试；Submitted 后结果不明必须先对账，只有确认未生效时才使用同一幂等键进行有界重试。",
+      "alt": "副作用动作生命周期：动作意图经授权后提交，明确成功进入 Committed；响应丢失进入 Unknown，必须对账后确认已提交或未提交，无法自动对账时转人工复核。",
+      "wide": true
     },
     {
       "id": "orchestrator-workers-sequence",
@@ -103,8 +133,8 @@
       "page": "docs/orchestration/05-multi-agent-boundaries.html",
       "source": "docs/orchestration/diagrams/orchestrator-workers-sequence.mmd",
       "svg": "docs/orchestration/diagrams/orchestrator-workers-sequence.svg",
-      "caption": "Lead Agent 定义子任务契约并并行委派，Worker 返回带证据的结果，Evaluator 对合成结果给出通过或缺口，再决定交付或继续工作。",
-      "alt": "Orchestrator-Workers 时序：用户目标交给 Lead Agent，两个 Worker 并行返回证据，Lead 合成后交给 Evaluator 检查并向用户返回结果。",
+      "caption": "Lead Agent 定义子任务契约并并行委派；Evaluator 通过时交付，发现缺口时在剩余预算内重新规划，或显式返回部分结果与缺口。",
+      "alt": "Orchestrator-Workers 时序：用户目标交给 Lead Agent，两个 Worker 并行返回证据，Lead 合成后交给 Evaluator；通过则交付，发现缺口则在剩余预算内重新规划或返回带缺口的部分结果。",
       "wide": true
     },
     {
