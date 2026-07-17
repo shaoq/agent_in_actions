@@ -6,7 +6,8 @@
     "diagrams:check": "node design-system/validate-learning-diagrams.mjs",
     "navigation:check": "node design-system/validate-learning-navigation.mjs",
     "links:check": "node design-system/validate-local-links.mjs",
-    "content:check": "npm run diagrams:check && npm run navigation:check && npm run links:check"
+    "interview:check": "node design-system/validate-interview-question-bank.mjs",
+    "content:check": "npm run diagrams:check && npm run navigation:check && npm run links:check && npm run interview:check"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "11.12.0"

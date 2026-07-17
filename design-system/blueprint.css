@@ -345,6 +345,33 @@ details.deep .placeholder .ph-tag{color:var(--rose)}
 .answer-block:first-child{border-top:0;padding-top:0}
 .answer-block h3{font-family:var(--serif);font-size:20px;color:#eef5fd}
 .answer-block p{margin-top:8px;color:var(--ink-dim);font-size:14.5px}
+.interview-toc{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0 24px}
+.interview-toc a{
+  font-family:var(--mono);font-size:11px;color:var(--accent-2);text-decoration:none;
+  border:1px solid var(--line-soft);border-radius:3px;padding:7px 9px;background:rgba(10,22,38,.4);
+}
+.interview-toc a:hover,.interview-toc a:focus-visible{border-color:var(--accent);color:var(--accent)}
+.question-bank-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.question-card,.answer-card{
+  scroll-margin-top:24px;border:1px solid var(--line-soft);border-radius:5px;
+  min-width:0;padding:20px;background:rgba(10,22,38,.4);break-inside:avoid;overflow-wrap:anywhere;
+}
+.question-card h3,.answer-card h3{font-family:var(--serif);font-size:21px;color:#eef5fd;margin:7px 0 12px}
+.question-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.question-meta span{
+  font-family:var(--mono);font-size:10px;color:var(--accent);border:1px solid var(--line-soft);
+  border-radius:999px;padding:3px 7px;letter-spacing:0;
+}
+.question-card p,.question-card li,.answer-card p{font-size:14px;color:var(--ink-dim)}
+.question-card strong,.answer-card strong{color:var(--ink)}
+.follow-ups{margin-top:8px}
+.question-action{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line-soft)}
+.question-action a,.answer-card a{color:var(--accent-2)}
+.answer-stack{display:grid;gap:16px}
+.answer-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;min-width:0}
+.answer-field{min-width:0;margin:0;padding-top:9px;border-top:1px dashed var(--line-soft);overflow-wrap:anywhere}
+.answer-field--wide{grid-column:1/-1}
+.answer-back{margin-top:13px;font-family:var(--mono);font-size:11px}
 .reference-list{display:grid;gap:10px;list-style:none}
 .reference-list a{color:var(--accent-2);text-decoration:none;border-bottom:1px dotted var(--line)}
 .reference-list span{display:block;margin-top:3px;color:var(--ink-faint);font-size:13px}
@@ -553,6 +580,8 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   h1{font-size:38px}
   .columns{grid-template-columns:1fr}
   .learning-grid,.sequence{grid-template-columns:1fr}
+  .question-bank-grid,.answer-fields{grid-template-columns:1fr}
+  .answer-field--wide{grid-column:auto}
   .conn.split .legs span:nth-child(2),
   .conn.split .legs span:nth-child(3){display:none}
   .page-nav{flex-direction:column}
@@ -573,7 +602,7 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   .wrap{max-width:none}
   .blueprint,.card,.rel,.layer{border-color:#9bb !important;background:#fff !important;box-shadow:none !important}
   .layer .num,.card .cnum{background:#0b1a2c !important;color:#fff !important}
-  h1,.layer .name,.card .cname,h2{color:#0b1a2c !important}
+  h1,.layer .name,.card .cname,h2,.prose h3,.sequence-step h3,.concept-panel h3{color:#0b1a2c !important}
   .layer .desc,.card .cbody,.subtitle,.rel .rt{color:#334 !important}
   details.deep .placeholder{border-color:#bbc !important;color:#556 !important}
   .prose p,.prose li,.prose td,.prose th{color:#24364a !important}
@@ -589,6 +618,11 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   .matrix th,.matrix td{color:#172b3f !important;border-color:#b8c5cf !important;background:#fff !important}
   .matrix th{color:#075985 !important;font-weight:700}
   .matrix td:first-child{color:#0b1a2c !important}
+  .question-card,.answer-card{border-color:#9bb !important;background:#fff !important;box-shadow:none !important}
+  .sequence-step{border-color:#9bb !important;background:#fff !important;box-shadow:none !important}
+  .question-card h3,.answer-card h3{color:#0b1a2c !important}
+  .question-meta span{color:#075985 !important;border-color:#9bb !important}
+  .answer-field,.question-action{border-color:#b8c5cf !important}
   .prose pre code{
     min-width:0;color:#075985 !important;background:#fff !important;white-space:pre-wrap;
   }

@@ -1,0 +1,29 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>L4 面试就绪度检查点 · Agent in Actions</title><link rel="stylesheet" href="../design-system/blueprint.css" /><script src="../design-system/learning-navigation.js" defer></script></head><body><div class="wrap"><header><div class="eyebrow">L4 · INTERVIEW READINESS · CHECKPOINT</div><h1>Agent 面试就绪度检查点</h1><p class="subtitle">用一次 60 分钟、跨九层、带原始证据的模拟面试验证：你能否准确、深入、可信地回答连续追问。</p><div class="meta"><span><b>总时长</b> 60 min</span><span><b>评分</b> 30</span><span><b>通过</b> ≥24</span><span class="tag">单项 ≥3</span></div><nav class="learning-nav" aria-label="全局学习导航"><a href="../interview/questions.html">题库总览</a><a href="../interview/suggested-answers.html">建议答案</a><a href="../roadmap/progress-tracker.html">进度跟踪</a><a href="rubric.html">通用评分规则</a></nav></header><main class="prose">
+<h2>前置与纪律</h2><ul><li>至少完成九层专题各一次口述，并完成系统设计、trace 调试和项目经验专题。</li><li>随机选题后才开始录音或文字记录；考核期间不得打开建议答案或课程。</li><li>保存原始回答、题号、计时和评审意见。答案修改稿不能替代首次证据。</li><li>项目经历必须来自真实工作或学习项目；无法核验的数字不计入证据可信度。</li></ul><div class="callout"><b>双门槛：</b>六维总分至少 24/30，且任一维度不得低于 3 分。总分达标但出现单项 1–2 分，仍判定未通过。</div>
+<h2>60 分钟模拟面试</h2><div class="matrix-wrap"><table class="matrix"><thead><tr><th>阶段</th><th>时间</th><th>抽题规则</th><th>必须交付</th></tr></thead><tbody><tr><td>A 快速问答</td><td>10 分钟</td><td>跨 5 个不同架构层随机抽 5 题</td><td>每题 30 秒结论，剩余时间接受一个追问</td></tr><tr><td>B 连续深挖</td><td>10 分钟</td><td>从薄弱层抽 1 题并完成全部追问</td><td>3 分钟主答 + 机制、边界、失败与取舍</td></tr><tr><td>C 系统设计</td><td>20 分钟</td><td>从 SYS 未练过的场景抽 1 题</td><td>需求、九层主流、SLO、安全、成本、评测和降级</td></tr><tr><td>D Trace 调试</td><td>10 分钟</td><td>从 DBG 未练过的证据包抽 1 题</td><td>证据、假设、最小验证、修复与回归</td></tr><tr><td>E 项目复盘</td><td>10 分钟</td><td>抽 1 个 PRJ 主问题并连续追问</td><td>真实背景、个人行动、指标、失败和反思</td></tr></tbody></table></div>
+<h2>六维评分锚点</h2><p>每项按最接近的可观察行为给 1–5 分；不得只写“好/一般/差”。</p><div class="matrix-wrap"><table class="matrix"><thead><tr><th>维度</th><th>1 分</th><th>2 分</th><th>3 分 · 达标</th><th>4 分</th><th>5 分</th></tr></thead><tbody>
+<tr><td>架构准确性</td><td>关键概念错误，层级混乱</td><td>能背定义但边界冲突</td><td>九层职责和主数据流基本准确</td><td>跨层契约与失败传播清楚</td><td>能发现问题假设并主动纠正边界</td></tr>
+<tr><td>工程深度</td><td>只有概念和框架名</td><td>只讲 happy path</td><td>包含状态、接口、错误和基本验证</td><td>覆盖恢复、版本、幂等、SLO 与上线</td><td>细节可直接转成可测试设计</td></tr>
+<tr><td>取舍意识</td><td>声称方案无缺点</td><td>取舍与场景无关</td><td>能说明一个替代方案和主要代价</td><td>按风险、质量、延迟和成本做矩阵</td><td>给出反事实和重新决策触发条件</td></tr>
+<tr><td>故障分析</td><td>无证据猜测或只改 prompt</td><td>有多个猜测但不验证</td><td>能从 trace 提出可证伪假设</td><td>按成本排序验证并定位最早偏离</td><td>修复同时覆盖止损、回归和监控</td></tr>
+<tr><td>证据可信度</td><td>虚构或无法解释数字</td><td>团队成果与个人贡献混淆</td><td>事实、个人行动和指标口径可说明</td><td>有 trace、评测或决策记录支撑</td><td>主动说明证据局限和因果边界</td></tr>
+<tr><td>表达结构</td><td>无结论、严重超时</td><td>术语堆砌、回答绕圈</td><td>先结论后依据，时间基本可控</td><td>按机制、取舍、风险、证据展开</td><td>能适应追问并保持前后事实一致</td></tr>
+</tbody></table></div>
+<h2>结果判定</h2><div class="learning-grid"><article class="concept-panel"><span class="label">PASS</span><h3>通过</h3><p>总分 ≥24，且六项均 ≥3。保存证据后可在 progress tracker 更新个人 L4 状态。</p></article><article class="concept-panel"><span class="label">TARGETED RETEST</span><h3>定向复测</h3><p>总分 21–23 且无单项低于 3：针对最低两项补练，用新题复测对应阶段。</p></article><article class="concept-panel"><span class="label">NOT READY</span><h3>未通过</h3><p>总分 ≤20，或任何单项 ≤2：按低分映射补学，并重新完成完整五段模拟面试。</p></article><article class="concept-panel"><span class="label">INVALID</span><h3>证据无效</h3><p>提前查看答案、项目事实不可核验或未保存原始回答，本轮不计分。</p></article></div>
+<h2>低分补强映射</h2><div class="matrix-wrap"><table class="matrix"><thead><tr><th>低分维度</th><th>优先补练</th><th>复测新增证据</th></tr></thead><tbody><tr><td>架构准确性</td><td><a href="../interview/01-orchestration-questions.html">编排</a>起按九层专题补最弱两层；对照<a href="../interview/suggested-answers.html">建议答案</a></td><td>新题的层级 owner 图和 30 秒边界回答</td></tr><tr><td>工程深度</td><td><a href="../interview/10-system-design-debugging-questions.html#system-design">SYS 系统设计</a></td><td>状态、接口、失败矩阵、SLO 和上线门禁</td></tr><tr><td>取舍意识</td><td>各专题“进阶/综合”题</td><td>至少三方案矩阵和反事实触发条件</td></tr><tr><td>故障分析</td><td><a href="../interview/10-system-design-debugging-questions.html#trace-debugging">DBG Trace 调试</a></td><td>新 trace 的假设、验证顺序、最早偏离和回归</td></tr><tr><td>证据可信度</td><td><a href="../interview/11-project-experience-questions.html">PRJ 项目题</a></td><td>真实指标口径、个人 owner 和可核验证据链接</td></tr><tr><td>表达结构</td><td>题库任意 5 题做 30 秒/3 分钟双版本</td><td>计时录音及删减前后对比</td></tr></tbody></table></div>
+<h2>证据记录模板</h2><pre><code class="language-md">L4 Agent 面试就绪度检查点
+日期 / 评审者：
+原始录音或文字位置：
+A 快速问答题号与用时：
+B 深挖题号与追问：
+C 系统设计题号与产物：
+D Trace 调试题号与证据链：
+E 项目题号与可核验事实：
+
+六维得分：架构 __ / 工程 __ / 取舍 __ / 故障 __ / 证据 __ / 表达 __
+总分：__ / 30；最低单项：__；结果：通过 / 定向复测 / 未通过 / 无效
+最低两项的可观察问题：
+补练页面与具体动作：
+复测新题、日期、证据与结果：</code></pre>
+<h2>首次与复测记录</h2><div class="matrix-wrap"><table class="matrix"><thead><tr><th>轮次</th><th>日期</th><th>A/B/C/D/E 题号</th><th>六维得分</th><th>总分</th><th>最低项</th><th>证据 / 下一步</th></tr></thead><tbody><tr><td>首次</td><td>待填写</td><td>待抽题</td><td>-/-/-/-/-/-</td><td>-/30</td><td>-</td><td>待填写</td></tr><tr><td>复测 1</td><td>待填写</td><td>必须使用新题</td><td>-/-/-/-/-/-</td><td>-/30</td><td>-</td><td>待填写</td></tr><tr><td>复测 2</td><td>待填写</td><td>必须使用新场景</td><td>-/-/-/-/-/-</td><td>-/30</td><td>-</td><td>待填写</td></tr></tbody></table></div><p>资产发布不会自动改变个人状态。只有真实作答、评分达到双门槛并保存证据后，才能更新<a href="../roadmap/progress-tracker.html">进度跟踪</a>。</p>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="../interview/suggested-answers.html">← 建议答案</a><a href="../roadmap/progress-tracker.html">通过后登记证据 →</a></nav><footer><span>L4 · Agent 面试就绪度检查点</span><span>60 分钟 · 24/30 · 单项 ≥3</span></footer></div></body></html>
