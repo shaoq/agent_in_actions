@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>L1 九层 Agent 架构知识地图检查点 · Agent in Actions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/blueprint.css" />
+<script src="../design-system/learning-navigation.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ASSESSMENT · L1 ARCHITECTURE MAP</div>
+    <h1>九层 Agent 架构知识地图检查点</h1>
+    <p class="subtitle">检验你能否把生产级 Agent 系统的职责放到正确层级，并讲清在线主链路与离线旁路。</p>
+    <nav class="learning-nav" aria-label="全局学习导航">
+      <a href="../docs/index.html">学习首页</a>
+      <a href="../roadmap/learning-plan.html">学习路线</a>
+      <a href="../roadmap/progress-tracker.html">进度跟踪</a>
+      <a href="../docs/00-agent-architecture.html">九层架构总览</a>
+    </nav>
+  </header>
+  <main class="prose">
+<h1>L1 九层 Agent 架构知识地图检查点</h1>
+<h2>目的</h2>
+<p>验证你是否已经从“知道九层名称”进阶到“能判断职责位置、上下游方向和错误流向”。本检查点不写代码,也不考查某个框架 API;通过后再进入 L2 编排控制层理论深潜。</p>
+<p>前置条件:通过<a href="00-agent-foundations-theory-checkpoint.html">L0 Agent 基础理论检查点</a>,并完成<a href="../docs/00-agent-architecture.html">九层 Agent 架构总览</a>。</p>
+
+<h2>L0、L1、L2 的考核边界</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>阶段</th><th>核心问题</th><th>本阶段不深入</th></tr></thead>
+<tbody>
+<tr><td>L0 Agent 基础</td><td>什么是 Agent,什么时候需要或不需要 Agent?</td><td>九层完整覆盖与组件内部机制</td></tr>
+<tr><td><strong>L1 九层知识地图</strong></td><td><strong>系统职责分别放在哪里,一次请求如何在层间流动?</strong></td><td><strong>单个组件的算法、框架实现和代码</strong></td></tr>
+<tr><td>L2 组件理论深潜</td><td>某个组件内部如何工作、取舍、失败和恢复?</td><td>工程实现细节,留到 L3 验证</td></tr>
+</tbody></table></div>
+<p>因此,L0 中的九层概念图只是基础关系预检;本检查点要求覆盖全部九层、七条关键关系、精确方向和错误归因。</p>
+
+<h2>规则</h2>
+<ul>
+<li>总分:100 分。</li>
+<li>建议时限:90 分钟,仅用于训练节奏。</li>
+<li>通过线:总分不低于 80 分。</li>
+<li>单项门槛:五项任务均不低于该项满分的 60%。</li>
+<li>必须提交全部证据;缺失任务不得用其他任务表现推定得分。</li>
+<li>评分依据是架构语义和证据,不依据绘图美观、框架名数量或术语密度。</li>
+<li>首次未通过时只补强薄弱项,并使用新场景复测。</li>
+</ul>
+
+<h2>任务一:九层职责与边界</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>不看文档,为九个核心组件分别填写:</p>
+<ol>
+<li>核心职责。</li>
+<li>明确不负责什么。</li>
+<li>主要输入。</li>
+<li>主要输出。</li>
+<li>至少一个职责错放的风险。</li>
+</ol>
+<p>九个组件:</p>
+<ol>
+<li>交互与接入层。</li>
+<li>编排控制层。</li>
+<li>推理内核。</li>
+<li>工具 / 动作层。</li>
+<li>记忆系统。</li>
+<li>知识 / 检索。</li>
+<li>治理与可观测层。</li>
+<li>评测层。</li>
+<li>模型网关 + 基础设施。</li>
+</ol>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>分数</th><th>标准</th></tr></thead>
+<tbody>
+<tr><td>0-7</td><td>主要列出组件名称或框架名,无法说明职责方向。</td></tr>
+<tr><td>8-12</td><td>大部分职责基本正确,但不负责事项、输入输出或在线/离线位置模糊。</td></tr>
+<tr><td>13-16</td><td>能说明九层主要输入、输出、上下游和常见职责错放。</td></tr>
+<tr><td>17-20</td><td>能区分通用事实、项目参考架构与合理替代位置,并说明不同选择的代价。</td></tr>
+</tbody></table></div>
+
+<h2>任务二:在线主链路与离线旁路</h2>
+<p><strong>分值</strong>:25 分。</p>
+<blockquote>
+<p>用户通过企业客服询问退款政策。系统需要结合用户身份检索其可见的公司制度;若用户决定申请退款,系统创建退款工单;金额超过阈值时必须暂停并等待人工审批。</p>
+</blockquote>
+<p>画出该请求从进入到结束的系统图。可以使用纸笔、Markdown、Mermaid 或其他形式,但必须标注方向并覆盖:</p>
+<ol>
+<li>用户/渠道、身份和目标如何进入系统。</li>
+<li>编排如何维护 State,调用推理、RAG、Memory 和工具。</li>
+<li>推理内核如何经过模型网关取得模型能力。</li>
+<li>政策检索结果、用户经历和当前 Run State 如何区分。</li>
+<li>创建工单前后的权限、审批、沙箱和业务验收。</li>
+<li>工具结果如何作为 Observation 回写 State,以及系统如何继续、完成、失败或转人工。</li>
+<li>在线治理在哪些位置检查请求、检索、动作和输出。</li>
+<li>结构化 Trace 如何进入离线评测,评测结果反馈到哪里。</li>
+</ol>
+<p>使用不同线型、颜色或文字标签区分:</p>
+<ul>
+<li><strong>控制流</strong>:谁决定下一步。</li>
+<li><strong>数据流</strong>:身份、目标、上下文和结果传到哪里。</li>
+<li><strong>反馈流</strong>:Observation 如何改变 State 与下一步。</li>
+<li><strong>在线路径</strong>:一次实时请求经过的组件。</li>
+<li><strong>离线旁路</strong>:请求结束后消费 Trace 的评测链路。</li>
+</ul>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>分数</th><th>标准</th></tr></thead>
+<tbody>
+<tr><td>0-9</td><td>只有组件列表或无方向连线,无法识别谁持有控制权。</td></tr>
+<tr><td>10-15</td><td>在线主链路基本正确,但控制流、数据流、Observation 或在线/离线关系混合。</td></tr>
+<tr><td>16-20</td><td>能区分四类流向,正确放置模型网关、RAG、Memory、工具、沙箱和离线评测。</td></tr>
+<tr><td>21-25</td><td>进一步标出关键治理点、暂停与审批、业务验收、失败出口和参考架构假设。</td></tr>
+</tbody></table></div>
+
+<h2>任务三:七条关键关系与边界对照</h2>
+<p><strong>分值</strong>:20 分。</p>
+<p>分别解释七条关系,每条给出一个错误设计及其风险:</p>
+<ol>
+<li>编排层协调推理、动作、Memory 和 RAG。</li>
+<li>在线治理横切实时请求。</li>
+<li>推理内核统一经过模型网关。</li>
+<li>Memory 与 RAG 分离。</li>
+<li>工具能力声明与沙箱执行分离。</li>
+<li>离线评测消费在线 Trace 并反馈编排。</li>
+<li>安全分布在在线治理、离线安全评测和沙箱三处。</li>
+</ol>
+<p>再用“各自负责什么 / 为什么容易混淆 / 混合后的风险 / 一个场景”深入对照:</p>
+<ul>
+<li>编排控制层 vs 推理内核。</li>
+<li>Memory vs RAG。</li>
+<li>在线治理 vs 离线评测。</li>
+<li>工具 / 动作层 vs 沙箱执行环境。</li>
+</ul>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>分数</th><th>标准</th></tr></thead>
+<tbody>
+<tr><td>0-7</td><td>只能复述关系标题,无法解释方向或风险。</td></tr>
+<tr><td>8-12</td><td>能解释部分关系,但把编排/推理、Memory/RAG 或治理/评测混合。</td></tr>
+<tr><td>13-16</td><td>七条关系方向基本稳定,四组边界均能结合场景说明。</td></tr>
+<tr><td>17-20</td><td>能主动说明架构假设、合理替代位置、治理条件和替代方案代价。</td></tr>
+</tbody></table></div>
+
+<h2>任务四:错误架构归因</h2>
+<p><strong>分值</strong>:20 分。</p>
+<blockquote>
+<p>“用户请求直接发送给 LLM。LLM 保存全部历史,直接查询包含所有部门文档和用户对话的共享向量库,再直接执行数据库工具。工具失败后由模型自由决定是否反复重试。模型声明完成就返回成功。系统只打印文本日志,不保留结构化 State、权限证据或 Trace。团队使用三个 Agent,所以认为不再需要额外治理和评测。”</p>
+</blockquote>
+<p>指出至少八个<strong>相互独立</strong>的问题。每个问题必须包含:</p>
+<ul>
+<li>错误假设或错误流向。</li>
+<li>对应的九层组件。</li>
+<li>控制流或数据流为什么错误。</li>
+<li>潜在生产风险。</li>
+<li>修复方向和必要证据。</li>
+</ul>
+<p>回答中必须区分“描述中明确存在的事实”“基于事实的原因假设”和“需要进一步验证的信息”。</p>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>分数</th><th>标准</th></tr></thead>
+<tbody>
+<tr><td>0-7</td><td>主要回答“会幻觉”“不安全”等泛化风险,没有层级和流向。</td></tr>
+<tr><td>8-12</td><td>能识别若干独立问题,但层级归因重复或修复方向笼统。</td></tr>
+<tr><td>13-16</td><td>至少八个问题基本独立,能准确归因并给出针对性修复和证据。</td></tr>
+<tr><td>17-20</td><td>还能识别事实与推测、质疑 Multi-Agent 必要性,并说明修复顺序和残余风险。</td></tr>
+</tbody></table></div>
+
+<h2>任务五:连续口述与追问</h2>
+<p><strong>分值</strong>:15 分。</p>
+<p>不看文档,用不超过 5 分钟回答:</p>
+<blockquote>
+<p>请从用户请求开始,完整讲解一次 Agent 请求如何经过九层架构,并说明哪些组件位于实时路径、哪些属于离线旁路。</p>
+</blockquote>
+<p>然后随机回答至少三轮追问:</p>
+<ol>
+<li>为什么编排层不能和推理内核合并理解?</li>
+<li>为什么不是所有组件都直接调用模型网关?</li>
+<li>RAG 检索结果在什么条件下才能写入 Memory?</li>
+<li>权限检查通过后为什么还需要沙箱?</li>
+<li>在线治理已经检查请求,为什么还需要离线评测?</li>
+<li>模型声明完成后,谁负责业务验收?</li>
+<li>Multi-Agent 应当位于哪一层,为什么它不是一个独立基础设施层?</li>
+</ol>
+<p><strong>评分锚点</strong>:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>分数</th><th>标准</th></tr></thead>
+<tbody>
+<tr><td>0-5</td><td>主要背九层名称,无法形成请求链路或回答方向追问。</td></tr>
+<tr><td>6-9</td><td>主链路基本正确,但追问下至少两组关键边界发生变化。</td></tr>
+<tr><td>10-12</td><td>表达结构清晰,实时/离线和四组边界稳定,能结合场景说明。</td></tr>
+<tr><td>13-15</td><td>能主动声明参考架构假设、替代方案、证据边界和工程取舍。</td></tr>
+</tbody></table></div>
+
+<h2>证据模板</h2>
+<pre><code class="language-md">检查日期:
+总用时:
+
+九层职责与边界:__/20
+在线主链路与离线旁路:__/25
+七条关系与边界对照:__/20
+错误架构归因:__/20
+连续口述与追问:__/15
+总分:__/100
+
+单项门槛是否全部满足:是 / 否
+结论:通过 / 补强后复测
+
+证据链接:
+- 九层职责表:
+- 请求链路图:
+- 边界对照表:
+- 错误架构归因:
+- 口述记录:
+
+最不稳定的三个边界:
+补强动作:
+复测使用的新场景:
+复测日期:
+</code></pre>
+
+<h2>补强规则</h2>
+<ul>
+<li>九层职责不足:只重做错放层级,补齐输入、输出和“不负责事项”。</li>
+<li>链路图不足:更换业务场景,重新标注控制流、数据流、反馈流与离线旁路。</li>
+<li>关键关系不足:为不稳定边界各增加一个正例和反例,不得抄原定义。</li>
+<li>错误归因不足:先区分事实、假设和未知,再按九层逐项定位。</li>
+<li>口述不足:录制新的 5 分钟主回答,只重练追问下不稳定的边界。</li>
+</ul>
+<p>通过后更新<a href="../roadmap/progress-tracker.html">进度跟踪</a>,再进入<a href="../docs/01-orchestration.html">L2 编排控制层</a>。</p>
+
+  </main>
+  <nav class="page-nav" aria-label="连续学习导航">
+    <a href="../docs/00-agent-architecture.html">← 上一步</a>
+    <a href="../docs/01-orchestration.html">下一步 →</a>
+  </nav>
+  <footer>
+    <span>L1 九层 Agent 架构知识地图检查点 · Agent in Actions</span>
+    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+  </footer>
+</div>
+</body>
+</html>

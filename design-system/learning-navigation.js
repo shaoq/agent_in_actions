@@ -31,6 +31,7 @@
       order: 2,
       items: [
         { id: 'agent-architecture', title: 'Agent 架构总览', path: 'docs/00-agent-architecture.html', type: 'overview', order: 1, status: 'available' },
+        { id: 'agent-architecture-checkpoint', title: '九层架构检查点', path: 'assessment/01-agent-architecture-checkpoint.html', type: 'checkpoint', order: 2, status: 'available' },
       ],
     },
     {
