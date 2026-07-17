@@ -1,0 +1,14 @@
+flowchart LR
+  U[用户与人工坐席] --> C[Web / App / IM / Voice]
+  C --> A[交互与接入层]
+  A --> N[规范化输入包<br/>intent + identity + session + capabilities]
+  N --> O[编排控制层]
+  O --> R[推理内核]
+  O --> T[工具 / 知识 / 记忆]
+  O --> E[进度 / 澄清 / 结果 / 移交事件]
+  E --> A
+  A --> C
+  G[治理与可观测层] -. 身份校验 · 同意 · 审计 .-> A
+  G -. 授权 · 预算 · trace .-> O
+  X{要执行任务?} -.-> O
+  A -. 不自行执行 .-> X

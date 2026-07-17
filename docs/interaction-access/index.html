@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>交互与接入层理论课程 · Agent in Actions</title>
+<link rel="stylesheet" href="../../design-system/blueprint.css" />
+<script src="../../design-system/learning-navigation.js" defer></script>
+</head>
+<body><div class="wrap">
+<header><div class="eyebrow">L2 · INTERACTION &amp; ACCESS</div><h1>交互与接入层理论课程</h1><p class="subtitle">把不同渠道中的人、消息与人工协作规范化成可信交互上下文，让编排在正确身份和状态上继续工作。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="../../roadmap/learning-plan.html">学习路线</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../00-agent-architecture.html">九层架构</a></nav></header>
+<main class="prose">
+<h1>交互与接入层理论课程</h1>
+<p>交互与接入层（Interaction &amp; Access）位于用户、渠道与 Agent 内部系统之间。它把 Web、App、IM、语音或人工坐席中的事件转换成统一输入包，维护渠道连接和会话关联，校验并传递身份上下文，再把编排产生的进度、澄清、审批、结果与移交事件适配回用户可理解的形式。</p>
+<div class="callout"><b>核心边界</b> · 交互层负责规范化意图、身份、会话和渠道能力，并交给编排层；它不选择执行计划、不直接调用工具，也不把“用户点了按钮”当成已完成授权或已执行动作。</div>
+<h2>学习目标</h2>
+<ol><li>用 channel、conversation、session、subject 与 run_id 划清连接、身份和任务生命周期。</li><li>设计可恢复的流式协议与多模态输入流水线，区分 transport complete、generation complete 和 business complete。</li><li>把澄清、Human-in-the-loop（HITL）和人工移交建模为可暂停、可恢复、可审计的交互协议。</li><li>让同意可被证明、撤回和重新确认；用类型化错误、无障碍语义和降级路径保护所有用户。</li><li>能从交互 trace 判断故障属于渠道适配、身份、编排、治理还是下游执行。</li></ol>
+<h2>前置知识</h2>
+<p>先完成<a href="../00-agent-architecture.html">九层架构</a>，并至少理解<a href="../orchestration/01-responsibilities-and-boundaries.html">编排职责与边界</a>、<a href="../memory/01-state-session-and-memory-boundaries.html">状态/会话/记忆边界</a>和<a href="../governance-observability/03-identity-authorization-and-audit.html">身份、权限与审计</a>。本课程把这些内部能力接到真实产品入口，不重复它们的完整实现。</p>
+<h2>组件边界与主数据流</h2>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/interaction-access-boundary.mmd"><div class="learning-diagram__viewport"><a class="learning-diagram__image-link" href="diagrams/interaction-access-boundary.svg" target="_blank" rel="noopener" aria-label="打开交互与接入层边界原图"><img src="diagrams/interaction-access-boundary.svg" alt="用户通过 Web、App、即时通信或语音进入交互与接入层，输入被规范化为意图、身份、会话和渠道能力后交给编排；编排产生的进度、澄清、结果或移交事件由接入层适配回渠道，交互层不自行执行任务。" /></a></div><figcaption><span>接入层是协议与信任边界，不是隐藏在 UI 里的第二个编排器。</span><span class="learning-diagram__actions"><a href="diagrams/interaction-access-boundary.mmd">查看 Mermaid 源</a><a href="diagrams/interaction-access-boundary.svg">打开 SVG</a></span></figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>相邻组件</th><th>交互层交付或接收</th><th>不得越界</th></tr></thead><tbody><tr><td>编排控制层</td><td>提交规范化意图、identity_context、session_ref、channel_capabilities；接收状态事件</td><td>不推进 run、不决定重试/完成、不执行工具</td></tr><tr><td>治理与可观测</td><td>请求身份校验、同意/审批策略和审计；传播 trace_id</td><td>不自行授予业务权限，不把登录等同于动作授权</td></tr><tr><td>记忆系统</td><td>提供主体与同意入口，展示查看/更正/删除操作</td><td>不把 session transcript 自动晋升为长期记忆</td></tr><tr><td>工具 / 动作层</td><td>只展示编排返回的动作摘要、进度与 receipt</td><td>不从 UI 直接旁路调用工具</td></tr><tr><td>人工坐席</td><td>传递最小必要上下文、待办、证据和 resume token</td><td>不泄露全量历史，不丢失机器侧 checkpoint</td></tr></tbody></table></div>
+<h2>学习路径与必须产出</h2>
+<div class="table-wrap"><table><thead><tr><th>顺序</th><th>单元</th><th>完成产出</th></tr></thead><tbody><tr><td>01</td><td><a href="01-channel-session-and-identity.html">渠道、会话与身份</a></td><td>标识符 owner 表与规范化输入契约</td></tr><tr><td>02</td><td><a href="02-streaming-and-multimodal-input.html">流式响应与多模态输入</a></td><td>事件协议、重连续传和多模态处理链</td></tr><tr><td>03</td><td><a href="03-clarification-hitl-and-handoff.html">澄清、HITL 与人工移交</a></td><td>暂停/恢复协议与 handoff package</td></tr><tr><td>04</td><td><a href="04-consent-error-recovery-and-accessibility.html">同意、错误恢复与可访问性</a></td><td>同意 receipt、错误矩阵与无障碍清单</td></tr><tr><td>门禁</td><td><a href="../../assessment/09-interaction-access-theory-checkpoint.html">交互与接入层理论检查点</a></td><td>五项场景证据与首次/复测记录</td></tr></tbody></table></div>
+<h2>完成标准</h2>
+<ul><li>能从同一客服场景区分 channel_connection、conversation_id、session_id、subject_id 和 run_id。</li><li>能解释断线重连、重复事件、部分输出、附件失败、澄清和人工移交如何保持状态一致。</li><li>能给出同意范围、身份绑定、有效期、撤回与动作摘要证据，并说明交互层为何不能自行执行。</li><li>完成理论检查点：总分至少 80/100，且 A–E 每项至少 12/20。</li></ul>
+<p><strong>目录中的 available 只表示资产可用</strong>；只有真实作答、评分和复测证据才能更新<a href="../../roadmap/progress-tracker.html">个人掌握状态</a>。</p>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="../model-gateway-infrastructure/05-sandbox-tenant-and-execution-isolation.html">← 前置：基础设施末单元</a><a href="01-channel-session-and-identity.html">开始单元 01 →</a></nav><footer><span>交互与接入层 · L2 理论课程</span><span>规范化交互上下文 → 编排控制</span></footer>
+</div></body></html>

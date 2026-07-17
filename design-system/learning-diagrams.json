@@ -436,6 +436,26 @@
       "caption": "策略决定“能不能做”，工具说明“要做什么”，基础设施证明“只能在给定边界内做”。",
       "alt": "治理层授权并绑定动作摘要，工具层提交规范化执行请求，基础设施按租户创建隔离环境、注入短期凭据、执行资源与网络限制、采集结果和审计，最后撤销凭据并销毁检查残留。",
       "wide": true
+    },
+    {
+      "id": "interaction-access-boundary",
+      "type": "flowchart",
+      "page": "docs/interaction-access/index.html",
+      "source": "docs/interaction-access/diagrams/interaction-access-boundary.mmd",
+      "svg": "docs/interaction-access/diagrams/interaction-access-boundary.svg",
+      "caption": "接入层是协议与信任边界，不是隐藏在 UI 里的第二个编排器。",
+      "alt": "用户通过 Web、App、即时通信或语音进入交互与接入层，输入被规范化为意图、身份、会话和渠道能力后交给编排；编排产生的进度、澄清、结果或移交事件由接入层适配回渠道，交互层不自行执行任务。",
+      "wide": true
+    },
+    {
+      "id": "clarification-handoff-sequence",
+      "type": "sequence",
+      "page": "docs/interaction-access/03-clarification-hitl-and-handoff.html",
+      "source": "docs/interaction-access/diagrams/clarification-handoff-sequence.mmd",
+      "svg": "docs/interaction-access/diagrams/clarification-handoff-sequence.svg",
+      "caption": "UI 承载问题与决定，run 的暂停、恢复和完成仍由编排层拥有。",
+      "alt": "用户的模糊请求经交互层校验身份后交给编排；编排请求澄清，信息足够时继续并返回结果，需要人工时固化检查点并生成最小必要移交包，人工决定通过绑定主体的恢复令牌回到编排。",
+      "wide": true
     }
   ]
 }

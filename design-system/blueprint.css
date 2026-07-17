@@ -579,6 +579,8 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   .prose p,.prose li,.prose td,.prose th{color:#24364a !important}
   .prose strong{color:#0b1a2c !important}
   .prose a{color:#075985 !important;text-decoration:underline}
+  .callout{background:#fffaf0 !important;color:#24364a !important;border-color:#b45309 !important}
+  .callout b{color:#92400e !important}
   .prose table,.prose blockquote,.prose pre{
     background:#fff !important;border-color:#9bb !important;box-shadow:none !important;
   }

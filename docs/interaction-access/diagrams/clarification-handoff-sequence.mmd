@@ -1,0 +1,27 @@
+sequenceDiagram
+  actor U as 用户
+  participant A as 交互与接入层
+  participant O as 编排控制层
+  participant G as 治理 / 身份策略
+  actor H as 人工坐席
+  U->>A: 模糊请求 + 渠道凭据
+  A->>G: 校验主体、会话与能力
+  G-->>A: identity_context + policy hints
+  A->>O: 规范化意图 + 身份上下文
+  O-->>A: clarification_required + question_id
+  A-->>U: 可访问的澄清问题
+  U->>A: 答复 / 请求人工
+  alt 信息足够
+    A->>O: answer + question_id
+    O-->>A: progress / result events
+    A-->>U: 渠道适配后的进度与结果
+  else 需要人工移交
+    A->>O: handoff_requested
+    O->>G: 固化 checkpoint 与授权范围
+    O-->>A: handoff_package + resume_token
+    A->>H: 最小必要摘要 + 证据 + 待办
+    H-->>A: 接受移交 + 决定
+    A->>O: 绑定主体的人工决定 + resume_token
+    O-->>A: 恢复、完成或类型化失败
+    A-->>U: 状态一致的最终反馈
+  end

@@ -154,12 +154,17 @@
       ],
     },
     {
-      id: 'l2-planned-components',
-      label: 'L2 · 后续组件',
+      id: 'l2-interaction-access',
+      label: 'L2 · 交互与接入',
       stage: 'L2',
       order: 11,
       items: [
-        { id: 'interaction-access', title: '交互与接入层', path: null, type: 'theory', order: 1, status: 'planned' },
+        { id: 'interaction-access-course', title: '交互与接入层课程目录', path: 'docs/interaction-access/index.html', type: 'course', order: 1, status: 'available' },
+        { id: 'interaction-channel-session-identity', title: '01 渠道、会话与身份', path: 'docs/interaction-access/01-channel-session-and-identity.html', type: 'theory', order: 2, status: 'available' },
+        { id: 'interaction-streaming-multimodal', title: '02 流式响应与多模态输入', path: 'docs/interaction-access/02-streaming-and-multimodal-input.html', type: 'theory', order: 3, status: 'available' },
+        { id: 'interaction-clarification-hitl-handoff', title: '03 澄清、HITL 与人工移交', path: 'docs/interaction-access/03-clarification-hitl-and-handoff.html', type: 'theory', order: 4, status: 'available' },
+        { id: 'interaction-consent-recovery-accessibility', title: '04 同意、错误恢复与可访问性', path: 'docs/interaction-access/04-consent-error-recovery-and-accessibility.html', type: 'theory', order: 5, status: 'available' },
+        { id: 'interaction-access-checkpoint', title: '交互与接入层理论检查点', path: 'assessment/09-interaction-access-theory-checkpoint.html', type: 'checkpoint', order: 6, status: 'available' },
       ],
     },
     {

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>02 流式响应与多模态输入 · 交互与接入层</title><link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script></head>
+<body><div class="wrap"><header><div class="eyebrow">L2 · INTERACTION &amp; ACCESS · UNIT 02</div><h1>流式响应与多模态输入</h1><p class="subtitle">流式是可恢复事件协议，多模态是受限数据流水线；两者都不是“把字节直接塞给模型”。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="index.html">交互课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../model-gateway-infrastructure/index.html">模型网关对照</a></nav></header>
+<main class="prose"><h1>02 流式响应与多模态输入</h1>
+<h2>学习目标</h2><ul><li>设计带 sequence、event type、resume cursor、取消和背压的流式交互协议。</li><li>区分模型 token、编排状态、工具进度、引用和最终业务 receipt。</li><li>为图片、音频、视频和文件建立上传、隔离、解析、授权、溯源与降级链路。</li></ul>
+<h2>核心概念：流式的是事件，不只是文本</h2>
+<p>生产界面需要知道“正在排队”“需要澄清”“工具已派发”“结果仍未知”“生成完成但业务验收失败”。若协议只有 token 字符串，客户端只能猜状态，断线后也无法判断哪些内容已被用户看到。</p>
+<div class="table-wrap"><table><thead><tr><th>事件类型</th><th>关键字段</th><th>客户端语义</th></tr></thead><tbody><tr><td>run.accepted / progress</td><td>run_id、phase、sequence、trace_id</td><td>任务已受理或阶段变化，不代表完成</td></tr><tr><td>content.delta</td><td>message_id、part_id、delta、sequence</td><td>可追加草稿；必须允许撤回或替换</td></tr><tr><td>citation / artifact</td><td>source_ref、access_scope、media_type</td><td>按权限展示证据或附件</td></tr><tr><td>clarification / approval</td><td>interaction_id、choices、expires_at</td><td>需要用户输入，run 进入等待</td></tr><tr><td>error</td><td>code、retryable、safe_message、support_ref</td><td>类型化恢复或转人工，不泄露内部信息</td></tr><tr><td>message.completed</td><td>message_id、finish_reason</td><td>一条输出完成，不等于业务完成</td></tr><tr><td>run.completed</td><td>outcome、receipt_refs</td><td>编排已完成业务验收并提交结果</td></tr></tbody></table></div>
+<h3>可恢复流式契约</h3>
+<pre><code class="language-json">{
+  "run_id": "run_31", "stream_id": "st_8", "sequence": 27,
+  "event": "content.delta", "message_id": "m_4", "part_id": "p_text",
+  "data": {"text": "订单已定位，正在核对取消规则…"},
+  "replayable": true, "created_at": "2026-07-17T09:31:12Z"
+}</code></pre>
+<p>客户端确认最高连续 <code>sequence</code>，断线重连提交 cursor。服务端重放必须保留同一 event id 和顺序；不可重放的敏感或超大事件返回 snapshot/ref。取消只表示用户发出 cancel intent，最终状态仍由编排返回 <code>cancelled</code>、<code>completed</code> 或 <code>effect_unknown</code>。</p>
+<h2>多模态输入流水线</h2>
+<ol><li><strong>入口限制：</strong>在上传前协商 MIME、大小、数量、时长与设备能力；使用短期 upload URL，不经应用进程缓冲大文件。</li><li><strong>隔离与校验：</strong>以服务端嗅探结果校验真实类型，做恶意软件、压缩炸弹、宏、EXIF/PII 与内容策略检查。</li><li><strong>主体与用途绑定：</strong>artifact_ref 绑定 tenant、subject、session/run、purpose、ACL、retention 与 checksum；引用不能单独充当访问权。</li><li><strong>派生处理：</strong>OCR、ASR、缩略图、抽帧、结构解析等派生物保留 provenance、工具版本、时间段/坐标与置信度。</li><li><strong>语义组装：</strong>接入层提交“用户文本 + artifact refs + 渠道能力”；由编排决定是否检索、调用视觉/语音能力或澄清。</li><li><strong>删除传播：</strong>过期、撤回或删除时覆盖原件、派生物、缓存和索引；审计只保留必要元数据。</li></ol>
+<div class="callout"><b>无障碍也是多模态契约</b> · 图片需要可编辑替代文本，音频需要 transcript/字幕，语音交互要提供文本等价路径；不能把“支持语音”当成只能说话和听声音。</div>
+<h2>工程要点</h2><ul><li><strong>背压：</strong>限制每连接缓冲、合并高频 delta、优先保留状态/错误/完成事件；慢客户端不能拖垮生成或丢失终态。</li><li><strong>部分输出安全：</strong>敏感内容需先缓冲再审核；若边生成边展示，协议必须支持 <code>content.replace</code>/<code>content.retract</code>，并记录用户实际可见范围。</li><li><strong>顺序与并发：</strong>同一 message 的 part 内有序，不同 artifact 可并行；UI 按稳定 ID 更新，不依赖到达时刻猜关系。</li><li><strong>降级：</strong>视觉模型不可用时可请求用户补充文字；ASR 低置信度展示可校正 transcript；不静默假装已理解附件。</li><li><strong>可观测：</strong>记录 upload、scan、parse、TTFT、断线、重放、积压、取消和最终状态，不在 telemetry 保存原始敏感媒体。</li></ul>
+<h2>常见坑</h2><ul><li><strong>把 HTTP 200 当完成：</strong>它可能只表示连接建立；业务动作仍在排队或结果未知。</li><li><strong>重连后重新生成：</strong>造成文本漂移或副作用重复；应重放事件或返回权威 snapshot。</li><li><strong>信任文件扩展名：</strong>伪装 MIME、宏和压缩炸弹会跨过边界。</li><li><strong>把 OCR 文本当用户原话：</strong>派生内容有版本、坐标和置信度，低置信度关键字段必须确认。</li><li><strong>隐藏错误只显示 spinner：</strong>用户不知道是否安全重试，也无法转人工。</li></ul>
+<h2>面试表达</h2><div class="answer-block"><h3>流式 Agent UI 怎样处理断线与部分结果？</h3><p>我把输出建模成有类型、sequence 和稳定 id 的事件流，而不是 token 管道。客户端确认 cursor，重连时重放或获取 snapshot；进度、澄清、错误、消息完成和 run 完成分开。取消也是交互意图，最终状态由编排确认。多模态附件先经过隔离、类型校验、权限和派生处理，只把带 provenance 的 artifact ref 交给编排，因此接入层不会因收到文件就自行选择模型或执行任务。</p></div>
+<h2>下一步</h2><p>写出“上传截图后断线、OCR 低置信度、重连继续”的事件序列与用户可见反馈，再进入<a href="03-clarification-hitl-and-handoff.html">澄清、HITL 与人工移交</a>。</p>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="01-channel-session-and-identity.html">← 单元 01</a><a href="03-clarification-hitl-and-handoff.html">单元 03 →</a></nav><footer><span>交互与接入层 · 单元 02</span><span>Transport complete ≠ Business complete</span></footer></div></body></html>

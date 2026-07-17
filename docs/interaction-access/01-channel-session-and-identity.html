@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>01 渠道、会话与身份 · 交互与接入层</title><link rel="stylesheet" href="../../design-system/blueprint.css" /><script src="../../design-system/learning-navigation.js" defer></script></head>
+<body><div class="wrap"><header><div class="eyebrow">L2 · INTERACTION &amp; ACCESS · UNIT 01</div><h1>渠道、会话与身份</h1><p class="subtitle">连接会断、渠道会变、主体不能猜；先把五类标识符和信任证据分开。</p><nav class="learning-nav" aria-label="全局学习导航"><a href="../index.html">学习首页</a><a href="index.html">交互课程</a><a href="../../roadmap/progress-tracker.html">进度跟踪</a><a href="../orchestration/index.html">编排对照</a></nav></header>
+<main class="prose"><h1>01 渠道、会话与身份</h1>
+<h2>学习目标</h2><ul><li>区分 transport connection、channel conversation、session、subject 与 run 的 owner 和生命周期。</li><li>把渠道事件规范化为可版本化、可去重、可追踪的输入契约。</li><li>解释 authentication、identity linkage、delegation 和 authorization 不是同一件事。</li></ul>
+<h2>核心概念</h2>
+<p>接入系统最危险的捷径是用一个 <code>session_id</code> 同时代表连接、对话、用户和任务。WebSocket 重连不会创造新用户，用户切换账号不应继承旧主体，群聊中的 conversation 也不能证明当前发言者有权访问某个 run。</p>
+<div class="table-wrap"><table><thead><tr><th>对象</th><th>owner / 生命周期</th><th>用途</th><th>不可替代</th></tr></thead><tbody><tr><td>connection_id</td><td>渠道适配器 / 单次连接</td><td>背压、心跳、重连游标</td><td>不能证明用户身份</td></tr><tr><td>conversation_id</td><td>渠道 / 对话容器</td><td>私聊、群聊、话题线程</td><td>不能等同一次 Agent 任务</td></tr><tr><td>session_id</td><td>交互+编排 / 一段连续交互</td><td>临时上下文、设备和能力</td><td>不能自动成为长期记忆或权限</td></tr><tr><td>subject_id</td><td>身份系统 / 已验证主体</td><td>租户、用户、代理人、服务主体</td><td>不能由显示名或模型猜测</td></tr><tr><td>run_id</td><td>编排层 / 一次可恢复任务</td><td>状态、步骤、预算、完成判定</td><td>不能由接入层推进或复用</td></tr></tbody></table></div>
+<h3>规范化输入契约</h3>
+<pre><code class="language-json">{
+  "event_id": "evt_01J...",
+  "occurred_at": "2026-07-17T09:30:00Z",
+  "channel": {"kind": "im", "conversation_id": "c_42", "capabilities": ["text", "file", "buttons"]},
+  "identity_context": {"tenant_id": "t_7", "subject_id": "u_9", "assurance": "mfa", "actor_type": "human"},
+  "session_ref": {"session_id": "s_3", "run_id": null, "reply_to": "msg_8"},
+  "intent_input": {"kind": "user_message", "text": "帮我取消明天的订单", "attachments": []},
+  "locale": "zh-CN", "timezone": "Asia/Shanghai", "trace_id": "tr_a1",
+  "schema_version": "1.2"
+}</code></pre>
+<p><code>intent_input</code> 是输入事实，不是最终执行意图。接入层可以做确定性结构化、编码标准化、附件引用和显式 UI intent 映射；语义歧义仍应交给编排/推理形成 <code>clarify</code> 或候选动作。</p>
+<h2>工程要点</h2><ol><li><strong>适配器薄层：</strong>每个渠道只负责签名验证、事件解析、能力声明、速率/重放处理和统一输出，不复制业务流程。</li><li><strong>身份连续性：</strong>账号绑定、设备切换、代理人操作和匿名转登录都要产生显式 linkage 事件；迁移 session 前重新检查租户和主体。</li><li><strong>去重有边界：</strong>以 tenant + channel + event_id 去重；保留 payload hash 与处理状态。渠道重放可以幂等接收，但不能把已执行副作用重新触发。</li><li><strong>最小上下文：</strong>向编排传递验证过的主体、作用域、身份强度和委托链；不把 access token、cookie 或原始 secret 放进 prompt 或 trace。</li><li><strong>能力协商：</strong>声明是否支持 streaming、attachments、buttons、audio、edit、thread 和 receipts；降级必须保留语义而非静默丢字段。</li></ol>
+<h2>失败定位矩阵</h2><div class="table-wrap"><table><thead><tr><th>现象</th><th>优先 owner</th><th>关键证据</th></tr></thead><tbody><tr><td>同一消息被处理两次</td><td>渠道适配 / 编排幂等</td><td>event_id、dedupe 状态、run 创建记录</td></tr><tr><td>群聊看到他人订单</td><td>身份/授权，严重安全事件</td><td>subject、tenant、resource scope、policy decision</td></tr><tr><td>换设备后任务丢失</td><td>session/run 关联</td><td>linkage event、run_id、checkpoint</td></tr><tr><td>按钮触发了错误动作</td><td>接入契约 / 编排校验</td><td>button value、schema version、action summary</td></tr></tbody></table></div>
+<h2>常见坑</h2><ul><li><strong>相信客户端传来的 user_id：</strong>主体必须由服务端验证的 credential 或受控映射产生。</li><li><strong>把登录当授权：</strong>authentication 只证明是谁；资源与动作是否允许仍由治理策略判定。</li><li><strong>渠道内编排：</strong>在 Slack handler、Web controller 各写一套重试和任务推进，最终状态无法一致恢复。</li><li><strong>保存原始 token：</strong>扩大日志、prompt 与人工移交的泄露面。</li><li><strong>conversation=session=memory：</strong>混淆生命周期，造成跨用户污染和无限保留。</li></ul>
+<h2>面试表达</h2><div class="answer-block"><h3>多渠道 Agent 如何保持身份与状态一致？</h3><p>我先拆开连接、渠道对话、交互 session、已验证主体和编排 run。渠道适配器只把签名通过的事件规范化并附上 identity assurance、能力和 trace；编排拥有 run 与恢复。跨设备或匿名转登录通过显式 linkage 事件重绑，重新校验 tenant、subject 和授权。事件用渠道级 id 去重，但工具副作用仍按动作层幂等契约处理，因此接入层不会自行执行任务。</p></div>
+<h2>下一步</h2><p>为“用户从 App 切换到电话继续取消订单”画出五类标识符的变化与不变项，然后进入<a href="02-streaming-and-multimodal-input.html">流式响应与多模态输入</a>。</p>
+</main><nav class="page-nav" aria-label="连续学习导航"><a href="index.html">← 课程目录</a><a href="02-streaming-and-multimodal-input.html">单元 02 →</a></nav><footer><span>交互与接入层 · 单元 01</span><span>连接 ≠ 会话 ≠ 主体 ≠ Run</span></footer></div></body></html>
