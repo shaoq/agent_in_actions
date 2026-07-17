@@ -50,14 +50,14 @@
 <li>延迟和成本预算严格。</li>
 </ul>
 <p>代价:对开放式问题适应性弱,规则可能膨胀。</p>
-<pre><code class="language-mermaid">flowchart LR
-    I[Input] --&gt; V[Validate]
-    V --&gt; C[Classify]
-    C --&gt; A[Fixed Action A]
-    C --&gt; B[Fixed Action B]
-    A --&gt; G[Acceptance]
-    B --&gt; G
-</code></pre>
+<figure class="learning-diagram" data-diagram-source="diagrams/deterministic-workflow.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/deterministic-workflow.svg" target="_blank" rel="noopener" aria-label="在新窗口打开确定性 Workflow 原图">
+      <img src="diagrams/deterministic-workflow.svg" alt="确定性 Workflow：输入经过校验和分类，进入固定动作 A 或 B，最后汇入业务验收。" />
+    </a>
+  </div>
+  <figcaption><span>确定性 Workflow 依次校验、分类并选择固定动作，所有路径最后由统一验收判断结果。</span><span class="learning-diagram__actions"><a href="diagrams/deterministic-workflow.mmd">查看 Mermaid 源码</a><a href="diagrams/deterministic-workflow.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <h2>3. Router</h2>
 <p>Router 先分类输入,再进入专门流程、模型或工具集。分类器可以是规则、传统模型或 LLM。</p>
 <p>适合:</p>
@@ -108,16 +108,14 @@
 <p>计划需要版本、假设、依赖和失效条件。计划是控制输入,不是事实。</p>
 <h2>6. 混合模式</h2>
 <p>生产系统常用外层确定性 Workflow 包围局部 Agent loop:</p>
-<pre><code class="language-mermaid">flowchart LR
-    I[Identity + Input Validation] --&gt; R{Deterministic Route}
-    R --&gt;|simple| W[Fixed Workflow]
-    R --&gt;|open-ended| A[Bounded Agent Loop]
-    A --&gt; H{High-risk Action?}
-    H --&gt;|yes| P[Human Approval]
-    H --&gt;|no| G[Business Acceptance]
-    P --&gt; G
-    W --&gt; G
-</code></pre>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/hybrid-orchestration.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/hybrid-orchestration.svg" target="_blank" rel="noopener" aria-label="在新窗口打开混合编排原图">
+      <img src="diagrams/hybrid-orchestration.svg" alt="混合编排：身份和输入校验后按复杂度选择固定流程或有限 Agent 循环，动态路径的高风险动作需人工审批，最终统一验收。" />
+    </a>
+  </div>
+  <figcaption><span>混合编排用确定性边界包围有限 Agent loop，高风险动作必须经人工审批，固定与动态路径都接受业务验收。</span><span class="learning-diagram__actions"><a href="diagrams/hybrid-orchestration.mmd">查看 Mermaid 源码</a><a href="diagrams/hybrid-orchestration.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>混合模式的价值是把不确定性限制在真正需要它的局部,关键边界仍然确定化。</p>
 <h2>7. 对比矩阵</h2>
 <div class="table-wrap"><table>
@@ -189,19 +187,14 @@
 </tr>
 </tbody></table></div>
 <h2>8. 选择流程</h2>
-<pre><code class="language-mermaid">flowchart TD
-    A[任务开始] --&gt; B{步骤能可靠枚举?}
-    B --&gt;|是| C{仅需按类别分流?}
-    C --&gt;|是| D[Router + Workflow]
-    C --&gt;|否| E[Deterministic Workflow]
-    B --&gt;|否| F{能先形成稳定计划?}
-    F --&gt;|是| G[Plan-and-Execute]
-    F --&gt;|否| H[Bounded ReAct]
-    G --&gt; I{存在高风险边界?}
-    H --&gt; I
-    I --&gt;|是| J[Hybrid + Guard + HITL]
-    I --&gt;|否| K[Measure and iterate]
-</code></pre>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/orchestration-pattern-selection.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/orchestration-pattern-selection.svg" target="_blank" rel="noopener" aria-label="在新窗口打开编排模式选择树原图">
+      <img src="diagrams/orchestration-pattern-selection.svg" alt="编排模式选择树：可枚举任务选择 Router 或确定性 Workflow，不可枚举任务选择 Plan-and-Execute 或有限 ReAct，有高风险边界时加入 Guard 与 HITL。" />
+    </a>
+  </div>
+  <figcaption><span>从步骤可枚举性、分类路由、稳定计划和高风险边界四个问题，选择 Router、Workflow、Plan-and-Execute、ReAct 或带 HITL 的混合模式。</span><span class="learning-diagram__actions"><a href="diagrams/orchestration-pattern-selection.mmd">查看 Mermaid 源码</a><a href="diagrams/orchestration-pattern-selection.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>这不是机械决策树。业务成功条件、工具可靠性和评测能力不足时,即使任务开放也不应直接使用高自治模式。</p>
 <h2>9. 三个案例</h2>
 <h3>固定发票审批</h3>

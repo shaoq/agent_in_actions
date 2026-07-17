@@ -100,15 +100,14 @@
 <li>动作结果会改变下一步决策。</li>
 <li>有明确自治边界、停止条件和治理约束。</li>
 </ul>
-<pre><code class="language-mermaid">flowchart LR
-    G[Goal + Constraints] --&gt; S[State]
-    S --&gt; D[Decide]
-    D --&gt; A[Action]
-    A --&gt; E[Environment]
-    E --&gt; O[Observation]
-    O --&gt; S
-    D --&gt; T[Finish / Fail / Escalate]
-</code></pre>
+<figure class="learning-diagram" data-diagram-source="diagrams/agent-feedback-loop.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/agent-feedback-loop.svg" target="_blank" rel="noopener" aria-label="在新窗口打开 Agent 反馈循环原图">
+      <img src="diagrams/agent-feedback-loop.svg" alt="Agent 反馈循环：目标与约束进入状态，状态驱动决策和动作，环境观察回写状态，决策也可结束、失败或升级。" />
+    </a>
+  </div>
+  <figcaption><span>Agent 以目标和约束为起点，在决策、动作、环境观察与状态更新之间形成反馈循环，并以完成、失败或升级结束。</span><span class="learning-diagram__actions"><a href="diagrams/agent-feedback-loop.mmd">查看 Mermaid 源码</a><a href="diagrams/agent-feedback-loop.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <h2>3. 这不是四个互斥产品类别</h2>
 <p>现实系统通常位于连续谱上:</p>
 <pre><code class="language-text">确定性代码
@@ -245,25 +244,14 @@
 </tr>
 </tbody></table></div>
 <h3>5.1 在线控制流</h3>
-<pre><code class="language-mermaid">sequenceDiagram
-    participant U as User / Channel
-    participant G as Governance
-    participant O as Orchestrator
-    participant R as Reasoning Core
-    participant A as Action / Knowledge / Memory
-    participant M as Model Gateway
-
-    U-&gt;&gt;G: goal + identity + constraints
-    G-&gt;&gt;O: validated request
-    O-&gt;&gt;R: current state
-    R-&gt;&gt;M: model request
-    M--&gt;&gt;R: decision
-    R--&gt;&gt;O: act / finish / ask
-    O-&gt;&gt;G: authorize action
-    G-&gt;&gt;A: permitted call
-    A--&gt;&gt;O: observation
-    O--&gt;&gt;U: progress / result / escalation
-</code></pre>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/online-control-flow.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/online-control-flow.svg" target="_blank" rel="noopener" aria-label="在新窗口打开在线控制流原图">
+      <img src="diagrams/online-control-flow.svg" alt="在线控制时序：用户请求经治理、编排、推理和模型网关形成决策，授权后的动作或知识、记忆调用将观察返回编排。" />
+    </a>
+  </div>
+  <figcaption><span>一次在线请求由治理层校验后进入编排，推理内核经模型网关形成决策，获授权的能力调用返回观察，再由编排向用户交付进度或结果。</span><span class="learning-diagram__actions"><a href="diagrams/online-control-flow.mmd">查看 Mermaid 源码</a><a href="diagrams/online-control-flow.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>这张图是项目参考架构,不是唯一实现。生产系统可以把部分治理放在网关、中间件或工具服务中,但相应职责不能消失。</p>
 <h3>5.2 离线反馈流</h3>
 <p>在线 trace 被评测层消费,形成成功率、失败分类、安全结果和回归信号,再反馈给编排策略、工具定义、检索配置或模型路由。离线 eval 不应被误画成每次请求必经的同步节点。</p>

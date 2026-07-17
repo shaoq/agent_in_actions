@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant U as User / Channel
+    participant G as Governance
+    participant O as Orchestrator
+    participant R as Reasoning Core
+    participant A as Action / Knowledge / Memory
+    participant M as Model Gateway
+
+    U->>G: goal + identity + constraints
+    G->>O: validated request
+    O->>R: current state
+    R->>M: model request
+    M-->>R: decision
+    R-->>O: act / finish / ask
+    O->>G: authorize action
+    G->>A: permitted call
+    A-->>O: observation
+    O-->>U: progress / result / escalation

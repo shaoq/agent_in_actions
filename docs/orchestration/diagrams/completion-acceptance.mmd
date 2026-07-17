@@ -1,0 +1,6 @@
+flowchart LR
+    F[Model finish] --> V{Acceptance check}
+    V -->|pass| C[Completed]
+    V -->|recoverable| R[Replan / Act]
+    V -->|need judgement| H[Human review]
+    V -->|unrecoverable| X[Failed]

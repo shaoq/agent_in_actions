@@ -1,0 +1,12 @@
+flowchart TD
+    A[任务开始] --> B{步骤能可靠枚举?}
+    B -->|是| C{仅需按类别分流?}
+    C -->|是| D[Router + Workflow]
+    C -->|否| E[Deterministic Workflow]
+    B -->|否| F{能先形成稳定计划?}
+    F -->|是| G[Plan-and-Execute]
+    F -->|否| H[Bounded ReAct]
+    G --> I{存在高风险边界?}
+    H --> I
+    I -->|是| J[Hybrid + Guard + HITL]
+    I -->|否| K[Measure and iterate]

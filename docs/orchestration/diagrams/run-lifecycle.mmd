@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Created
+    Created --> Running: validate goal<br/>and identity
+    Running --> Waiting: need user / approval /<br/>external event
+    Waiting --> Running: resume with<br/>new input
+    Running --> Completed: business acceptance<br/>passed
+    Running --> Failed: unrecoverable<br/>error
+    Running --> Cancelled: user or policy<br/>cancellation
+    Running --> Exhausted: time / step /<br/>cost limit
+    Failed --> Running: recover from<br/>checkpoint
+    Completed --> [*]
+    Cancelled --> [*]
+    Exhausted --> [*]

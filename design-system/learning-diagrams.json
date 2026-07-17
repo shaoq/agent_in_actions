@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "diagrams": [
+    {
+      "id": "agent-feedback-loop",
+      "type": "flowchart",
+      "page": "docs/foundations/01-agent-basics.html",
+      "source": "docs/foundations/diagrams/agent-feedback-loop.mmd",
+      "svg": "docs/foundations/diagrams/agent-feedback-loop.svg",
+      "caption": "Agent 以目标和约束为起点，在决策、动作、环境观察与状态更新之间形成反馈循环，并以完成、失败或升级结束。",
+      "alt": "Agent 反馈循环：目标与约束进入状态，状态驱动决策和动作，环境观察回写状态，决策也可结束、失败或升级。"
+    },
+    {
+      "id": "online-control-flow",
+      "type": "sequence",
+      "page": "docs/foundations/01-agent-basics.html",
+      "source": "docs/foundations/diagrams/online-control-flow.mmd",
+      "svg": "docs/foundations/diagrams/online-control-flow.svg",
+      "caption": "一次在线请求由治理层校验后进入编排，推理内核经模型网关形成决策，获授权的能力调用返回观察，再由编排向用户交付进度或结果。",
+      "alt": "在线控制时序：用户请求经治理、编排、推理和模型网关形成决策，授权后的动作或知识、记忆调用将观察返回编排。",
+      "wide": true
+    },
+    {
+      "id": "workflow-agent-hybrid",
+      "type": "flowchart",
+      "page": "docs/orchestration/01-responsibilities-and-boundaries.html",
+      "source": "docs/orchestration/diagrams/workflow-agent-hybrid.mmd",
+      "svg": "docs/orchestration/diagrams/workflow-agent-hybrid.svg",
+      "caption": "确定性校验与路由可以把已知场景交给固定 Workflow，把开放场景交给 Agent loop，最终统一进入业务验收。",
+      "alt": "Workflow 与 Agent 混合流程：输入先确定性校验和路由，已知场景走固定流程，开放场景走 Agent 循环，两者都进入业务验收。"
+    },
+    {
+      "id": "orchestrator-action-boundary",
+      "type": "sequence",
+      "page": "docs/orchestration/01-responsibilities-and-boundaries.html",
+      "source": "docs/orchestration/diagrams/orchestrator-action-boundary.mmd",
+      "svg": "docs/orchestration/diagrams/orchestrator-action-boundary.svg",
+      "caption": "推理只返回结构化动作意图，编排经治理授权后才调用工具运行时，并把观察或类型化错误写回状态。",
+      "alt": "编排与工具执行边界时序：推理提出动作意图，治理允许、拒绝或要求审批，编排只向工具运行时发送已验证请求并更新状态。",
+      "wide": true
+    },
+    {
+      "id": "run-lifecycle",
+      "type": "state",
+      "page": "docs/orchestration/02-state-and-lifecycle.html",
+      "source": "docs/orchestration/diagrams/run-lifecycle.mmd",
+      "svg": "docs/orchestration/diagrams/run-lifecycle.svg",
+      "caption": "Run 从创建进入运行，可等待并恢复，也可因业务验收、不可恢复错误、取消或预算耗尽进入终态；失败后可从检查点恢复。",
+      "alt": "Agent Run 生命周期状态图：Created 进入 Running，Running 可等待后恢复，或完成、失败、取消、耗尽；Failed 可从检查点回到 Running。",
+      "wide": true
+    },
+    {
+      "id": "pause-resume-sequence",
+      "type": "sequence",
+      "page": "docs/orchestration/02-state-and-lifecycle.html",
+      "source": "docs/orchestration/diagrams/pause-resume-sequence.mmd",
+      "svg": "docs/orchestration/diagrams/pause-resume-sequence.svg",
+      "caption": "高风险动作先持久化检查点并请求人工审批，恢复时重新校验版本、身份和权限，再使用幂等键执行并提交结果。",
+      "alt": "暂停与恢复时序：编排在副作用前保存检查点并等待人工决定，恢复后校验上下文，以幂等键执行工具并保存结果。",
+      "wide": true
+    },
+    {
+      "id": "deterministic-workflow",
+      "type": "flowchart",
+      "page": "docs/orchestration/03-patterns-and-tradeoffs.html",
+      "source": "docs/orchestration/diagrams/deterministic-workflow.mmd",
+      "svg": "docs/orchestration/diagrams/deterministic-workflow.svg",
+      "caption": "确定性 Workflow 依次校验、分类并选择固定动作，所有路径最后由统一验收判断结果。",
+      "alt": "确定性 Workflow：输入经过校验和分类，进入固定动作 A 或 B，最后汇入业务验收。"
+    },
+    {
+      "id": "hybrid-orchestration",
+      "type": "flowchart",
+      "page": "docs/orchestration/03-patterns-and-tradeoffs.html",
+      "source": "docs/orchestration/diagrams/hybrid-orchestration.mmd",
+      "svg": "docs/orchestration/diagrams/hybrid-orchestration.svg",
+      "caption": "混合编排用确定性边界包围有限 Agent loop，高风险动作必须经人工审批，固定与动态路径都接受业务验收。",
+      "alt": "混合编排：身份和输入校验后按复杂度选择固定流程或有限 Agent 循环，动态路径的高风险动作需人工审批，最终统一验收。",
+      "wide": true
+    },
+    {
+      "id": "orchestration-pattern-selection",
+      "type": "flowchart",
+      "page": "docs/orchestration/03-patterns-and-tradeoffs.html",
+      "source": "docs/orchestration/diagrams/orchestration-pattern-selection.mmd",
+      "svg": "docs/orchestration/diagrams/orchestration-pattern-selection.svg",
+      "caption": "从步骤可枚举性、分类路由、稳定计划和高风险边界四个问题，选择 Router、Workflow、Plan-and-Execute、ReAct 或带 HITL 的混合模式。",
+      "alt": "编排模式选择树：可枚举任务选择 Router 或确定性 Workflow，不可枚举任务选择 Plan-and-Execute 或有限 ReAct，有高风险边界时加入 Guard 与 HITL。",
+      "wide": true
+    },
+    {
+      "id": "completion-acceptance",
+      "type": "flowchart",
+      "page": "docs/orchestration/04-reliability-and-recovery.html",
+      "source": "docs/orchestration/diagrams/completion-acceptance.mmd",
+      "svg": "docs/orchestration/diagrams/completion-acceptance.svg",
+      "caption": "模型声明 finish 后仍需业务验收；验收结果才能把任务置为完成、重新规划、交给人工或判定失败。",
+      "alt": "完成判定流程：Model finish 进入 Acceptance check，通过则完成，可恢复则重新规划，需要判断则人工复核，不可恢复则失败。"
+    },
+    {
+      "id": "orchestrator-workers-sequence",
+      "type": "sequence",
+      "page": "docs/orchestration/05-multi-agent-boundaries.html",
+      "source": "docs/orchestration/diagrams/orchestrator-workers-sequence.mmd",
+      "svg": "docs/orchestration/diagrams/orchestrator-workers-sequence.svg",
+      "caption": "Lead Agent 定义子任务契约并并行委派，Worker 返回带证据的结果，Evaluator 对合成结果给出通过或缺口，再决定交付或继续工作。",
+      "alt": "Orchestrator-Workers 时序：用户目标交给 Lead Agent，两个 Worker 并行返回证据，Lead 合成后交给 Evaluator 检查并向用户返回结果。",
+      "wide": true
+    }
+  ]
+}

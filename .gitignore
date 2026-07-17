@@ -1,7 +1,8 @@
 # 本地工具 / 工作区目录（不入版本库）
 .codex/
 .claude/
-openspec/
+openspec
+node_modules/
 
 # Python
 __pycache__/

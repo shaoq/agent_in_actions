@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant U as User
+    participant L as Lead Agent
+    participant W1 as Worker A
+    participant W2 as Worker B
+    participant E as Evaluator
+
+    U->>L: goal + constraints
+    L->>L: decompose + define contracts
+    par independent work
+        L->>W1: subtask + budget + context
+        L->>W2: subtask + budget + context
+        W1-->>L: findings + evidence + status
+        W2-->>L: findings + evidence + status
+    end
+    L->>E: synthesized result + provenance
+    E-->>L: pass / gaps
+    L-->>U: result or further work

@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant O as Orchestrator
+    participant R as Reasoning
+    participant G as Governance
+    participant T as Tool Runtime
+
+    O->>R: state + available capabilities
+    R-->>O: structured action intent
+    O->>G: identity + action + risk
+    G-->>O: allow / deny / require approval
+    O->>T: validated action request
+    T-->>O: observation / typed error
+    O->>O: update state and route

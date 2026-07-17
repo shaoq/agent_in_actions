@@ -113,25 +113,14 @@
 <h3>Peer-to-Peer / Handoff</h3>
 <p>Agent 根据能力把控制权移交给另一个 Agent。适合职责清晰的专业接力,需要明确当前 owner、handoff contract 和循环检测。</p>
 <h2>4. Orchestrator-Workers 时序</h2>
-<pre><code class="language-mermaid">sequenceDiagram
-    participant U as User
-    participant L as Lead Agent
-    participant W1 as Worker A
-    participant W2 as Worker B
-    participant E as Evaluator
-
-    U-&gt;&gt;L: goal + constraints
-    L-&gt;&gt;L: decompose + define contracts
-    par independent work
-        L-&gt;&gt;W1: subtask + budget + context
-        L-&gt;&gt;W2: subtask + budget + context
-        W1--&gt;&gt;L: findings + evidence + status
-        W2--&gt;&gt;L: findings + evidence + status
-    end
-    L-&gt;&gt;E: synthesized result + provenance
-    E--&gt;&gt;L: pass / gaps
-    L--&gt;&gt;U: result or further work
-</code></pre>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/orchestrator-workers-sequence.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/orchestrator-workers-sequence.svg" target="_blank" rel="noopener" aria-label="在新窗口打开 Orchestrator-Workers 时序原图">
+      <img src="diagrams/orchestrator-workers-sequence.svg" alt="Orchestrator-Workers 时序：用户目标交给 Lead Agent，两个 Worker 并行返回证据，Lead 合成后交给 Evaluator 检查并向用户返回结果。" />
+    </a>
+  </div>
+  <figcaption><span>Lead Agent 定义子任务契约并并行委派，Worker 返回带证据的结果，Evaluator 对合成结果给出通过或缺口，再决定交付或继续工作。</span><span class="learning-diagram__actions"><a href="diagrams/orchestrator-workers-sequence.mmd">查看 Mermaid 源码</a><a href="diagrams/orchestrator-workers-sequence.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>每个 worker 应有独立 sub-run ID、预算、工具权限和输出契约。Lead 不能只收到自然语言总结而丢失来源和失败状态。</p>
 <h2>5. 上下文隔离与共享状态</h2>
 <h3>应隔离的信息</h3>

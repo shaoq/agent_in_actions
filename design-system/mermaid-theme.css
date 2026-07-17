@@ -1,0 +1,36 @@
+/* Mermaid CLI 生成阶段使用；学习页面容器样式位于 blueprint.css。 */
+.nodeLabel,
+.edgeLabel,
+.messageText,
+.loopText,
+.stateLabel,
+.labelText,
+.actor {
+  font-family: "IBM Plex Sans", system-ui, sans-serif !important;
+}
+
+.edgeLabel,
+.labelBkg {
+  background-color: #091421 !important;
+}
+
+.flowchart-link,
+.messageLine0,
+.messageLine1,
+.transition {
+  stroke-width: 1.6px !important;
+}
+
+.actor-line {
+  stroke: #52708e !important;
+}
+
+.state-note rect,
+.note {
+  filter: none !important;
+}
+
+.statediagram .edgeLabel {
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}

@@ -1,0 +1,8 @@
+flowchart LR
+    G[Goal + Constraints] --> S[State]
+    S --> D[Decide]
+    D --> A[Action]
+    A --> E[Environment]
+    E --> O[Observation]
+    O --> S
+    D --> T[Finish / Fail / Escalate]

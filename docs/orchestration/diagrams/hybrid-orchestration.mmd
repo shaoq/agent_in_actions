@@ -1,0 +1,9 @@
+flowchart LR
+    I[Identity + Input Validation] --> R{Deterministic Route}
+    R -->|simple| W[Fixed Workflow]
+    R -->|open-ended| A[Bounded Agent Loop]
+    A --> H{High-risk Action?}
+    H -->|yes| P[Human Approval]
+    H -->|no| G[Business Acceptance]
+    P --> G
+    W --> G

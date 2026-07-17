@@ -101,20 +101,14 @@
 <li>它是否有独立的安全和保留期限?</li>
 </ol>
 <h2>4. 生命周期</h2>
-<pre><code class="language-mermaid">stateDiagram-v2
-    [*] --&gt; Created
-    Created --&gt; Running: validate goal and identity
-    Running --&gt; Waiting: need user / approval / external event
-    Waiting --&gt; Running: resume with new input
-    Running --&gt; Completed: business acceptance passed
-    Running --&gt; Failed: unrecoverable error
-    Running --&gt; Cancelled: user or policy cancellation
-    Running --&gt; Exhausted: time / step / cost limit
-    Failed --&gt; Running: recover from checkpoint
-    Completed --&gt; [*]
-    Cancelled --&gt; [*]
-    Exhausted --&gt; [*]
-</code></pre>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/run-lifecycle.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/run-lifecycle.svg" target="_blank" rel="noopener" aria-label="在新窗口打开 Agent Run 生命周期原图">
+      <img src="diagrams/run-lifecycle.svg" alt="Agent Run 生命周期状态图：Created 进入 Running，Running 可等待后恢复，或完成、失败、取消、耗尽；Failed 可从检查点回到 Running。" />
+    </a>
+  </div>
+  <figcaption><span>Run 从创建进入运行，可等待并恢复，也可因业务验收、不可恢复错误、取消或预算耗尽进入终态；失败后可从检查点恢复。</span><span class="learning-diagram__actions"><a href="diagrams/run-lifecycle.mmd">查看 Mermaid 源码</a><a href="diagrams/run-lifecycle.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>关键原则:</p>
 <ul>
 <li><code>completed</code>、<code>failed</code>、<code>cancelled</code>、<code>exhausted</code> 是不同终态。</li>
@@ -134,22 +128,14 @@
 </ul>
 <p>LangGraph 的官方文档把 checkpoint 描述为图状态在特定 super-step 的快照,可支持 HITL、time travel 和 fault tolerance。这是一个框架实现示例,不是所有系统都必须按 super-step 保存。</p>
 <h2>6. 暂停与恢复时序</h2>
-<pre><code class="language-mermaid">sequenceDiagram
-    participant O as Orchestrator
-    participant C as Checkpoint Store
-    participant H as Human
-    participant T as Tool
-
-    O-&gt;&gt;O: build high-risk action intent
-    O-&gt;&gt;C: persist state before side effect
-    O-&gt;&gt;H: request approval with evidence
-    H--&gt;&gt;O: approve / reject / edit
-    O-&gt;&gt;C: load checkpoint + new decision
-    O-&gt;&gt;O: verify version, identity, permission
-    O-&gt;&gt;T: execute with idempotency key
-    T--&gt;&gt;O: observation
-    O-&gt;&gt;C: persist committed result
-</code></pre>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/pause-resume-sequence.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/pause-resume-sequence.svg" target="_blank" rel="noopener" aria-label="在新窗口打开暂停与恢复时序原图">
+      <img src="diagrams/pause-resume-sequence.svg" alt="暂停与恢复时序：编排在副作用前保存检查点并等待人工决定，恢复后校验上下文，以幂等键执行工具并保存结果。" />
+    </a>
+  </div>
+  <figcaption><span>高风险动作先持久化检查点并请求人工审批，恢复时重新校验版本、身份和权限，再使用幂等键执行并提交结果。</span><span class="learning-diagram__actions"><a href="diagrams/pause-resume-sequence.mmd">查看 Mermaid 源码</a><a href="diagrams/pause-resume-sequence.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>恢复前至少重新检查:</p>
 <ol>
 <li>用户和租户身份是否仍有效。</li>

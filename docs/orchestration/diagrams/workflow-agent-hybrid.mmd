@@ -1,0 +1,7 @@
+flowchart LR
+    I[Input] --> V[Deterministic validation]
+    V --> R{Route}
+    R -->|known case| W[Fixed workflow]
+    R -->|open-ended| A[Agent loop]
+    W --> G[Business acceptance]
+    A --> G

@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant O as Orchestrator
+    participant C as Checkpoint Store
+    participant H as Human
+    participant T as Tool
+
+    O->>O: build high-risk action intent
+    O->>C: persist state before side effect
+    O->>H: request approval with evidence
+    H-->>O: approve / reject / edit
+    O->>C: load checkpoint + new decision
+    O->>O: verify version, identity, permission
+    O->>T: execute with idempotency key
+    T-->>O: observation
+    O->>C: persist committed result

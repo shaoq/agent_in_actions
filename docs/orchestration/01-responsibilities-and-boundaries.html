@@ -102,14 +102,14 @@
 <li>动态 Agent loop:模型根据观察提出路径。</li>
 <li>混合系统:外层 Workflow 固定关键阶段,局部节点允许 Agent 动态探索。</li>
 </ul>
-<pre><code class="language-mermaid">flowchart LR
-    I[Input] --&gt; V[Deterministic validation]
-    V --&gt; R{Route}
-    R --&gt;|known case| W[Fixed workflow]
-    R --&gt;|open-ended| A[Agent loop]
-    W --&gt; G[Business acceptance]
-    A --&gt; G
-</code></pre>
+<figure class="learning-diagram" data-diagram-source="diagrams/workflow-agent-hybrid.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/workflow-agent-hybrid.svg" target="_blank" rel="noopener" aria-label="在新窗口打开 Workflow 与 Agent 混合流程原图">
+      <img src="diagrams/workflow-agent-hybrid.svg" alt="Workflow 与 Agent 混合流程：输入先确定性校验和路由，已知场景走固定流程，开放场景走 Agent 循环，两者都进入业务验收。" />
+    </a>
+  </div>
+  <figcaption><span>确定性校验与路由可以把已知场景交给固定 Workflow，把开放场景交给 Agent loop，最终统一进入业务验收。</span><span class="learning-diagram__actions"><a href="diagrams/workflow-agent-hybrid.mmd">查看 Mermaid 源码</a><a href="diagrams/workflow-agent-hybrid.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>编排系统通常可以运行 Workflow 和 Agent loop,不能把两者当作互斥的产品架构。</p>
 <h2>4. 编排与状态机</h2>
 <p>状态机是一种表达控制流的工具:</p>
@@ -129,20 +129,14 @@
 </ul>
 <p>状态机是编排的实现模式之一,不是编排全部职责。</p>
 <h2>5. 编排与工具执行</h2>
-<pre><code class="language-mermaid">sequenceDiagram
-    participant O as Orchestrator
-    participant R as Reasoning
-    participant G as Governance
-    participant T as Tool Runtime
-
-    O-&gt;&gt;R: state + available capabilities
-    R--&gt;&gt;O: structured action intent
-    O-&gt;&gt;G: identity + action + risk
-    G--&gt;&gt;O: allow / deny / require approval
-    O-&gt;&gt;T: validated action request
-    T--&gt;&gt;O: observation / typed error
-    O-&gt;&gt;O: update state and route
-</code></pre>
+<figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/orchestrator-action-boundary.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/orchestrator-action-boundary.svg" target="_blank" rel="noopener" aria-label="在新窗口打开编排与工具执行边界原图">
+      <img src="diagrams/orchestrator-action-boundary.svg" alt="编排与工具执行边界时序：推理提出动作意图，治理允许、拒绝或要求审批，编排只向工具运行时发送已验证请求并更新状态。" />
+    </a>
+  </div>
+  <figcaption><span>推理只返回结构化动作意图，编排经治理授权后才调用工具运行时，并把观察或类型化错误写回状态。</span><span class="learning-diagram__actions"><a href="diagrams/orchestrator-action-boundary.mmd">查看 Mermaid 源码</a><a href="diagrams/orchestrator-action-boundary.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <p>编排层协调工具调用,工具层负责能力契约和执行适配,治理层负责授权和审计。实际系统可能合并服务,但设计讨论要保持语义分离。</p>
 <h2>6. 编排与治理</h2>
 <p>治理不是编排器里的一个 if 语句。在线治理至少可能包含:</p>

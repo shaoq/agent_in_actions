@@ -476,6 +476,28 @@ details.deep .placeholder .ph-tag{color:var(--rose)}
 .toc li{margin:5px 0}
 .toc a{color:var(--accent-2);text-decoration:none}
 
+/* 学习图表:静态 SVG、离线可用，宽图在容器内横向查看 */
+.learning-diagram{
+  margin:24px 0 30px;border:1px solid var(--line-soft);border-radius:6px;
+  background:rgba(6,17,29,.72);box-shadow:inset 0 1px 0 rgba(125,211,252,.04);
+  overflow:hidden;
+}
+.learning-diagram__viewport{
+  padding:18px;overflow-x:auto;overscroll-behavior-inline:contain;
+  scrollbar-color:var(--line) rgba(9,20,33,.7);scrollbar-width:thin;
+}
+.learning-diagram__image-link{display:block;width:max-content;min-width:100%;border:0 !important}
+.learning-diagram img{display:block;width:auto;max-width:100%;height:auto;margin:0 auto}
+.learning-diagram--wide img{max-width:none;min-width:760px}
+.learning-diagram figcaption{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+  margin:0;padding:12px 16px;border-top:1px dashed var(--line-soft);
+  color:var(--ink-dim);font-size:12.5px;line-height:1.55;background:rgba(10,22,38,.72);
+}
+.learning-diagram__actions{display:flex;flex:0 0 auto;gap:12px;font-family:var(--mono);font-size:10px;white-space:nowrap}
+.learning-diagram__actions a{color:var(--accent-2);border-bottom:1px dotted var(--line)}
+.learning-diagram a:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
+
 /* -------------------------------------------------------------------------
    13. FOOTER (页脚)
    ------------------------------------------------------------------------- */
@@ -535,6 +557,10 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   .conn.split .legs span:nth-child(3){display:none}
   .page-nav{flex-direction:column}
   .prose h2{font-size:26px}
+  .learning-diagram__viewport{padding:12px}
+  .learning-diagram--wide img{min-width:680px}
+  .learning-diagram figcaption{flex-direction:column;gap:10px;padding:11px 12px}
+  .learning-diagram__actions{flex-wrap:wrap;white-space:normal}
 }
 
 /* -------------------------------------------------------------------------
@@ -559,6 +585,15 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   .prose pre code{
     min-width:0;color:#075985 !important;background:#fff !important;white-space:pre-wrap;
   }
+  .learning-diagram{
+    break-inside:avoid;border-color:#9bb !important;background:#fff !important;box-shadow:none !important;
+    print-color-adjust:exact;-webkit-print-color-adjust:exact;
+  }
+  .learning-diagram__viewport{padding:8px;overflow:visible}
+  .learning-diagram__image-link{width:100%;min-width:0}
+  .learning-diagram img,.learning-diagram--wide img{width:100%;max-width:100%;min-width:0;height:auto}
+  .learning-diagram figcaption{display:block;color:#24364a;background:#fff !important;border-color:#9bb !important}
+  .learning-diagram__actions{display:none}
   footer{color:#668}
   .course-menu,.course-menu-toggle,.course-menu-overlay{display:none !important}
   body.has-course-menu .wrap{width:auto;max-width:none;margin:0;padding:0}

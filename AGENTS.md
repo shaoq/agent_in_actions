@@ -56,6 +56,14 @@
 - 标题字体使用 Fraunces,正文使用 IBM Plex Sans,技术标注使用 IBM Plex Mono。
 - 继续保持工程蓝图风格:深靛蓝背景、细网格、青色墨线、克制可读。
 
+## Mermaid 学习图表
+
+- Mermaid 图表以课程旁 `diagrams/<stable-name>.mmd` 为唯一图表源码，并在维护阶段生成同名静态 SVG；学习页面不得加载 Mermaid runtime 或 CDN。
+- 新增或修改图表是一个完整交付事务:创建或更新 `.mmd`、登记 `design-system/learning-diagrams.json`、生成 SVG、用 `figure.learning-diagram` 接入 HTML，并补齐有效 alt、caption、源码入口和原图入口。
+- HTML 不得长期手工维护第二份 Mermaid 源码，也不得把 `language-mermaid`、`sequenceDiagram`、`flowchart` 或 `stateDiagram` 裸代码块作为学习者默认内容。
+- 图表统一使用 `design-system/mermaid-config.json` 与 `design-system/mermaid-theme.css` 生成，不得逐页复制完整主题。
+- 修改图表源码、共享主题或生成工具版本后必须运行 `npm run diagrams:generate`；交付前必须运行 `npm run content:check`，验证指纹、语法、引用、可访问性、统一导航和本地链接。
+
 ## Agent 架构语义
 
 当前 Agent 总览采用 9 个核心组件:

@@ -56,13 +56,14 @@
 <li><strong>Business acceptance</strong>:测试、外部状态、规则或用户确认任务真的成功。</li>
 </ol>
 <p>例如代码 Agent 输出补丁并 finish,但测试失败,只能说明模型结束了,不能标记任务成功。</p>
-<pre><code class="language-mermaid">flowchart LR
-    F[Model finish] --&gt; V{Acceptance check}
-    V --&gt;|pass| C[Completed]
-    V --&gt;|recoverable| R[Replan / Act]
-    V --&gt;|need judgement| H[Human review]
-    V --&gt;|unrecoverable| X[Failed]
-</code></pre>
+<figure class="learning-diagram" data-diagram-source="diagrams/completion-acceptance.mmd">
+  <div class="learning-diagram__viewport">
+    <a class="learning-diagram__image-link" href="diagrams/completion-acceptance.svg" target="_blank" rel="noopener" aria-label="在新窗口打开完成与业务验收流程原图">
+      <img src="diagrams/completion-acceptance.svg" alt="完成判定流程：Model finish 进入 Acceptance check，通过则完成，可恢复则重新规划，需要判断则人工复核，不可恢复则失败。" />
+    </a>
+  </div>
+  <figcaption><span>模型声明 finish 后仍需业务验收；验收结果才能把任务置为完成、重新规划、交给人工或判定失败。</span><span class="learning-diagram__actions"><a href="diagrams/completion-acceptance.mmd">查看 Mermaid 源码</a><a href="diagrams/completion-acceptance.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+</figure>
 <h2>3. 有界终止</h2>
 <div class="table-wrap"><table>
 <thead>

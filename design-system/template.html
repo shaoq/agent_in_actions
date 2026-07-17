@@ -191,6 +191,27 @@
     </div>
   </section>
 
+  <!-- ============ 学习图表(按需复制) ============
+    路径规则: 在目标课程旁创建 diagrams/<stable-name>.mmd，并生成同名 SVG。
+    下方相对路径从“复制后的 HTML”出发填写；同时登记 design-system/learning-diagrams.json。
+    完成交付前运行 npm run diagrams:generate 与 npm run content:check。
+  -->
+  <section>
+    <div class="sec-head">
+      <span class="idx">FIG.04</span>
+      <h2><!-- FILL -->学习图表</h2>
+      <span class="rule"></span>
+    </div>
+    <figure class="learning-diagram learning-diagram--wide" data-diagram-source="diagrams/example.mmd">
+      <div class="learning-diagram__viewport">
+        <a class="learning-diagram__image-link" href="diagrams/example.svg" target="_blank" rel="noopener" aria-label="在新窗口打开图表原图">
+          <img src="diagrams/example.svg" alt="<!-- FILL: 描述图表目的和主要关系 -->图表替代文本" />
+        </a>
+      </div>
+      <figcaption><span><!-- FILL: 提供足以理解上下文的文字说明 -->图表说明。</span><span class="learning-diagram__actions"><a href="diagrams/example.mmd">查看 Mermaid 源码</a><a href="diagrams/example.svg" target="_blank" rel="noopener">打开原图</a></span></figcaption>
+    </figure>
+  </section>
+
   <footer>
     <span><!-- FILL -->文档名 · v0.1 · 2026-07-08</span>
     <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
