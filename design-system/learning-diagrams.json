@@ -336,6 +336,56 @@
       "caption": "HITL 是状态协议，预算是多维控制，事件响应以证据保存和安全恢复收口。",
       "alt": "运行事件按风险预算和异常分流，正常继续，高风险暂停审批，超预算降级终止，安全事件撤权隔离并保存证据，经修复回归后受控恢复。",
       "wide": true
+    },
+    {
+      "id": "dataset-baseline-pipeline",
+      "type": "flowchart",
+      "page": "docs/evaluation/01-objectives-datasets-and-baselines.html",
+      "source": "docs/evaluation/diagrams/dataset-baseline-pipeline.mmd",
+      "svg": "docs/evaluation/diagrams/dataset-baseline-pipeline.svg",
+      "caption": "评测集是被治理的数据产品，不是随手收集的一袋 prompt。",
+      "alt": "产品目标与风险形成失败分类，生产专家和合成样本经去重脱敏切分成为版本化评测集，在冻结系统上运行基线并分析切片和数据缺口。",
+      "wide": true
+    },
+    {
+      "id": "outcome-trajectory-evaluation",
+      "type": "flowchart",
+      "page": "docs/evaluation/02-outcome-and-trajectory-evaluation.html",
+      "source": "docs/evaluation/diagrams/outcome-trajectory-evaluation.mmd",
+      "svg": "docs/evaluation/diagrams/outcome-trajectory-evaluation.svg",
+      "caption": "最终结果回答“做成了吗”，轨迹回答“为何做成、是否安全、哪里可修”。",
+      "alt": "同一评测运行同时产生最终结果与 trace，分别接受正确性业务验收和步骤工具证据成本策略评分，之后按切片聚合并反馈编排策略。",
+      "wide": true
+    },
+    {
+      "id": "judge-escalation",
+      "type": "flowchart",
+      "page": "docs/evaluation/03-rules-humans-and-llm-as-a-judge.html",
+      "source": "docs/evaluation/diagrams/judge-escalation.mmd",
+      "svg": "docs/evaluation/diagrams/judge-escalation.svg",
+      "caption": "Judge 是有误差的测量工具，不是事实来源或线上授权者。",
+      "alt": "结果与 trace 优先进入确定性规则，语义判断由 LLM Judge 批量处理，低置信分歧和高风险样本升级人工，所有结果持续校准审计和漂移监控。",
+      "wide": true
+    },
+    {
+      "id": "regression-release-gate",
+      "type": "flowchart",
+      "page": "docs/evaluation/04-regression-tests-and-release-gates.html",
+      "source": "docs/evaluation/diagrams/regression-release-gate.mmd",
+      "svg": "docs/evaluation/diagrams/regression-release-gate.svg",
+      "caption": "离线通过是上线必要条件，不是充分条件；灰度与回滚继续验证真实分布。",
+      "alt": "候选变更在固定环境运行回归挑战和安全数据集，经重复运行统计比较后决定阻断或小流量发布，线上异常触发回滚，稳定后逐步放量。",
+      "wide": true
+    },
+    {
+      "id": "safety-feedback-loop",
+      "type": "flowchart",
+      "page": "docs/evaluation/05-safety-red-teaming-and-online-feedback.html",
+      "source": "docs/evaluation/diagrams/safety-feedback-loop.mmd",
+      "svg": "docs/evaluation/diagrams/safety-feedback-loop.svg",
+      "caption": "线上治理立即控制风险；离线评测从证据中学习并验证修复，两条链路时间尺度不同。",
+      "alt": "威胁模型驱动红队在隔离环境运行，失败与脱敏线上 trace 汇入高风险样本库，离线安全回归形成修复反馈，交给正确组件 owner 后受控上线并继续观测。",
+      "wide": true
     }
   ]
 }
