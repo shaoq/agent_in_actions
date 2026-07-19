@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import {
-  collectFiles,
+  collectManagedDiagramSources,
   diagramFingerprint,
   fingerprintLabel,
   mmdcPath,
@@ -18,7 +18,7 @@ const errors = [];
 const manifest = readManifest();
 const ids = new Set();
 const pages = new Set(manifest.diagrams.map((diagram) => diagram.page));
-const managedSources = collectFiles(path.join(projectRoot, 'docs'), '.mmd');
+const managedSources = collectManagedDiagramSources();
 const manifestSources = new Set(manifest.diagrams.map((diagram) => diagram.source));
 
 function fail(message) {

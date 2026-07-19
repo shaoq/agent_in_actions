@@ -346,6 +346,11 @@ details.deep .placeholder .ph-tag{color:var(--rose)}
 .answer-block h3{font-family:var(--serif);font-size:20px;color:#eef5fd}
 .answer-block p{margin-top:8px;color:var(--ink-dim);font-size:14.5px}
 .checkpoint-answer-task{scroll-margin-top:24px}
+.checkpoint-answer__model{margin:14px 0 20px;padding:16px 18px;border:1px solid rgba(114,209,218,.24);border-left:3px solid var(--cyan);background:rgba(9,31,52,.46)}
+.checkpoint-answer__model h3{margin-top:0;color:var(--cyan)}
+.checkpoint-answer__model p,.checkpoint-answer__model li{color:var(--ink);font-size:15px;overflow-wrap:anywhere}
+.checkpoint-answer__model pre,.checkpoint-answer__model .table-wrap{margin-top:12px}
+.checkpoint-answer__model h4{margin:14px 0 6px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--yellow)}
 .theory-followups{margin-top:30px}
 .theory-followups__hint{
   margin:0 0 16px;padding:12px 14px;border-left:2px solid var(--accent-2);
@@ -663,13 +668,16 @@ footer a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(-
   .question-card h3,.answer-card h3{color:#0b1a2c !important}
   .question-meta span{color:#075985 !important;border-color:#9bb !important}
   .answer-field,.question-action{border-color:#b8c5cf !important}
-  .checkpoint-answer-task{break-inside:avoid-page}
+  .checkpoint-answer-task{break-before:page;break-inside:auto}
+  .checkpoint-answer-task:first-of-type{break-before:auto}
+  .checkpoint-answer__model{break-inside:auto;background:transparent}
   .theory-followups__item,.theory-answer__body{background:#fff !important;border-color:#9bb !important}
   .theory-followups__question{color:#0b1a2c !important}
   .theory-answer summary{color:#075985 !important}
   .theory-answer:not([open])>.theory-answer__body{display:block !important}
   .prose pre code{
-    min-width:0;color:#075985 !important;background:#fff !important;white-space:pre-wrap;
+    min-width:0;max-width:100%;color:#075985 !important;background:#fff !important;
+    white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;
   }
   .learning-diagram{
     break-inside:avoid;border-color:#9bb !important;background:#fff !important;box-shadow:none !important;

@@ -566,6 +566,166 @@
       "caption": "交互层把渠道、身份、会话和同意规范化后交给编排，再把澄清、进度、结果和移交适配回用户。",
       "alt": "交互接入总览：用户渠道进入交互层形成规范化请求交给编排，编排返回澄清、流式结果或人工移交事件。",
       "wide": true
+    },
+    {
+      "id": "answer-nine-component-control-feedback",
+      "type": "flowchart",
+      "page": "assessment/answers/00-agent-foundations.html",
+      "source": "assessment/answers/diagrams/nine-component-control-feedback-map.mmd",
+      "svg": "assessment/answers/diagrams/nine-component-control-feedback-map.svg",
+      "caption": "九个核心组件在在线请求中形成受治理的控制闭环；脱敏运行证据进入离线评测，只有通过版本化门禁的策略与配置才反馈回编排。",
+      "alt": "九组件关系图：交互进入编排，推理经模型网关形成决策，工具、记忆和知识返回观察或证据；治理贯穿在线路径，评测离线消费证据并通过发布门禁反馈编排。",
+      "wide": true
+    },
+    {
+      "id": "answer-architecture-online-control-flow",
+      "type": "sequence",
+      "page": "assessment/answers/01-agent-architecture.html",
+      "source": "docs/foundations/diagrams/online-control-flow.mmd",
+      "svg": "docs/foundations/diagrams/online-control-flow.svg",
+      "caption": "在线主链路由治理校验进入编排，推理经模型网关提出决定；动作只有获授权才执行，结果或类型化控制状态再交付给用户。",
+      "alt": "九层架构在线时序：用户请求经治理与编排进入推理和模型网关，动作、知识或记忆调用返回观察，拒绝、审批、澄清与完成进入显式控制分支。",
+      "wide": true
+    },
+    {
+      "id": "answer-architecture-offline-evaluation-feedback",
+      "type": "flowchart",
+      "page": "assessment/answers/01-agent-architecture.html",
+      "source": "docs/foundations/diagrams/offline-evaluation-feedback-loop.mmd",
+      "svg": "docs/foundations/diagrams/offline-evaluation-feedback-loop.svg",
+      "caption": "离线评测异步消费受治理的线上 trace，把指标、失败分类和安全发现转成候选变更；候选只有通过回归与发布门禁才回到线上。",
+      "alt": "九层架构离线反馈闭环：线上运行产生受治理 trace，离线评测形成发现并更新编排、工具、检索或路由候选，版本化门禁通过后重新部署。",
+      "wide": true
+    },
+    {
+      "id": "answer-orchestration-request-loop",
+      "type": "sequence",
+      "page": "assessment/answers/01-orchestration.html",
+      "source": "docs/diagrams/single-agent-request-loop.mmd",
+      "svg": "docs/diagrams/single-agent-request-loop.svg",
+      "caption": "编排拥有显式状态和有界循环；推理只提出意图，治理决定动作是否可执行，工具观察写回状态，finish 仍需业务验收。",
+      "alt": "编排请求循环：用户目标初始化运行状态，编排反复读取状态并请求推理决定，动作经治理后调用工具，观察写回；完成、澄清、升级和失败进入显式状态。",
+      "wide": true
+    },
+    {
+      "id": "answer-orchestration-run-lifecycle",
+      "type": "state",
+      "page": "assessment/answers/01-orchestration.html",
+      "source": "docs/orchestration/diagrams/run-lifecycle.mmd",
+      "svg": "docs/orchestration/diagrams/run-lifecycle.svg",
+      "caption": "Run 的等待与恢复不是终态；恢复必须基于 checkpoint 并重新校验身份和环境，完成、失败、取消与预算耗尽保持明确区分。",
+      "alt": "Run 生命周期状态图：Created 进入 Running，运行可等待或恢复；恢复校验通过才返回 Running，业务验收通过后完成，不可恢复错误、取消和预算耗尽进入不同终态。",
+      "wide": true
+    },
+    {
+      "id": "answer-tools-call-lifecycle",
+      "type": "sequence",
+      "page": "assessment/answers/03-tools-actions.html",
+      "source": "docs/tools/diagrams/tool-call-lifecycle.mmd",
+      "svg": "docs/tools/diagrams/tool-call-lifecycle.svg",
+      "caption": "工具调用依次经过准备、授权、派发、观察和调用记录提交；派发后超时必须标为未知结果，不能直接当作未执行。",
+      "alt": "工具调用生命周期时序：编排提交已验证动作，工具准备契约并请求治理授权，允许后派发外部系统，规范化响应或未知结果并提交 receipt，最后返回类型化 Observation。",
+      "wide": true
+    },
+    {
+      "id": "answer-rag-ingestion-indexing",
+      "type": "flowchart",
+      "page": "assessment/answers/04-knowledge-rag.html",
+      "source": "docs/knowledge-rag/diagrams/ingestion-indexing-pipeline.mmd",
+      "svg": "docs/knowledge-rag/diagrams/ingestion-indexing-pipeline.svg",
+      "caption": "离线知识供应链把权威源转换为带权限、租户、版本和血缘的索引；新版本只有通过质量门禁才原子发布。",
+      "alt": "RAG 离线摄取流程：权威数据源经快照、解析、权限与版本元数据、结构切分和特征生成进入版本化索引，再经质量门禁发布或隔离回滚。",
+      "wide": true
+    },
+    {
+      "id": "answer-rag-online-pipeline",
+      "type": "flowchart",
+      "page": "assessment/answers/04-knowledge-rag.html",
+      "source": "docs/knowledge-rag/diagrams/rag-online-pipeline.mmd",
+      "svg": "docs/knowledge-rag/diagrams/rag-online-pipeline.svg",
+      "caption": "在线链路携带身份和过滤条件，经访问策略、混合检索、重排、证据组装、生成和引用校验返回；Memory 只按独立策略接入编排。",
+      "alt": "RAG 在线流程：用户问题和身份进入编排，经访问策略、混合检索、重排与证据上下文驱动推理，引用校验后返回；外部知识与 Agent 记忆保持边界。",
+      "wide": true
+    },
+    {
+      "id": "answer-memory-state-session-boundary",
+      "type": "flowchart",
+      "page": "assessment/answers/05-memory-system.html",
+      "source": "docs/memory/diagrams/state-session-memory-boundary.mmd",
+      "svg": "docs/memory/diagrams/state-session-memory-boundary.svg",
+      "caption": "Session 组织交互，Run State 支撑当前任务恢复；经历只有通过同意、验证与策略门禁才进入长期 Memory，外部知识由 RAG 独立提供。",
+      "alt": "State、Session、Memory 与 RAG 边界：输入形成 Session 和 Run State，经历候选经门禁进入长期记忆；外部知识和授权后的记忆分别回到当前运行。",
+      "wide": true
+    },
+    {
+      "id": "answer-memory-lifecycle",
+      "type": "flowchart",
+      "page": "assessment/answers/05-memory-system.html",
+      "source": "docs/memory/diagrams/memory-lifecycle.mmd",
+      "svg": "docs/memory/diagrams/memory-lifecycle.svg",
+      "caption": "记忆写入从有来源的候选开始，经同意、敏感性、置信与冲突门禁发布；读取受身份和 purpose 约束，TTL、撤回与删除沿生命周期传播。",
+      "alt": "记忆生命周期：经历形成带来源候选，门禁接受后整合入库；请求按身份用途授权并排序读取，TTL、撤回和删除触发衰减、归档、传播与残留验证。",
+      "wide": true
+    },
+    {
+      "id": "answer-governance-online-control-plane",
+      "type": "flowchart",
+      "page": "assessment/answers/06-governance-observability.html",
+      "source": "docs/governance-observability/diagrams/online-governance-control-plane.mmd",
+      "svg": "docs/governance-observability/diagrams/online-governance-control-plane.svg",
+      "caption": "在线治理在输入、动作、预算、审批和输出阶段返回允许、义务、暂停或拒绝；Trace、Log、Metric 与 Audit 贯穿而不替代强制控制。",
+      "alt": "在线治理控制面：身份请求经输入门禁进入编排和候选动作，授权预算审批决定执行或暂停拒绝，输出再校验脱敏；遥测审计贯穿各阶段。",
+      "wide": true
+    },
+    {
+      "id": "answer-governance-telemetry-correlation",
+      "type": "flowchart",
+      "page": "assessment/answers/06-governance-observability.html",
+      "source": "docs/governance-observability/diagrams/telemetry-correlation.mmd",
+      "svg": "docs/governance-observability/diagrams/telemetry-correlation.svg",
+      "caption": "Trace 保存因果路径，Log 保存离散事件，Metric 暴露聚合趋势，Audit 记录责任与策略；统一关联后才能从告警回到第一处事实偏离。",
+      "alt": "遥测关联图：一次 run 同时产生 Trace、Log 和 Metric，分别通过关联 ID、事件字段和聚合信号进入查询；Audit 与告警共同支持事实、假设和处置。",
+      "wide": true
+    },
+    {
+      "id": "answer-governance-hitl-budget-incident",
+      "type": "flowchart",
+      "page": "assessment/answers/06-governance-observability.html",
+      "source": "docs/governance-observability/diagrams/hitl-budget-incident-loop.mmd",
+      "svg": "docs/governance-observability/diagrams/hitl-budget-incident-loop.svg",
+      "caption": "风险动作进入 HITL，预算临界进入降级或终止，疑似事件先撤权隔离；批准恢复和事件修复都必须重验或回归后受控恢复。",
+      "alt": "HITL、预算与事件响应闭环：运行事件按风险预算异常分流，审批通过且重验后继续，预算超限降级终止，事件先遏制保存证据再修复回归并受控恢复。",
+      "wide": true
+    },
+    {
+      "id": "answer-infrastructure-runtime-topology",
+      "type": "flowchart",
+      "page": "assessment/answers/08-model-gateway-infrastructure.html",
+      "source": "docs/model-gateway-infrastructure/diagrams/runtime-storage-network-topology.mmd",
+      "svg": "docs/model-gateway-infrastructure/diagrams/runtime-storage-network-topology.svg",
+      "caption": "无状态编排通过 Durable State、Queue 与 Artifact Store 恢复；模型网关和工具沙箱使用不同 egress，短期凭据由 Secret Broker 分别注入。",
+      "alt": "运行时存储网络拓扑：身份入口进入无状态编排，编排连接模型网关、持久状态、队列、对象存储和工具沙箱；网关与沙箱具有独立 egress 和短期凭据边界。",
+      "wide": true
+    },
+    {
+      "id": "answer-interaction-streaming-resume",
+      "type": "sequence",
+      "page": "assessment/answers/09-interaction-access.html",
+      "source": "assessment/answers/diagrams/streaming-resume-sequence.mmd",
+      "svg": "assessment/answers/diagrams/streaming-resume-sequence.svg",
+      "caption": "每个流式事件具有稳定 ID 并持久化；断线重连携带最后确认 ID，接入层重验身份后有序补发并去重，无法恢复时返回类型化出口。",
+      "alt": "流式恢复时序：用户请求产生带事件 ID 和恢复令牌的流，断线期间事件继续持久化；重连后按最后确认 ID 补发去重，从 checkpoint 恢复，过期或身份变化时重启或移交。",
+      "wide": true
+    },
+    {
+      "id": "answer-interaction-clarification-approval-resume",
+      "type": "sequence",
+      "page": "assessment/answers/09-interaction-access.html",
+      "source": "assessment/answers/diagrams/clarification-approval-resume-sequence.mmd",
+      "svg": "assessment/answers/diagrams/clarification-approval-resume-sequence.svg",
+      "caption": "澄清响应按 question ID 幂等恢复；高风险动作以摘要和 checkpoint 请求审批，批准后仍须重验，拒绝、过期或关键参数变化进入显式分支。",
+      "alt": "澄清与审批恢复时序：编排保存问题并等待用户回答，校验 question ID 后恢复；高风险动作绑定摘要和 checkpoint 发起审批，批准重验后执行，拒绝或过期则重新规划或终止。",
+      "wide": true
     }
   ]
 }

@@ -2,19 +2,28 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import {
+  ANSWER_DIAGRAM_TARGETS,
+  validateAnswerDiagramTargets,
+} from './theory-checkpoint-answer-diagrams.mjs';
 
 const require = createRequire(import.meta.url);
 const { LEARNING_CATALOG } = require('./learning-navigation.js');
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
 const requiredParts = [
-  'checkpoint-answer__suggested',
+  'checkpoint-answer__model',
   'checkpoint-answer__evidence',
   'checkpoint-answer__bands',
   'checkpoint-answer__variants',
   'checkpoint-answer__deductions',
   'checkpoint-answer__remediation',
 ];
+const diagramManifest = JSON.parse(fs.readFileSync(path.join(projectRoot, 'design-system/learning-diagrams.json'), 'utf8'));
+
+if (ANSWER_DIAGRAM_TARGETS.length !== 14) errors.push(`图形化答案目标应为 14 项，实际为 ${ANSWER_DIAGRAM_TARGETS.length}`);
+const targetDiagramCount = ANSWER_DIAGRAM_TARGETS.reduce((total, target) => total + target.diagramIds.length, 0);
+if (targetDiagramCount !== 16) errors.push(`图形化答案图表实例应为 16 个，实际为 ${targetDiagramCount}`);
 
 function read(relativePath) {
   const target = path.resolve(projectRoot, relativePath);
@@ -73,16 +82,34 @@ for (const checkpoint of checkpoints) {
   const tasks = [...answerSource.matchAll(/<article class="answer-block checkpoint-answer-task" data-task-id="([^"]+)">([\s\S]*?)<\/article>/g)];
   if (tasks.length !== 5) errors.push(`${answer.path} 应包含 5 项任务校准，实际为 ${tasks.length}`);
   const taskIds = new Set();
+  const taskBodies = new Map();
   for (const [, taskId, body] of tasks) {
     if (taskIds.has(taskId)) errors.push(`${answer.path} 重复任务 ID: ${taskId}`);
     taskIds.add(taskId);
+    taskBodies.set(taskId, body);
     for (const part of requiredParts) {
-      const match = body.match(new RegExp(`<section class="[^"]*${part}[^"]*"[^>]*>([\\s\\S]*?)<\\/section>`));
+      const matches = [...body.matchAll(new RegExp(`<section class="[^"]*${part}[^"]*"[^>]*>([\\s\\S]*?)<\\/section>`, 'g'))];
+      if (matches.length !== 1) {
+        errors.push(`${answer.path} 的 ${taskId} 应恰有一个 ${part}，实际为 ${matches.length}`);
+        continue;
+      }
+      const match = matches[0];
       const content = match?.[1].replace(/<h3[^>]*>[\s\S]*?<\/h3>/, ' ');
       const text = content?.replace(/<[^>]+>/g, ' ').replace(/&[^;]+;/g, ' ').replace(/\s+/g, ' ').trim();
       if (!text || text.length < 20) errors.push(`${answer.path} 的 ${taskId} 缺少实质性 ${part}`);
+      if (part === 'checkpoint-answer__model') {
+        const contentBlocks = count(content ?? '', /<(?:p|ol|ul|pre|table|div)\b/g);
+        if ((text?.length ?? 0) < 180) errors.push(`${answer.path} 的 ${taskId} 完整示范答案过短（${text?.length ?? 0} 字符，至少 180）`);
+        if (contentBlocks < 2) errors.push(`${answer.path} 的 ${taskId} 完整示范答案至少需要两个实质内容块，实际为 ${contentBlocks}`);
+        if (!match[1].includes('<h3>完整示范答案</h3>')) errors.push(`${answer.path} 的 ${taskId} 未使用“完整示范答案”标题`);
+      }
     }
   }
+  errors.push(...validateAnswerDiagramTargets({
+    answerPath: answer.path,
+    taskBodies,
+    manifest: diagramManifest,
+  }));
 
   const checkpointTaskIds = [...checkpointSource.matchAll(/data-task-id="([^"]+)"/g)].map((match) => match[1]);
   const checkpointTaskIdSet = new Set(checkpointTaskIds);
@@ -107,4 +134,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`检查点答案校验通过: ${checkpoints.length} 个检查点与 ${answers.length} 个独立建议答案一一对应。`);
+console.log(`检查点答案校验通过: ${checkpoints.length} 个检查点、${answers.length} 个独立建议答案与 ${targetDiagramCount} 个图表实例满足契约。`);

@@ -10,6 +10,10 @@ export const mermaidCssPath = path.join(projectRoot, 'design-system/mermaid-them
 export const packagePath = path.join(projectRoot, 'package.json');
 export const mmdcPath = path.join(projectRoot, 'node_modules/.bin', process.platform === 'win32' ? 'mmdc.cmd' : 'mmdc');
 export const fingerprintLabel = 'blueprint-mermaid-input-sha256';
+export const managedDiagramRoots = [
+  path.join(projectRoot, 'docs'),
+  path.join(projectRoot, 'assessment/answers'),
+];
 
 export function readManifest() {
   return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
@@ -24,6 +28,10 @@ export function collectFiles(directory, suffix) {
     else if (entry.isFile() && entry.name.endsWith(suffix)) files.push(target);
   }
   return files.sort();
+}
+
+export function collectManagedDiagramSources() {
+  return managedDiagramRoots.flatMap((root) => collectFiles(root, '.mmd')).sort();
 }
 
 export function relativeFromRoot(target) {

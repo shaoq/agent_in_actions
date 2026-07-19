@@ -1,0 +1,29 @@
+sequenceDiagram
+    participant U as 用户 / 渠道
+    participant A as 交互接入层
+    participant O as 编排控制层
+    participant E as 事件存储
+
+    U->>A: 启动请求 request_id=Q7
+    A->>O: identity + session + capabilities
+    O->>E: append event e101 checkpoint cp7
+    O-->>A: e101 status.running
+    A-->>U: event_id=e101 + resume_token
+    O->>E: append e102 content.delta
+    O-->>A: e102 content.delta
+    A--xU: 网络断开
+    O->>E: append e103 / e104 and checkpoint cp8
+    U->>A: 重连 token + last_event_id=e101
+    A->>A: 重验 identity session token expiry
+    A->>E: read events after e101
+    E-->>A: e102 e103 e104 + checkpoint cp8
+    loop 按 event_id 有序补发
+        A->>A: 跳过客户端已确认或重复事件
+        A-->>U: replay event + idempotent cursor
+    end
+    A->>O: resume from cp8 + acknowledged=e104
+    O-->>A: e105 current status / result
+    A-->>U: e105 + new resume_token
+    alt token 过期 身份变化或事件已清理
+        A-->>U: resume_unavailable + restart / handoff
+    end

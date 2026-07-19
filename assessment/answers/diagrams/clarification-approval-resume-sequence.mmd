@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant U as 用户
+    participant A as 交互接入层
+    participant O as 编排控制层
+    participant S as Run State
+    participant G as 治理层
+    participant H as 审批人 / HITL
+    participant T as 工具运行时
+
+    O->>S: 保存 question_id=q12 与 waiting_for_user
+    O-->>A: clarification.request q12 + options + expiry
+    A-->>U: 可访问问题与选择
+    U->>A: clarification.response q12
+    A->>A: 校验 identity session question_id expiry
+    A->>O: 规范化答案 + response_id
+    O->>S: 幂等提交答案并恢复 Running
+    O->>G: 高风险 ActionIntent + action_digest=h9
+    G-->>O: require_approval policy=p17
+    O->>S: checkpoint cp9 + waiting_approval + digest
+    O-->>H: approval.request ap7 + 摘要 + 有效期
+    alt 批准
+        H-->>O: approve ap7 + digest=h9
+        O->>G: 重验 identity resource digest policy expiry
+        G-->>O: allow + decision_ref
+        O->>T: execute with idempotency_key
+        T-->>O: typed observation + effect receipt
+        O->>S: commit observation and continue
+    else 拒绝
+        H-->>O: deny ap7 + reason
+        O->>S: record denied and replan / stop
+    else 过期或关键参数变化
+        O->>S: invalidate ap7
+        O-->>A: approval_expired / request again
+        A-->>U: 展示新摘要或安全终止
+    end

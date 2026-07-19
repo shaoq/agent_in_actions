@@ -1,0 +1,29 @@
+flowchart TB
+    subgraph Online[在线请求与控制闭环]
+        I[1 交互与接入层] --> O[2 编排控制层]
+        O --> R[3 推理内核]
+        R --> G[9 模型网关 + 基础设施]
+        G --> R
+        R --> O
+        O --> T[4 工具 / 动作层]
+        O --> M[5 记忆系统]
+        O --> K[6 知识 / 检索]
+        T -->|Observation / Typed Error| O
+        M -->|经历候选 / Recall| O
+        K -->|外部证据 / Citation| O
+        O -->|Progress / Result / Handoff| I
+        C[7 治理与可观测层] -. 身份 策略 预算 审计 .-> I
+        C -. 授权 Trace HITL .-> O
+        C -. 执行与 Egress 控制 .-> T
+        C -. 路由 成本 基础设施信号 .-> G
+    end
+
+    subgraph Offline[离线学习与发布反馈]
+        E[8 评测层]
+        Q[版本化回归与发布门禁]
+    end
+
+    C -->|脱敏 Trace / Log / Metric| E
+    E -->|指标 失败分类 安全发现| Q
+    Q -->|通过后更新策略与配置| O
+    Q -. 未通过则继续修订 .-> E

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import {
-  collectFiles,
+  collectManagedDiagramSources,
   diagramFingerprint,
   fingerprintLabel,
   mmdcPath,
@@ -15,7 +15,7 @@ import {
 
 const errors = [];
 const manifest = readManifest();
-const managedSources = collectFiles(path.join(projectRoot, 'docs'), '.mmd');
+const managedSources = collectManagedDiagramSources();
 const manifestSources = new Set(manifest.diagrams.map((diagram) => diagram.source));
 
 if (!fs.existsSync(mmdcPath)) {
