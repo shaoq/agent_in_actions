@@ -256,15 +256,48 @@
 <li>“所有路由都让模型判断更灵活”:确定性规则能稳定解决的问题不必交给模型。</li>
 <li>“工具失败是工具层自己的事”:工具分类错误,编排仍需决定重试、补偿或升级。</li>
 </ol>
+<section class="theory-followups">
 <h2>理论追问</h2>
-<ol>
-<li>编排层和推理内核能否部署在同一进程?为什么语义仍要分开?</li>
-<li>哪些路由应该写成代码,哪些可以交给模型?</li>
-<li>一个固定 Workflow 是否需要编排器?</li>
-<li>模型直接调用工具的 SDK 为什么仍然存在编排逻辑?</li>
-<li>如何证明某次 finish 是业务成功而非模型自我声明?</li>
-<li>如果治理策略在工具服务中,编排层还需要做什么?</li>
+<p class="theory-followups__hint">请先脱稿回答，再展开参考答案核对边界、证据和取舍。</p>
+<ol class="theory-followups__list">
+<li class="theory-followups__item">
+<p class="theory-followups__question">编排层和推理内核能否部署在同一进程?为什么语义仍要分开?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>可以部署在同一进程，但语义必须分开。编排拥有 Run State、状态迁移、重试、权限检查和终止权；推理内核只根据受控上下文提出下一步候选判断。进程边界是部署选择，职责边界决定可测试性、可替换性和故障归因。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">哪些路由应该写成代码,哪些可以交给模型?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>身份授权、金额阈值、合规门禁、状态合法迁移和确定性业务规则应写成代码；意图模糊、方案比较或开放式任务分解可让模型提出候选。判断标准是规则能否稳定枚举、错误代价和是否需要可复现审计，模型路由仍需由编排校验。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">一个固定 Workflow 是否需要编排器?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>需要控制执行顺序、状态和失败恢复的运行机制，但不一定需要复杂的 Agent 编排器。简单固定流程可由普通代码或状态机承担；只有出现持久状态、暂停恢复、并发、补偿或动态分支时，才值得引入更完整的编排基础。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">模型直接调用工具的 SDK 为什么仍然存在编排逻辑?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>SDK 只是把模型输出解析成工具调用，调用前后的参数校验、授权、执行、Observation 回写、重试预算和终止判断仍构成编排。若这些逻辑隐含在回调中，它们并没有消失，只是变得更难观察和测试。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">如何证明某次 finish 是业务成功而非模型自我声明?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>编排应调用独立验收器读取外部事实，例如按工单 ID 回查状态、运行测试或核对业务约束，并把验收结果作为 Observation 写入 State。Trace 至少要关联 finish 候选、验收规则版本、外部证据和最终 terminal reason。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">如果治理策略在工具服务中,编排层还需要做什么?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>工具服务可执行资源侧的最终授权，但编排仍需在调用前维护主体、目标、风险等级、审批状态和预算，决定是否允许进入该工具，并处理拒绝后的分支。两层形成纵深防御：编排负责流程控制，工具服务负责资源边界的强制执行。</p></div>
+</details>
+</li>
 </ol>
+</section>
 <h2>本单元产出</h2>
 <ul>
 <li>重画一次单 Agent 请求控制图。</li>

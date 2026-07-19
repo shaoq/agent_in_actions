@@ -7,7 +7,9 @@
     "navigation:check": "node design-system/validate-learning-navigation.mjs",
     "links:check": "node design-system/validate-local-links.mjs",
     "interview:check": "node design-system/validate-interview-question-bank.mjs",
-    "content:check": "npm run diagrams:check && npm run navigation:check && npm run links:check && npm run interview:check"
+    "theory-followups:check": "node design-system/validate-theory-followups.mjs",
+    "theory-checkpoint-answers:check": "node design-system/validate-theory-checkpoint-answers.mjs",
+    "content:check": "npm run diagrams:check && npm run navigation:check && npm run links:check && npm run interview:check && npm run theory-followups:check && npm run theory-checkpoint-answers:check"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "11.12.0"

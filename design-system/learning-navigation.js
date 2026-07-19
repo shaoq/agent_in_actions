@@ -22,6 +22,7 @@
       items: [
         { id: 'agent-foundations', title: 'Agent 基础理论', path: 'docs/foundations/01-agent-basics.html', type: 'theory', order: 1, status: 'available' },
         { id: 'agent-foundations-checkpoint', title: '基础理论检查点', path: 'assessment/00-agent-foundations-theory-checkpoint.html', type: 'checkpoint', order: 2, status: 'available' },
+        { id: 'agent-foundations-suggested-answer', title: '基础检查点建议答案', path: 'assessment/answers/00-agent-foundations.html', type: 'suggested-answer', answerFor: 'agent-foundations-checkpoint', order: 3, status: 'available' },
       ],
     },
     {
@@ -32,6 +33,7 @@
       items: [
         { id: 'agent-architecture', title: 'Agent 架构总览', path: 'docs/00-agent-architecture.html', type: 'overview', order: 1, status: 'available' },
         { id: 'agent-architecture-checkpoint', title: '九层架构检查点', path: 'assessment/01-agent-architecture-checkpoint.html', type: 'checkpoint', order: 2, status: 'available' },
+        { id: 'agent-architecture-suggested-answer', title: '架构检查点建议答案', path: 'assessment/answers/01-agent-architecture.html', type: 'suggested-answer', answerFor: 'agent-architecture-checkpoint', order: 3, status: 'available' },
       ],
     },
     {
@@ -48,6 +50,7 @@
         { id: 'orchestration-reliability', title: '04 可靠性与恢复', path: 'docs/orchestration/04-reliability-and-recovery.html', type: 'theory', order: 6, status: 'available' },
         { id: 'orchestration-multi-agent', title: '05 Multi-Agent 边界', path: 'docs/orchestration/05-multi-agent-boundaries.html', type: 'theory', order: 7, status: 'available' },
         { id: 'orchestration-checkpoint', title: '编排理论检查点', path: 'assessment/01-orchestration-theory-checkpoint.html', type: 'checkpoint', order: 8, status: 'available' },
+        { id: 'orchestration-suggested-answer', title: '编排检查点建议答案', path: 'assessment/answers/01-orchestration.html', type: 'suggested-answer', answerFor: 'orchestration-checkpoint', order: 9, status: 'available' },
       ],
     },
     {
@@ -63,6 +66,7 @@
         { id: 'reasoning-patterns', title: '03 推理模式及取舍', path: 'docs/reasoning/03-reasoning-patterns-and-tradeoffs.html', type: 'theory', order: 5, status: 'available' },
         { id: 'reasoning-uncertainty', title: '04 不确定性与恢复', path: 'docs/reasoning/04-uncertainty-failure-and-recovery.html', type: 'theory', order: 6, status: 'available' },
         { id: 'reasoning-core-checkpoint', title: '推理内核理论检查点', path: 'assessment/02-reasoning-core-theory-checkpoint.html', type: 'checkpoint', order: 7, status: 'available' },
+        { id: 'reasoning-core-suggested-answer', title: '推理检查点建议答案', path: 'assessment/answers/02-reasoning-core.html', type: 'suggested-answer', answerFor: 'reasoning-core-checkpoint', order: 8, status: 'available' },
       ],
     },
     {
@@ -79,6 +83,7 @@
         { id: 'tools-retry-idempotency', title: '04 重试、幂等与副作用', path: 'docs/tools/04-retry-idempotency-and-side-effects.html', type: 'theory', order: 6, status: 'available' },
         { id: 'tools-interfaces', title: '05 Function Calling / MCP / Computer Use', path: 'docs/tools/05-function-calling-mcp-and-computer-use.html', type: 'theory', order: 7, status: 'available' },
         { id: 'tools-actions-checkpoint', title: '工具 / 动作层理论检查点', path: 'assessment/03-tools-actions-theory-checkpoint.html', type: 'checkpoint', order: 8, status: 'available' },
+        { id: 'tools-actions-suggested-answer', title: '工具检查点建议答案', path: 'assessment/answers/03-tools-actions.html', type: 'suggested-answer', answerFor: 'tools-actions-checkpoint', order: 9, status: 'available' },
       ],
     },
     {
@@ -95,6 +100,7 @@
         { id: 'knowledge-rag-grounding-security', title: '04 Grounding、引用与访问控制', path: 'docs/knowledge-rag/04-grounding-citations-and-access-control.html', type: 'theory', order: 6, status: 'available' },
         { id: 'knowledge-rag-evaluation-diagnosis', title: '05 评测与失败诊断', path: 'docs/knowledge-rag/05-evaluation-and-failure-diagnosis.html', type: 'theory', order: 7, status: 'available' },
         { id: 'knowledge-rag-checkpoint', title: '知识 / RAG 理论检查点', path: 'assessment/04-knowledge-rag-theory-checkpoint.html', type: 'checkpoint', order: 8, status: 'available' },
+        { id: 'knowledge-rag-suggested-answer', title: 'RAG 检查点建议答案', path: 'assessment/answers/04-knowledge-rag.html', type: 'suggested-answer', answerFor: 'knowledge-rag-checkpoint', order: 9, status: 'available' },
       ],
     },
     {
@@ -110,6 +116,7 @@
         { id: 'memory-lifecycle', title: '03 读取、写入、整合与遗忘', path: 'docs/memory/03-read-write-consolidation-and-forgetting.html', type: 'theory', order: 5, status: 'available' },
         { id: 'memory-governance', title: '04 隐私、投毒与治理', path: 'docs/memory/04-privacy-poisoning-and-governance.html', type: 'theory', order: 6, status: 'available' },
         { id: 'memory-system-checkpoint', title: '记忆系统理论检查点', path: 'assessment/05-memory-system-theory-checkpoint.html', type: 'checkpoint', order: 7, status: 'available' },
+        { id: 'memory-system-suggested-answer', title: '记忆检查点建议答案', path: 'assessment/answers/05-memory-system.html', type: 'suggested-answer', answerFor: 'memory-system-checkpoint', order: 8, status: 'available' },
       ],
     },
     {
@@ -126,6 +133,7 @@
         { id: 'governance-injection-pii', title: '04 Prompt Injection、PII 与防护', path: 'docs/governance-observability/04-prompt-injection-pii-and-guardrails.html', type: 'theory', order: 6, status: 'available' },
         { id: 'governance-hitl-budget-incident', title: '05 HITL、预算与事件响应', path: 'docs/governance-observability/05-hitl-budget-and-incident-response.html', type: 'theory', order: 7, status: 'available' },
         { id: 'governance-observability-checkpoint', title: '治理与可观测理论检查点', path: 'assessment/06-governance-observability-theory-checkpoint.html', type: 'checkpoint', order: 8, status: 'available' },
+        { id: 'governance-observability-suggested-answer', title: '治理检查点建议答案', path: 'assessment/answers/06-governance-observability.html', type: 'suggested-answer', answerFor: 'governance-observability-checkpoint', order: 9, status: 'available' },
       ],
     },
     {
@@ -142,6 +150,7 @@
         { id: 'evaluation-regression-release-gates', title: '04 回归测试与上线门禁', path: 'docs/evaluation/04-regression-tests-and-release-gates.html', type: 'theory', order: 6, status: 'available' },
         { id: 'evaluation-safety-feedback', title: '05 安全红队与线上反馈', path: 'docs/evaluation/05-safety-red-teaming-and-online-feedback.html', type: 'theory', order: 7, status: 'available' },
         { id: 'evaluation-checkpoint', title: '评测层理论检查点', path: 'assessment/07-evaluation-theory-checkpoint.html', type: 'checkpoint', order: 8, status: 'available' },
+        { id: 'evaluation-suggested-answer', title: '评测检查点建议答案', path: 'assessment/answers/07-evaluation.html', type: 'suggested-answer', answerFor: 'evaluation-checkpoint', order: 9, status: 'available' },
       ],
     },
     {
@@ -158,6 +167,7 @@
         { id: 'infrastructure-runtime-storage-network', title: '04 运行时、存储与网络', path: 'docs/model-gateway-infrastructure/04-runtime-storage-and-network.html', type: 'theory', order: 6, status: 'available' },
         { id: 'infrastructure-sandbox-tenant-isolation', title: '05 沙箱、租户与执行隔离', path: 'docs/model-gateway-infrastructure/05-sandbox-tenant-and-execution-isolation.html', type: 'theory', order: 7, status: 'available' },
         { id: 'model-gateway-infrastructure-checkpoint', title: '模型网关 + 基础设施理论检查点', path: 'assessment/08-model-gateway-infrastructure-theory-checkpoint.html', type: 'checkpoint', order: 8, status: 'available' },
+        { id: 'model-gateway-infrastructure-suggested-answer', title: '网关与基础设施检查点建议答案', path: 'assessment/answers/08-model-gateway-infrastructure.html', type: 'suggested-answer', answerFor: 'model-gateway-infrastructure-checkpoint', order: 9, status: 'available' },
       ],
     },
     {
@@ -173,6 +183,7 @@
         { id: 'interaction-clarification-hitl-handoff', title: '03 澄清、HITL 与人工移交', path: 'docs/interaction-access/03-clarification-hitl-and-handoff.html', type: 'theory', order: 5, status: 'available' },
         { id: 'interaction-consent-recovery-accessibility', title: '04 同意、错误恢复与可访问性', path: 'docs/interaction-access/04-consent-error-recovery-and-accessibility.html', type: 'theory', order: 6, status: 'available' },
         { id: 'interaction-access-checkpoint', title: '交互与接入层理论检查点', path: 'assessment/09-interaction-access-theory-checkpoint.html', type: 'checkpoint', order: 7, status: 'available' },
+        { id: 'interaction-access-suggested-answer', title: '交互检查点建议答案', path: 'assessment/answers/09-interaction-access.html', type: 'suggested-answer', answerFor: 'interaction-access-checkpoint', order: 8, status: 'available' },
       ],
     },
     {

@@ -290,16 +290,54 @@
 <li>Trace 越详细越好,忽略隐私和成本。</li>
 <li><code>run_completed</code> 就是任务成功率分子。</li>
 </ol>
+<section class="theory-followups">
 <h2>理论追问</h2>
-<ol>
-<li>如何确定最大步数而不是拍脑袋?</li>
-<li>工具层重试和编排层重试如何分工?</li>
-<li>响应超时如何判断动作是否实际成功?</li>
-<li>补偿失败时系统进入什么状态?</li>
-<li>如何定义 observation 的信息增益?</li>
-<li>哪些 trace 字段必须脱敏?</li>
-<li>在线监控和离线 eval 如何消费同一 trace?</li>
+<p class="theory-followups__hint">请先脱稿回答，再展开参考答案核对边界、证据和取舍。</p>
+<ol class="theory-followups__list">
+<li class="theory-followups__item">
+<p class="theory-followups__question">如何确定最大步数而不是拍脑袋?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>基于任务分解的必要步骤、历史成功轨迹分布、延迟和成本 SLO 设置软硬预算，并按任务类型分层。门槛应通过评测验证：过低造成截断，过高掩盖循环；运行中还要结合信息增益和重复检测提前停止。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">工具层重试和编排层重试如何分工?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>工具层处理连接抖动等可安全透明重试，并遵守短超时和幂等条件；编排层根据业务错误类别、已发生副作用、全局预算和替代路径决定是否再次尝试、补偿或升级。两层必须共享 attempt、call ID 和 effect 状态。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">响应超时如何判断动作是否实际成功?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>把它标记为 effect unknown，禁止直接重放。使用幂等键或原调用 ID 查询外部系统，取得 receipt、资源版本或业务状态；确认未提交才可重试，确认已提交则回写成功，无法确认时转人工对账。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">补偿失败时系统进入什么状态?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>进入显式的 compensation_failed 或 needs_manual_repair，而不是继续宣称失败已回滚。State 要保留原动作、补偿尝试、剩余副作用和责任主体，暂停后续相关动作并触发告警与人工修复。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">如何定义 observation 的信息增益?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>信息增益可以表现为新增可信证据、减少候选空间、更新关键状态或解除下一步前置条件。应比较规范化内容、来源与业务字段，而不只比较文本；若连续多步没有增益，就触发改策略、停止或升级。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">哪些 trace 字段必须脱敏?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>Prompt、工具参数、检索片段、Observation、用户标识、凭据和业务载荷都可能含 PII 或密钥。应按字段分级做采集前最小化、tokenization 或遮盖，并记录策略版本；调试所需原文只能通过受审计的 break-glass 访问。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">在线监控和离线 eval 如何消费同一 trace?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>在线监控读取低延迟事件和聚合指标，用于超时、越权、预算和错误告警；离线评测读取脱敏、版本化的完整轨迹，分析结果质量、首个偏离点和回归。二者共享 run、step、版本和事件语义，但保留不同延迟与数据权限。</p></div>
+</details>
+</li>
 </ol>
+</section>
 <h2>参考资料</h2>
 <ul>
 <li><a href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/">OpenAI: A practical guide to building agents</a> - 停止阈值、人工介入和 guardrails。</li>

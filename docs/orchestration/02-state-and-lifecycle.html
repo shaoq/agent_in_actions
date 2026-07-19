@@ -240,16 +240,54 @@
 <li>认为恢复就是重跑:有副作用的节点不能盲目重放。</li>
 <li>只保存模型输出:工具真实结果、授权和业务验收同样关键。</li>
 </ol>
+<section class="theory-followups">
 <h2>理论追问</h2>
-<ol>
-<li>什么状态必须持久化,什么可以重算?</li>
-<li>checkpoint 应该在动作前还是动作后?</li>
-<li>为什么 checkpoint 不能解决所有幂等问题?</li>
-<li>session history 和 run observations 能否共用一个表?</li>
-<li>恢复旧 run 为什么要重新授权?</li>
-<li>如何在恢复能力和存储成本之间取舍?</li>
-<li>code deploy 时长任务如何迁移?</li>
+<p class="theory-followups__hint">请先脱稿回答，再展开参考答案核对边界、证据和取舍。</p>
+<ol class="theory-followups__list">
+<li class="theory-followups__item">
+<p class="theory-followups__question">什么状态必须持久化,什么可以重算?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>目标、外部副作用、授权与审批证据、已消费预算、checkpoint、幂等键和不可重复 Observation 必须持久化。可由版本化输入确定重建的派生摘要或缓存可以重算；判断依据是丢失后是否会重复副作用、改变权限语义或无法恢复。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">checkpoint 应该在动作前还是动作后?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>两侧通常都需要：动作前保存 intent、授权快照和幂等键，动作后保存 result、effect ID 与新 State。只在动作后保存会在崩溃时不知道是否提交，只在动作前保存又无法证明结果；关键是用状态机表达 submitted、unknown、committed。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">为什么 checkpoint 不能解决所有幂等问题?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>checkpoint 只能记录本地进度，无法原子地覆盖外部系统副作用。若请求超时，checkpoint 可能停在动作前而外部已成功。仍需稳定幂等键、外部查询接口、effect receipt 或事务 outbox 来识别重复和 effect unknown。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">session history 和 run observations 能否共用一个表?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>物理上可以共用存储，但必须有明确类型、主体、生命周期、权限和索引边界。Session history 服务交互连续性，Run Observation 服务当前执行与恢复；若不做逻辑隔离，会把展示消息当执行事实，也会让保留和删除策略相互冲突。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">恢复旧 run 为什么要重新授权?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>授权依赖主体、资源、动作、参数、策略版本和时间，这些条件在暂停期间可能变化。恢复时必须重查权限、审批有效期、业务对象版本和动作参数，不能把旧的 allow 决策当永久通行证。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">如何在恢复能力和存储成本之间取舍?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>按风险和重算代价分层：高风险副作用与人工审批保存细粒度事件和 checkpoint，低风险纯推理可只存关键状态并允许重算。结合 TTL、增量快照、压缩和归档，同时用恢复 SLO 与每 run 存储成本验证策略。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">code deploy 时长任务如何迁移?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>状态必须带 schema、workflow 和代码版本。部署时让旧 run 继续由兼容 worker 消费，或通过显式迁移器升级 State；不能让新代码直接解释未知旧状态。迁移前要做回放测试，并保留失败回滚与人工接管路径。</p></div>
+</details>
+</li>
 </ol>
+</section>
 <h2>参考资料</h2>
 <ul>
 <li><a href="https://docs.langchain.com/oss/python/langgraph/persistence">LangGraph Persistence</a> - checkpoint、thread、replay 和 fault tolerance 的框架实例。</li>

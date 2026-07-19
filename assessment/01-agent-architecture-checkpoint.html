@@ -21,6 +21,7 @@
       <a href="../roadmap/learning-plan.html">学习路线</a>
       <a href="../roadmap/progress-tracker.html">进度跟踪</a>
       <a href="../docs/00-agent-architecture.html">九层架构总览</a>
+      <a href="answers/01-agent-architecture.html">建议答案（完成后查看）</a>
     </nav>
   </header>
   <main class="prose">
@@ -50,7 +51,7 @@
 <li>首次未通过时只补强薄弱项,并使用新场景复测。</li>
 </ul>
 
-<h2>任务一:九层职责与边界</h2>
+<h2 id="task-1" data-task-id="task-1">任务一:九层职责与边界</h2>
 <p><strong>分值</strong>:20 分。</p>
 <p>不看文档,为九个核心组件分别填写:</p>
 <ol>
@@ -82,7 +83,7 @@
 <tr><td>17-20</td><td>能区分通用事实、项目参考架构与合理替代位置,并说明不同选择的代价。</td></tr>
 </tbody></table></div>
 
-<h2>任务二:在线主链路与离线旁路</h2>
+<h2 id="task-2" data-task-id="task-2">任务二:在线主链路与离线旁路</h2>
 <p><strong>分值</strong>:25 分。</p>
 <blockquote>
 <p>用户通过企业客服询问退款政策。系统需要结合用户身份检索其可见的公司制度;若用户决定申请退款,系统创建退款工单;金额超过阈值时必须暂停并等待人工审批。</p>
@@ -116,7 +117,7 @@
 <tr><td>21-25</td><td>进一步标出关键治理点、暂停与审批、业务验收、失败出口和参考架构假设。</td></tr>
 </tbody></table></div>
 
-<h2>任务三:七条关键关系与边界对照</h2>
+<h2 id="task-3" data-task-id="task-3">任务三:七条关键关系与边界对照</h2>
 <p><strong>分值</strong>:20 分。</p>
 <p>分别解释七条关系,每条给出一个错误设计及其风险:</p>
 <ol>
@@ -145,7 +146,7 @@
 <tr><td>17-20</td><td>能主动说明架构假设、合理替代位置、治理条件和替代方案代价。</td></tr>
 </tbody></table></div>
 
-<h2>任务四:错误架构归因</h2>
+<h2 id="task-4" data-task-id="task-4">任务四:错误架构归因</h2>
 <p><strong>分值</strong>:20 分。</p>
 <blockquote>
 <p>“用户请求直接发送给 LLM。LLM 保存全部历史,直接查询包含所有部门文档和用户对话的共享向量库,再直接执行数据库工具。工具失败后由模型自由决定是否反复重试。模型声明完成就返回成功。系统只打印文本日志,不保留结构化 State、权限证据或 Trace。团队使用三个 Agent,所以认为不再需要额外治理和评测。”</p>
@@ -169,7 +170,7 @@
 <tr><td>17-20</td><td>还能识别事实与推测、质疑 Multi-Agent 必要性,并说明修复顺序和残余风险。</td></tr>
 </tbody></table></div>
 
-<h2>任务五:连续口述与追问</h2>
+<h2 id="task-5" data-task-id="task-5">任务五:连续口述与追问</h2>
 <p><strong>分值</strong>:15 分。</p>
 <p>不看文档,用不超过 5 分钟回答:</p>
 <blockquote>
@@ -232,10 +233,12 @@
 </ul>
 <p>通过后更新<a href="../roadmap/progress-tracker.html">进度跟踪</a>,再进入<a href="../docs/01-orchestration.html">L2 编排控制层</a>。</p>
 
+<div class="callout"><b>答案纪律</b> · 请先闭卷完成并保存原始答卷，再打开建议答案校准；查看答案不等于通过检查点。</div>
+
   </main>
   <nav class="page-nav" aria-label="连续学习导航">
     <a href="../docs/00-agent-architecture.html">← 上一步</a>
-    <a href="../docs/01-orchestration.html">下一步 →</a>
+    <a href="answers/01-agent-architecture.html">完成后核对建议答案 →</a>
   </nav>
   <footer>
     <span>L1 九层 Agent 架构知识地图检查点 · Agent in Actions</span>

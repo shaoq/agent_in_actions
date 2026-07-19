@@ -352,6 +352,48 @@
 <li>评审一个“所有状态都放 messages”的设计,指出生命周期和恢复问题。</li>
 <li>用 3 分钟解释为什么 Agent 不等于“LLM + tool calling”。</li>
 </ol>
+<section class="theory-followups">
+<h2>理论追问</h2>
+<p class="theory-followups__hint">请先脱稿回答，再展开参考答案核对边界、证据和取舍。</p>
+<ol class="theory-followups__list">
+<li class="theory-followups__item">
+<p class="theory-followups__question">为什么“调用了 LLM 和工具”仍不足以证明系统是 Agent？</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>因为 Agent 的关键不在组件数量，而在控制权和反馈闭环。只有系统围绕目标维护显式 State，根据 Observation 动态选择下一步 Action，并在权限、预算和停止条件内推进，才具备 Agent 特征；固定代码顺序调用 LLM 与工具仍可能只是 Workflow。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">Goal、State、Action、Observation 和 Environment 如何形成闭环？</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>Goal 与约束定义方向，State 保存当前可决策事实，决策模块据此选择 Action；Action 影响 Environment，环境返回 Observation，编排把它写回 State，再决定继续、完成、失败或转人工。缺少 Observation 回写就没有真正的反馈闭环。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">Run State、Memory 和 Environment 为什么不能混成一个“上下文”？</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>Run State 是当前运行的目标、步骤、权限和观察；Memory 是经过治理、供未来任务复用的 Agent 经历；Environment 是文件、数据库、工单或用户等外部事实来源。混合后会造成生命周期错位、历史污染，并让模型把内部记录误当作外部真值。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">自治程度越高是否一定越能解决复杂任务？</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>不一定。自治提高对未知路径的适应性，也同步放大延迟、成本、越权和不可恢复副作用。应按任务不确定性开放最小必要自治，并用工具白名单、参数范围、最大步数、预算、审批、沙箱和业务验收约束。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">模型声明 finish 后，系统需要什么证据才能判定业务成功？</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>必须由独立于模型自述的验收证据确认，例如退款系统状态、工单 ID 回查、编译测试、确定性规则或用户确认。编排层依据这些 Observation 更新终态；只有自然语言“已完成”最多表示完成候选，不能作为 ground truth。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">企业 FAQ、开放式行业研究和大额退款分别应优先采用什么系统形态？</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>企业 FAQ 通常用权限过滤后的固定 RAG Workflow；开放式研究因新线索会改变路径，可使用有预算与来源门禁的 Agent；大额退款外层应是确定性 Workflow 与人工审批，局部调查节点可以使用 Agent。选择依据是路径可枚举性、反馈是否改变下一步及副作用风险。</p></div>
+</details>
+</li>
+</ol>
+</section>
 <h2>参考资料</h2>
 <ul>
 <li><a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic: Building effective agents</a> - workflow 与 agent 的工程区分、常见模式和增加复杂度的条件。</li>

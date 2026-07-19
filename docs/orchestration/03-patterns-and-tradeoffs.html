@@ -288,15 +288,48 @@
 <li>Router 使用 LLM 后就自动成为 Agent。</li>
 <li>混合模式只是把多种框架拼在一起;关键是控制边界。</li>
 </ol>
+<section class="theory-followups">
 <h2>理论追问</h2>
-<ol>
-<li>如何判断任务步骤是否“可枚举”?</li>
-<li>Router 的置信度低时有哪些 fallback?</li>
-<li>ReAct 如何检测 observation 没有信息增益?</li>
-<li>Plan-and-Execute 的重规划触发器应该由谁判断?</li>
-<li>为什么高风险动作适合放在确定性边界?</li>
-<li>如何通过 trace 把成功轨迹沉淀为 Workflow?</li>
+<p class="theory-followups__hint">请先脱稿回答，再展开参考答案核对边界、证据和取舍。</p>
+<ol class="theory-followups__list">
+<li class="theory-followups__item">
+<p class="theory-followups__question">如何判断任务步骤是否“可枚举”?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>看输入类别、分支条件和验收路径能否在设计时稳定列出，并用历史样本验证未知分支率。步骤多不等于不可枚举；若环境新证据会频繁改变目标或产生未预见动作，才需要更动态的 Agent 控制。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">Router 的置信度低时有哪些 fallback?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>可以请求澄清、使用确定性默认路由、扩大候选后由规则校验、转人工或安全拒绝。不能只把同一请求无限重试给模型；fallback 应记录候选、置信证据、阈值、最终路由和升级原因。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">ReAct 如何检测 observation 没有信息增益?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>为每步记录目标子问题、证据集合和 Observation 指纹，比较是否新增可验证事实、缩小候选或改变计划。连续重复查询、相同错误和无新来源可触发停机、改策略或转人工，而不是依赖模型自报“没有进展”。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">Plan-and-Execute 的重规划触发器应该由谁判断?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>编排层根据结构化条件判断，例如依赖失败、前提失效、预算变化、审批拒绝或计划版本过期；模型可以提出重规划建议，但不能自行覆盖已批准计划。触发事件与新旧计划差异必须进入 Trace。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">为什么高风险动作适合放在确定性边界?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>因为授权、金额阈值、不可逆性和审批条件需要可复现、可审计且默认拒绝。模型适合解释上下文或提出动作候选，真正执行前应由确定性策略校验主体、资源、参数和审批快照。</p></div>
+</details>
+</li>
+<li class="theory-followups__item">
+<p class="theory-followups__question">如何通过 trace 把成功轨迹沉淀为 Workflow?</p>
+<details class="theory-answer"><summary>查看参考答案</summary>
+<div class="theory-answer__body"><p>先按目标切片聚合成功轨迹，识别高频稳定步骤、必要不变量和少量动态节点，再用回放与消融验证固定化不会降低成功率或安全性。只把稳定部分编码为 Workflow，保留不确定节点的受控决策能力。</p></div>
+</details>
+</li>
 </ol>
+</section>
 <h2>参考资料</h2>
 <ul>
 <li><a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic: Building effective agents</a> - routing、parallelization、orchestrator-workers、evaluator-optimizer 与 agent 模式。</li>
