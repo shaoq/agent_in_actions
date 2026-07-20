@@ -14,8 +14,8 @@ def build_scenario(name: str) -> tuple[ScriptedDecisionProvider, int]:
         "success": (
             ScriptedDecisionProvider(
                 [
-                    Decision.act("inspect", "orchestration-state"),
-                    Decision.finish("The loop completed after one observation."),
+                    Decision.act("inspect", "ticket:T-100"),
+                    Decision.finish("Ticket T-100 was inspected after one observation."),
                 ]
             ),
             4,
@@ -46,7 +46,7 @@ def main() -> None:
 
     provider, max_steps = build_scenario(args.scenario)
     state = run_agent(
-        "Learn the orchestration loop",
+        "Inspect enterprise ticket T-100",
         provider,
         LocalActionExecutor(),
         max_steps=max_steps,

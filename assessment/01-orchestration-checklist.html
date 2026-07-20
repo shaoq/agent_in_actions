@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>编排控制层模块考核 · Agent in Actions</title>
+<title>L3 基础工程阶段考核 · Agent in Actions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -13,9 +13,9 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">ASSESSMENT · ENGINEERING</div>
-    <h1>编排控制层模块考核</h1>
-    <p class="subtitle">在理论门禁之后检验最小 Agent Loop 的工程实现。</p>
+    <div class="eyebrow">L3 · ENGINEERING ASSESSMENT · VERSION 2</div>
+    <h1>L3 基础工程阶段考核</h1>
+    <p class="subtitle">用新工单场景验证结构化决策、工具契约、可靠副作用、Checkpoint 恢复与 Trace 归因。</p>
     <nav class="learning-nav" aria-label="全局学习导航">
       <a href="../docs/index.html">学习首页</a>
       <a href="../roadmap/learning-plan.html">学习路线</a>
@@ -24,219 +24,141 @@
     </nav>
   </header>
   <main class="prose">
-<h1>编排控制层模块考核</h1>
-<h2>目标</h2>
-<p>验证学习者是否真正具备编排控制层的理解、实现、调试和面试表达能力。资产文件完成不等于模块已掌握;只有提交证据并达到通过标准后,才能更新掌握状态。</p>
-<p>考核前应完成:</p>
-<ul>
-<li><a href="../docs/01-orchestration.html">编排控制专题</a></li>
-<li><a href="../labs/agent-loop-minimal/README.md">最小 Agent Loop 实验</a></li>
-<li><a href="../interview/01-orchestration-questions.html">编排面试题</a></li>
-</ul>
+<h1>L3 基础工程阶段考核</h1>
+<div class="callout"><b>版本边界</b> · 本页为 Version 2，覆盖 E0～E4。旧版“编排控制层模块考核”的历史得分与证据不得删除；需要使用本版新场景重新评测时，应作为新的阶段复测记录。</div>
+
+<h2>进入条件</h2>
+<p>开始考核前，应完成并保存以下案例的实现、测试、调试和表达证据：</p>
+<ol>
+<li><a href="../labs/agent-loop-minimal/README.md">E0 最小 Agent Loop</a></li>
+<li><a href="../labs/decision-contract-minimal/README.md">E1 结构化决策契约</a></li>
+<li><a href="../labs/tool-calling-minimal/README.md">E2 工具调用与 Schema</a></li>
+<li><a href="../labs/tool-reliability-minimal/README.md">E3 权限与可靠副作用</a></li>
+<li><a href="../labs/checkpoint-resume-minimal/README.md">E4 Checkpoint 与安全恢复</a></li>
+</ol>
+<p>案例资产可用或基准测试通过不等于满足进入条件。个人状态以<a href="../roadmap/progress-tracker.html">进度跟踪</a>中的证据为准。</p>
+
 <h2>总体规则</h2>
 <ul>
-<li>总分:100 分。</li>
-<li>建议总时限:120 分钟。</li>
-<li>通过线:总分不低于 80 分。</li>
-<li>单项门槛:理解、实现、调试、表达每项得分不低于该项满分的 60%。</li>
-<li>必须提交四类证据;缺少任一类证据均不判定为已掌握。</li>
-<li>首次未通过时记录具体缺口,补强后使用新案例复测,不直接修改原评分。</li>
+<li>总分：100 分；建议总时限：140 分钟。</li>
+<li>通过线：总分不低于 80 分。</li>
+<li>单项门槛：理解、实现、调试、表达每项不低于该项满分的 60%。</li>
+<li>必须提交四类证据；缺少任一类证据均不判定为阶段通过。</li>
+<li>代码任务必须在独立分支或临时副本完成，不直接覆盖 E0～E4 基准案例。</li>
+<li>首次未通过时保存原始结果，补强后使用新动作或新故障组合复测。</li>
 </ul>
-<h2>任务一:架构理解</h2>
-<p><strong>分值与时限</strong>:25 分,20 分钟。</p>
-<p><strong>输入</strong>:一张空白纸或空白 Markdown,不得查看专题文档。</p>
-<p><strong>任务</strong>:</p>
+
+<h2>任务一：架构理解</h2>
+<p><strong>分值与时限：</strong>20 分，20 分钟。</p>
+<p><strong>任务：</strong>不查看课程与案例，画出“企业工单 Agent 请求分派处理人”的链路，并回答：</p>
 <ol>
-<li>画出单 Agent 的 <code>decide -&gt; act -&gt; observe -&gt; terminate</code> 请求链路。</li>
-<li>标出编排层、推理内核、动作层和治理层的职责边界。</li>
-<li>解释运行状态、会话状态和长期记忆的区别。</li>
-<li>给出至少三种终止条件和两种不应该使用 Agent loop 的场景。</li>
+<li>原始模型输出在哪个边界转换成类型化 Decision？</li>
+<li>Tool Registry、Schema、授权、审批、派发和 Observation 分别由谁负责？</li>
+<li>派发后响应丢失时，已知事实、未知事实和下一步查询分别是什么？</li>
+<li>等待审批时 Checkpoint 至少保存什么，恢复时为什么必须重验？</li>
+<li>哪些 Trace 能证明“没有越权执行”，哪些 Trace 仍不足以证明业务成功？</li>
 </ol>
-<p><strong>评分锚点</strong>:</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>分数</th>
-<th>标准</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0-9</td>
-<td>只能描述 LLM 调用或框架 API,无法说明状态和终止。</td>
-</tr>
-<tr>
-<td>10-15</td>
-<td>能画出主循环,但边界、失败或状态解释不完整。</td>
-</tr>
-<tr>
-<td>16-20</td>
-<td>主链路、状态、边界和终止基本正确,能指出常见错误。</td>
-</tr>
-<tr>
-<td>21-25</td>
-<td>能补充适用前提、替代方案、恢复和治理取舍,表达无明显概念混淆。</td>
-</tr>
+<p><strong>评分锚点：</strong></p>
+<div class="table-wrap"><table><thead><tr><th>分数</th><th>标准</th></tr></thead><tbody>
+<tr><td>0～7</td><td>只能描述模型调用或框架 API，无法区分控制与副作用边界。</td></tr>
+<tr><td>8～12</td><td>能画主流程，但权限、派发、未知结果或恢复语义混乱。</td></tr>
+<tr><td>13～16</td><td>边界、状态、证据和失败出口基本正确。</td></tr>
+<tr><td>17～20</td><td>能主动说明替代方案、生产缺口、幂等与恢复竞态。</td></tr>
 </tbody></table></div>
-<p><strong>通过证据</strong>:架构图或 Markdown 回答,附完成时间和自评盲点。</p>
-<h2>任务二:工程实现</h2>
-<p><strong>分值与时限</strong>:25 分,35 分钟。</p>
-<p><strong>输入</strong>:<code>labs/agent-loop-minimal/</code> 现有代码,允许查看 Python 标准库文档。</p>
-<p><strong>任务</strong>:</p>
+<p><strong>通过证据：</strong>架构图或 Markdown 答案、完成时间、自评盲点。</p>
+
+<h2>任务二：迁移性工程实现</h2>
+<p><strong>分值与时限：</strong>35 分，55 分钟。</p>
+<p><strong>新场景：</strong>实现“将工单分派给指定处理人”，不得复制案例中的同名动作。</p>
 <ol>
-<li>增加一个 <code>cancelled</code> 终止状态和对应 trace event。</li>
-<li>设计一个不依赖全局变量的取消信号接口。</li>
-<li>增加正常取消的自动化测试,保证原有四个测试继续通过。</li>
-<li>说明如果取消发生在不可逆动作执行中,当前实现还缺少什么。</li>
+<li>为控制协议增加类型化 <code>escalate</code> 决策，用于把无法自动处理的请求转人工队列；严格拒绝缺字段和多余字段。</li>
+<li>注册写工具 <code>assign_ticket</code>，Schema 要求 <code>ticket_id</code>、<code>assignee_id</code> 和 <code>reason</code>，并禁止额外字段。</li>
+<li>动作必须检查 <code>ticket:assign</code> 权限；跨团队分派需要审批，审批绑定主体、目标工单、处理人和原因摘要。</li>
+<li>使用稳定幂等键和 Effect Receipt；派发后响应丢失时先查询效果，不能直接换键重试。</li>
+<li>等待审批时保存版本化 Checkpoint；恢复时重验主体、环境、动作摘要、权限和工单版本。</li>
+<li>至少提供正常完成、非法决策、未授权、unknown outcome、恢复参数变化和重复恢复测试。</li>
 </ol>
-<p><strong>评分锚点</strong>:</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>分数</th>
-<th>标准</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0-9</td>
-<td>代码不能运行,或通过破坏已有行为实现取消。</td>
-</tr>
-<tr>
-<td>10-15</td>
-<td>能增加状态,但接口耦合、trace 或测试不完整。</td>
-</tr>
-<tr>
-<td>16-20</td>
-<td>状态、接口、trace 和回归测试完整,职责基本清楚。</td>
-</tr>
-<tr>
-<td>21-25</td>
-<td>同时说明动作边界、竞态、幂等或 checkpoint 影响,实现保持最小且可扩展。</td>
-</tr>
+<p><strong>评分锚点：</strong></p>
+<div class="table-wrap"><table><thead><tr><th>分数</th><th>标准</th></tr></thead><tbody>
+<tr><td>0～13</td><td>代码不可运行，或把模型输出、权限和真实执行混在一起。</td></tr>
+<tr><td>14～21</td><td>主流程可运行，但错误分类、幂等、Checkpoint 或测试不完整。</td></tr>
+<tr><td>22～28</td><td>契约、策略、Receipt、恢复和关键回归测试完整。</td></tr>
+<tr><td>29～35</td><td>还能解释崩溃窗口、并发 claim、审计字段和生产替换方案。</td></tr>
 </tbody></table></div>
-<p><strong>通过证据</strong>:代码差异、完整测试输出、设计说明。考核修改应在独立分支或临时副本完成,不直接覆盖基准实验。</p>
-<h2>任务三:Trace 调试</h2>
-<p><strong>分值与时限</strong>:30 分,35 分钟。</p>
-<p><strong>输入</strong>:分别运行以下三个场景产生的 trace:</p>
-<pre><code class="language-bash">conda run -n agent_in_actions python labs/agent-loop-minimal/demo.py --scenario max-steps
-conda run -n agent_in_actions python labs/agent-loop-minimal/demo.py --scenario invalid
-conda run -n agent_in_actions python labs/agent-loop-minimal/demo.py --scenario action-error
+<p><strong>通过证据：</strong>代码差异、完整测试输出、状态/协议设计说明和未解决风险。</p>
+
+<h2>任务三：Trace 调试</h2>
+<p><strong>分值与时限：</strong>25 分，35 分钟。</p>
+<p>运行以下故障场景，并对每条 Trace 按“现象、第一处事实偏离、已知、未知、责任层、修复、回归”记录：</p>
+<pre><code class="language-bash">conda run -n agent_in_actions python labs/decision-contract-minimal/demo.py --scenario extra-field
+conda run -n agent_in_actions python labs/tool-calling-minimal/demo.py --scenario business-rejected
+conda run -n agent_in_actions python labs/tool-reliability-minimal/demo.py --scenario unknown-outcome
+conda run -n agent_in_actions python labs/checkpoint-resume-minimal/demo.py --scenario action-changed
 </code></pre>
-<p><strong>任务</strong>:</p>
-<p>对每条 trace 回答:</p>
+<p>必须额外回答：</p>
 <ol>
-<li>失败或终止发生在哪个 phase?</li>
-<li>已知事实和推测原因分别是什么?</li>
-<li>修复应落在决策契约、编排策略、动作实现还是治理策略?</li>
-<li>修复后需要增加什么回归用例?</li>
+<li>哪两个场景在派发前停止，证据是什么？</li>
+<li>哪个场景已经产生效果但客户端最初不知道？为什么最终没有重复写入？</li>
+<li>动作摘要变化时，应该复用旧审批、重新审批、重新规划还是直接失败？依据是什么？</li>
+<li>如果最终出现 <code>run_completed</code>，还需要什么业务验收信号才能证明工单确实分派正确？</li>
 </ol>
-<p>再分析一个附加问题:如果 trace 显示 <code>run_completed</code>,但用户任务实际上未完成,为什么当前事件不足以证明业务成功?应该增加什么验收信号?</p>
-<p><strong>评分锚点</strong>:</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>分数</th>
-<th>标准</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0-11</td>
-<td>主要根据错误文案猜测,不能使用 phase 和状态证据。</td>
-</tr>
-<tr>
-<td>12-18</td>
-<td>能定位三种场景,但事实、推测和修复层次混合。</td>
-</tr>
-<tr>
-<td>19-24</td>
-<td>能基于事件链归因,修复位置和回归用例基本合理。</td>
-</tr>
-<tr>
-<td>25-30</td>
-<td>能识别 trace 的证据边界,补充业务验收、错误分类和观测字段。</td>
-</tr>
-</tbody></table></div>
-<p><strong>通过证据</strong>:三份结构化调试记录,每份包含“现象、证据、归因、修复、回归”。</p>
-<h2>任务四:面试表达</h2>
-<p><strong>分值与时限</strong>:20 分,30 分钟。</p>
-<p><strong>输入</strong>:随机抽取<a href="../interview/01-orchestration-questions.html">编排面试题</a>中的两题,再回答一道系统设计追问:</p>
-<blockquote>
-<p>设计一个可暂停、可恢复的企业工单 Agent 编排方案。说明状态、终止、动作失败、权限、人在回路和 trace。</p>
-</blockquote>
-<p><strong>任务</strong>:</p>
-<ul>
-<li>每道基础题先用 30 秒回答,再接受 3 分钟追问。</li>
-<li>系统设计题在 8 分钟内完成结构化回答。</li>
-<li>至少引用一个实验中的失败案例,但不能照读题库答案。</li>
-</ul>
-<p><strong>评分锚点</strong>:</p>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>分数</th>
-<th>标准</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0-7</td>
-<td>回答以术语或框架名为主,缺少链路和取舍。</td>
-</tr>
-<tr>
-<td>8-12</td>
-<td>能解释主流程,但追问下边界、失败或证据不足。</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>按问题、架构、链路、失败、治理、取舍组织回答。</td>
-</tr>
-<tr>
-<td>17-20</td>
-<td>能结合实验与业务风险,主动说明替代方案和未解决问题。</td>
-</tr>
-</tbody></table></div>
-<p><strong>通过证据</strong>:录音、逐字稿或面试官评分表,附一个回答得不好的追问及改进版本。</p>
-<h2>评分记录</h2>
-<pre><code class="language-md">考核日期:
-考核版本:
+<p><strong>评分锚点：</strong>0～9 分主要靠错误文案猜测；10～15 分能定位但混淆事实和推测；16～20 分能按边界归因并提出回归；21～25 分能识别证据上限和跨层修复风险。</p>
+<p><strong>通过证据：</strong>四份结构化调试记录和一份业务验收信号设计。</p>
 
-架构理解:__/25
-工程实现:__/25
-Trace 调试:__/30
-面试表达:__/20
-总分:__/100
+<h2>任务四：工程表达</h2>
+<p><strong>分值与时限：</strong>20 分，30 分钟。</p>
+<ol>
+<li>30 秒回答：“为什么 Function Calling 不等于安全工具执行？”</li>
+<li>3 分钟回答：“一次工单写动作超时后应该如何处理？”</li>
+<li>8 分钟设计：“支持暂停、审批、恢复和人工移交的工单 Agent”。</li>
+<li>连续追问：Schema 版本变化、权限撤销、Checkpoint 过期、重复恢复、Trace 脱敏分别如何处理？</li>
+</ol>
+<p><strong>评分锚点：</strong>0～7 分以术语和框架名为主；8～12 分能解释主流程；13～16 分按问题、边界、链路、失败、证据和取舍组织；17～20 分能引用真实实验失败并主动说明未解决问题。</p>
+<p><strong>通过证据：</strong>录音、逐字稿或评分表，以及一个回答不佳追问的改进版本。</p>
 
-单项门槛是否全部满足:是 / 否
-结果:通过 / 待补强
+<h2>评分与证据记录</h2>
+<pre><code class="language-md">考核日期：
+考核版本：L3 基础工程阶段考核 Version 2
+代码版本 / 分支：
 
-证据链接:
-- 理解:
-- 实现:
-- 调试:
-- 表达:
+架构理解：__/20
+工程实现：__/35
+Trace 调试：__/25
+工程表达：__/20
+总分：__/100
 
-最薄弱能力:
-具体补强动作:
-复测日期:
-复测使用的新案例:
+单项门槛是否全部满足：是 / 否
+结果：通过 / 待补强
+
+证据链接：
+- 理解：
+- 实现：
+- 调试：
+- 表达：
+
+旧版历史记录（如有）：
+最薄弱能力：
+具体补强动作：
+复测日期：
+复测使用的新动作或故障：
 </code></pre>
-<h2>复盘问题</h2>
+
+<h2>复盘与下一步</h2>
 <ol>
-<li>哪个回答依赖记忆结论,却无法用 trace 或代码解释?</li>
-<li>哪个失败最初归因错误?混淆了哪两个架构层?</li>
-<li>实现取消功能时,哪些状态转换没有提前设计?</li>
-<li>面试表达是否先讲问题和边界,还是直接讲框架?</li>
-<li>进入工具调用单元前还需要补强什么?</li>
+<li>哪项判断最初把“客户端未知”误当成“服务端未执行”？</li>
+<li>哪个拒绝分支缺少零副作用证据？</li>
+<li>哪项教学简化最容易在生产系统中失效？</li>
+<li>能否在不说框架名的情况下讲清状态、权限、派发、恢复和证据？</li>
 </ol>
-<p>通过后,在<a href="../roadmap/progress-tracker.html">学习进度跟踪</a>中分别记录四项证据和复测日期,再进入工具调用主题。</p>
-
-
+<p>通过后在<a href="../roadmap/progress-tracker.html">进度跟踪</a>中登记四类证据和复测日期，再进入后续 L3 RAG、Memory、Evaluation 或端到端 Capstone 建设；未通过时回到对应 E0～E4 案例补强。</p>
   </main>
   <nav class="page-nav" aria-label="连续学习导航">
-    <a href="../labs/agent-loop-minimal/README.md">← 上一步</a>
-    <a href="../interview/questions.html">下一步 →</a>
+    <a href="../labs/checkpoint-resume-minimal/README.md">← E4 安全恢复</a>
+    <a href="../interview/questions.html">下一步：面试训练 →</a>
   </nav>
   <footer>
-    <span>编排控制层模块考核 · Agent in Actions</span>
-    <span>规范见 AGENTS.md · 样式见 design-system/blueprint.css</span>
+    <span>L3 基础工程阶段考核 · Version 2</span>
+    <span>资产可用不等于个人通过 · 证据与复测见 progress tracker</span>
   </footer>
 </div>
 </body>

@@ -1,0 +1,30 @@
+{
+  "success": {
+    "tool_name": "get_ticket",
+    "arguments": {"ticket_id": "T-100", "include_history": true}
+  },
+  "unknown-tool": {
+    "tool_name": "delete_everything",
+    "arguments": {"ticket_id": "T-100"}
+  },
+  "missing-field": {
+    "tool_name": "get_ticket",
+    "arguments": {"include_history": false}
+  },
+  "wrong-type": {
+    "tool_name": "get_ticket",
+    "arguments": {"ticket_id": 100}
+  },
+  "extra-field": {
+    "tool_name": "get_ticket",
+    "arguments": {"ticket_id": "T-100", "admin": true}
+  },
+  "business-rejected": {
+    "tool_name": "get_ticket",
+    "arguments": {"ticket_id": "T-403"}
+  },
+  "execution-error": {
+    "tool_name": "get_ticket",
+    "arguments": {"ticket_id": "T-500"}
+  }
+}

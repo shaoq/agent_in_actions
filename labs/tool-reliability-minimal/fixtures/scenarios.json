@@ -1,0 +1,53 @@
+{
+  "success": {
+    "subject_id": "agent-operator",
+    "permissions": ["ticket:update"],
+    "action_name": "add_internal_note",
+    "ticket_id": "T-100",
+    "parameters": {"note": "已复现并转交二线处理。"},
+    "max_attempts": 2
+  },
+  "waiting-approval": {
+    "subject_id": "agent-operator",
+    "permissions": ["ticket:update"],
+    "action_name": "update_priority",
+    "ticket_id": "T-100",
+    "parameters": {"priority": 1},
+    "max_attempts": 2
+  },
+  "unauthorized": {
+    "subject_id": "readonly-user",
+    "permissions": [],
+    "action_name": "add_internal_note",
+    "ticket_id": "T-100",
+    "parameters": {"note": "不应写入"},
+    "max_attempts": 2
+  },
+  "retry-exhausted": {
+    "subject_id": "agent-operator",
+    "permissions": ["ticket:update"],
+    "action_name": "add_internal_note",
+    "ticket_id": "T-100",
+    "parameters": {"note": "等待网络恢复"},
+    "max_attempts": 2,
+    "transient_failures": 3
+  },
+  "unknown-outcome": {
+    "subject_id": "agent-operator",
+    "permissions": ["ticket:update"],
+    "action_name": "add_internal_note",
+    "ticket_id": "T-100",
+    "parameters": {"note": "响应可能丢失"},
+    "max_attempts": 2,
+    "lose_response_after_commit": true
+  },
+  "idempotency-conflict": {
+    "subject_id": "agent-operator",
+    "permissions": ["ticket:update"],
+    "action_name": "add_internal_note",
+    "ticket_id": "T-100",
+    "parameters": {"note": "新参数"},
+    "max_attempts": 2,
+    "preload_conflict": true
+  }
+}

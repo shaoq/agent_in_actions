@@ -50,6 +50,7 @@ class Observation:
 
 @dataclass(frozen=True)
 class TraceEvent:
+    run_id: str
     step: int
     phase: str
     event_type: str
@@ -57,6 +58,7 @@ class TraceEvent:
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "run_id": self.run_id,
             "step": self.step,
             "phase": self.phase,
             "event_type": self.event_type,
@@ -67,6 +69,7 @@ class TraceEvent:
 @dataclass
 class LoopState:
     task: str
+    run_id: str = "ticket-e0-run"
     max_steps: int = 4
     step: int = 0
     observations: list[Observation] = field(default_factory=list)
@@ -83,6 +86,7 @@ class LoopState:
     ) -> None:
         self.trace.append(
             TraceEvent(
+                run_id=self.run_id,
                 step=self.step,
                 phase=phase,
                 event_type=event_type,
@@ -160,13 +164,19 @@ def run_agent(
     executor: ActionExecutor,
     *,
     max_steps: int = 4,
+    run_id: str = "ticket-e0-run",
 ) -> LoopState:
     """Run a bounded agent loop and return all state needed for diagnosis."""
 
     if max_steps < 1:
         raise ValueError("max_steps must be at least 1")
 
-    state = LoopState(task=task, max_steps=max_steps, status=RunStatus.RUNNING)
+    state = LoopState(
+        task=task,
+        run_id=run_id,
+        max_steps=max_steps,
+        status=RunStatus.RUNNING,
+    )
     state.record("orchestrate", "run_started", {"task": task, "max_steps": max_steps})
 
     while state.step < state.max_steps:

@@ -1,0 +1,40 @@
+{
+  "valid-resume": {
+    "subject_id": "agent-operator",
+    "environment": "policy-v1:ticket-v7",
+    "now": 1100
+  },
+  "subject-mismatch": {
+    "subject_id": "other-user",
+    "environment": "policy-v1:ticket-v7",
+    "now": 1100
+  },
+  "environment-changed": {
+    "subject_id": "agent-operator",
+    "environment": "policy-v2:ticket-v8",
+    "now": 1100
+  },
+  "expired": {
+    "subject_id": "agent-operator",
+    "environment": "policy-v1:ticket-v7",
+    "now": 1400
+  },
+  "action-changed": {
+    "subject_id": "agent-operator",
+    "environment": "policy-v1:ticket-v7",
+    "now": 1100,
+    "change_action": true
+  },
+  "duplicate-resume": {
+    "subject_id": "agent-operator",
+    "environment": "policy-v1:ticket-v7",
+    "now": 1100,
+    "resume_twice": true
+  },
+  "clarification-resume": {
+    "subject_id": "agent-operator",
+    "environment": "policy-v1:ticket-v7",
+    "now": 1100,
+    "clarification": true
+  }
+}

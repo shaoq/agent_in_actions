@@ -10,7 +10,10 @@
     "theory-followups:check": "node design-system/validate-theory-followups.mjs",
     "theory-checkpoint-answer-diagrams:test": "node design-system/test-theory-checkpoint-answer-diagrams.mjs",
     "theory-checkpoint-answers:check": "node design-system/validate-theory-checkpoint-answers.mjs",
-    "content:check": "npm run diagrams:check && npm run navigation:check && npm run links:check && npm run interview:check && npm run theory-followups:check && npm run theory-checkpoint-answer-diagrams:test && npm run theory-checkpoint-answers:check"
+    "engineering-labs-contract:test": "node design-system/test-progressive-engineering-labs.mjs",
+    "engineering-labs:check": "node design-system/validate-progressive-engineering-labs.mjs",
+    "engineering-labs:test": "conda run -n agent_in_actions python design-system/run-l3-engineering-tests.py",
+    "content:check": "npm run diagrams:check && npm run navigation:check && npm run links:check && npm run interview:check && npm run theory-followups:check && npm run theory-checkpoint-answer-diagrams:test && npm run theory-checkpoint-answers:check && npm run engineering-labs-contract:test && npm run engineering-labs:check"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "11.12.0"

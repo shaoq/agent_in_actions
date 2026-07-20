@@ -193,7 +193,11 @@
       order: 12,
       items: [
         { id: 'agent-loop-lab', title: '最小 Agent Loop', path: 'labs/agent-loop-minimal/README.md', type: 'lab', order: 1, status: 'available' },
-        { id: 'orchestration-engineering-check', title: '编排工程考核', path: 'assessment/01-orchestration-checklist.html', type: 'assessment', order: 2, status: 'available' },
+        { id: 'decision-contract-lab', title: 'E1 · 结构化决策契约', path: 'labs/decision-contract-minimal/README.md', type: 'lab', order: 2, status: 'available' },
+        { id: 'tool-calling-lab', title: 'E2 · 工具调用与 Schema', path: 'labs/tool-calling-minimal/README.md', type: 'lab', order: 3, status: 'available' },
+        { id: 'tool-reliability-lab', title: 'E3 · 权限与可靠副作用', path: 'labs/tool-reliability-minimal/README.md', type: 'lab', order: 4, status: 'available' },
+        { id: 'checkpoint-resume-lab', title: 'E4 · Checkpoint 与安全恢复', path: 'labs/checkpoint-resume-minimal/README.md', type: 'lab', order: 5, status: 'available' },
+        { id: 'orchestration-engineering-check', title: 'L3 基础工程阶段考核', path: 'assessment/01-orchestration-checklist.html', type: 'assessment', order: 6, status: 'available' },
       ],
     },
     {

@@ -32,6 +32,7 @@ class AgentLoopTests(unittest.TestCase):
         self.assertIn(
             "observation_recorded", [event.event_type for event in state.trace]
         )
+        self.assertTrue(all(event.run_id == "ticket-e0-run" for event in state.trace))
         self.assertEqual("run_completed", state.trace[-1].event_type)
 
     def test_stops_at_max_steps(self) -> None:

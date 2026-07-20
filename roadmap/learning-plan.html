@@ -58,9 +58,9 @@
 </tr>
 <tr>
 <td>L3 工程验证</td>
-<td>用最小实验验证理论,训练 trace 调试</td>
-<td>可运行实验、测试、失败复盘</td>
-<td>能实现、解释并诊断主要失败路径</td>
+<td>用 E0～E4 渐进案例验证控制、工具、副作用与恢复理论</td>
+<td>代码差异、测试输出、Trace 复盘、工程口述</td>
+<td>完成五个案例证据并通过 L3 基础工程阶段考核</td>
 </tr>
 <tr>
 <td>L4 面试与综合设计</td>
@@ -71,6 +71,16 @@
 </tbody></table></div>
 <h3>L4 面试训练顺序</h3><ol><li>从<a href="../interview/questions.html">面试题库总览</a>进入九层专题，每题先完成 30 秒结论、3 分钟展开和三个追问。</li><li>完成<a href="../interview/10-system-design-debugging-questions.html">系统设计与 trace 调试</a>，练习九层主流程、SLO、安全、成本、证据归因和回归。</li><li>使用<a href="../interview/11-project-experience-questions.html">项目经验题</a>整理真实 owner、指标、失败和上线证据，不虚构经历。</li><li>最后打开<a href="../interview/suggested-answers.html">独立建议答案</a>复盘遗漏，再以新题完成<a href="../assessment/interview-readiness-checkpoint.html">60 分钟面试就绪度检查点</a>。</li></ol><p>题库和答案的 <code>available</code> 只表示资产可用。个人 L4 状态必须由限时原始回答、六维评分和复测证据决定。</p>
 <p>当前处于 <strong>L0 Agent 基础</strong>。现有编排实验已经可用,但推荐在 L2 编排理论门禁通过后再运行。</p>
+<h3>L3 渐进工程顺序</h3>
+<ol>
+<li><a href="../labs/agent-loop-minimal/README.md">E0 最小 Agent Loop</a>：观察显式 State、有界循环、终止与失败 Trace。</li>
+<li><a href="../labs/decision-contract-minimal/README.md">E1 结构化决策契约</a>：把未信任输出转换成 <code>act / finish / clarify</code> 控制状态。</li>
+<li><a href="../labs/tool-calling-minimal/README.md">E2 工具调用与 Schema</a>：完成 Registry、参数校验、派发和类型化 Observation。</li>
+<li><a href="../labs/tool-reliability-minimal/README.md">E3 权限与可靠副作用</a>：验证审批、统一重试预算、幂等键、Receipt 与 unknown outcome。</li>
+<li><a href="../labs/checkpoint-resume-minimal/README.md">E4 Checkpoint 与安全恢复</a>：验证暂停、恢复重验和零重复副作用。</li>
+<li>保存每个案例的实现、测试、调试和表达证据后，完成<a href="../assessment/01-orchestration-checklist.html">L3 基础工程阶段考核</a>。</li>
+</ol>
+<p>每个案例的 <code>available</code> 只表示资产可用。没有通过相应 L2 理论门禁或没有保存个人证据时，不得把案例标记为已掌握。</p>
 <h3>第二阶段:考核与查漏补缺</h3>
 <p>考核阶段不再输入新知识,而是验证迁移能力:</p>
 <ol>
@@ -222,7 +232,7 @@
 <li>治理与可观测理论通过后先学习<a href="../docs/07-evaluation.html">评测层总览</a>，再进入<a href="../docs/evaluation/index.html">五单元课程</a>并完成理论检查点。</li>
 <li>评测层理论通过后先学习<a href="../docs/08-model-gateway-infrastructure.html">模型网关 + 基础设施总览</a>，再进入<a href="../docs/model-gateway-infrastructure/index.html">五单元课程</a>并完成理论检查点。</li>
 <li>随后先学习<a href="../docs/09-interaction-access.html">交互与接入层总览</a>，再进入<a href="../docs/interaction-access/index.html">四单元课程</a>并完成理论检查点；重点证明接入层不越权执行。</li>
-<li>在进度页登记真实门禁证据后，再按对应路线进入实验或下一组件；编排实验入口仍为<a href="../labs/agent-loop-minimal/README.md">最小 Agent Loop</a>。</li>
+<li>在进度页登记真实门禁证据后，再按前置关系进入<a href="../labs/agent-loop-minimal/README.md">E0</a>、<a href="../labs/decision-contract-minimal/README.md">E1</a>、<a href="../labs/tool-calling-minimal/README.md">E2</a>、<a href="../labs/tool-reliability-minimal/README.md">E3</a>和<a href="../labs/checkpoint-resume-minimal/README.md">E4</a>；完成四类工程证据后再参加阶段考核。</li>
 </ol>
 <div class="callout"><b>答案校准规则</b> · 其余 L2 组件同样在检查点提交后进入各自独立建议答案；答案 available 或已经查看不自动改变个人门禁状态，复测必须使用新题或新场景。</div>
 <h2>防止理论学习跑偏</h2>

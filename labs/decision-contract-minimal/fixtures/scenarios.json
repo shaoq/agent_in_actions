@@ -1,0 +1,29 @@
+{
+  "act-success": {
+    "kind": "act",
+    "action_name": "get_ticket",
+    "arguments": {"ticket_id": "T-100"}
+  },
+  "finish": {
+    "kind": "finish",
+    "answer": "工单 T-100 当前正在处理中。"
+  },
+  "clarify": {
+    "kind": "clarify",
+    "question_id": "q-ticket-id",
+    "question": "请提供需要查询的工单编号。"
+  },
+  "invalid-kind": {
+    "kind": "guess",
+    "answer": "也许已经处理。"
+  },
+  "missing-field": {
+    "kind": "act",
+    "action_name": "get_ticket"
+  },
+  "extra-field": {
+    "kind": "finish",
+    "answer": "完成",
+    "action_name": "unsafe"
+  }
+}

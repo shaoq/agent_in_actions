@@ -1,8 +1,8 @@
-# 最小 Agent Loop 实验
+# E0 · 最小 Agent Loop
 
 > **进入条件**:本实验用于验证编排理论,不是编排概念的第一学习入口。请先完成[编排五单元理论课程](../../docs/orchestration/index.html),并通过[编排无代码理论检查点](../../assessment/01-orchestration-theory-checkpoint.html)。若尚未通过,先不要运行代码。
 
-## 目标
+## 学习目标
 
 本实验用一个无需模型 API 的确定性程序拆开 Agent 编排控制的核心链路:
 
@@ -11,9 +11,9 @@
 3. 区分正常完成、最大步数终止和失败。
 4. 用结构化 trace 还原每一步发生了什么。
 
-理论门禁通过后,先阅读[编排控制总览](../../docs/01-orchestration.html),再运行实验。完成后先执行[工程模块考核](../../assessment/01-orchestration-checklist.html),再使用[面试题](../../interview/01-orchestration-questions.html)训练表达。
+理论门禁通过后,先阅读[编排控制总览](../../docs/01-orchestration.html),再运行实验。本案例是渐进工程路径的 E0，完成证据后进入 E1，而不是直接把示例运行结果当成阶段通过。
 
-## 对应架构层
+## 架构层映射
 
 - 主要对应:② 编排控制层。
 - 仅作接口演示:③ 推理内核、④ 工具 / 动作层。
@@ -23,7 +23,17 @@
 
 `LocalActionExecutor` 也不是完整工具系统。它只有受控的 `inspect` 和 `fail` 动作,不包含 tool schema、MCP、权限、重试或幂等。这些属于后续工具调用单元。
 
-## 环境
+## 前置理论
+
+- [编排控制总览](../../docs/01-orchestration.html)
+- [编排五单元理论课程](../../docs/orchestration/index.html)
+- [编排无代码理论检查点](../../assessment/01-orchestration-theory-checkpoint.html)
+
+## 范围边界
+
+范围内是显式运行状态、有界 `decide → act → observe` 循环、终止和教学型 Trace。范围外是真实模型、Tool Schema、权限、重试、幂等、Checkpoint、长期 Memory 和生产遥测；这些能力由后续案例逐步加入。
+
+## 环境与运行
 
 项目使用 Conda 环境 `agent_in_actions`,当前验证版本为 Python 3.12.13。
 
@@ -40,8 +50,6 @@ conda run -n agent_in_actions python --version
 
 本实验只使用 Python 标准库,不需要安装依赖、配置 API key 或访问网络。
 
-## 运行方式
-
 在本目录执行正常场景:
 
 ```bash
@@ -56,6 +64,8 @@ conda run -n agent_in_actions \
   python labs/agent-loop-minimal/demo.py --scenario success
 ```
 
+## 自动化测试
+
 运行全部测试:
 
 ```bash
@@ -64,6 +74,15 @@ conda run -n agent_in_actions \
   -s labs/agent-loop-minimal/tests \
   -t labs/agent-loop-minimal -v
 ```
+
+## 成功场景
+
+成功场景应得到:
+
+- `status = completed`
+- `step = 2`
+- 一条 `Observation`
+- trace 依次包含 `run_started`、决策、动作、观察和 `run_completed`
 
 ## 关键文件
 
@@ -92,14 +111,7 @@ provider.decide(state)
                          +--> 下一步 / MAX_STEPS
 ```
 
-成功场景应得到:
-
-- `status = completed`
-- `step = 2`
-- 一条 `Observation`
-- trace 依次包含 `run_started`、决策、动作、观察和 `run_completed`
-
-## 失败场景
+## 故障场景
 
 ### 最大步数
 
@@ -128,7 +140,7 @@ conda run -n agent_in_actions \
 
 预期状态为 `failed`,失败 phase 为 `act`,trace 保留 `action_name=fail` 和此前事件。
 
-## 工程设计要点
+## 设计取舍
 
 1. **显式状态**:关键数据不依赖隐藏全局变量或控制台输出。
 2. **结构化决策**:编排器只接受 `Decision`,并在执行前校验。
@@ -144,7 +156,7 @@ conda run -n agent_in_actions \
 - 把达到 `finish` 当作业务成功,却没有独立验收任务结果。
 - 用一个复杂框架隐藏状态转换,导致无法解释失败发生在哪一层。
 
-## 学到什么
+## Trace 复盘
 
 完成实验后,应能不看代码回答:
 
@@ -153,11 +165,18 @@ conda run -n agent_in_actions \
 3. 从 trace 如何区分决策失败和动作失败?
 4. 接入真实模型后哪些接口不变,哪些实现会变化?
 
-## 扩展方向
+## 小步改造
 
-1. 为状态增加 checkpoint 与恢复,验证动作去重。
-2. 将 scripted provider 替换为真实模型适配器,保持 `DecisionProvider` 契约不变。
-3. 在后续工具调用单元加入 JSON Schema、权限、重试和幂等键。
-4. 为 trace 增加 run ID、耗时、token 和成本字段。
+在独立分支或副本中增加 `cancelled` 状态、取消信号接口、Trace event 和自动化测试，并说明取消发生在不可逆动作期间时当前实现还缺少什么。
 
-下一步进入[编排模块考核](../../assessment/01-orchestration-checklist.html),不要因为示例能够运行就直接把主题标记为已掌握。
+## 面试表达
+
+用 30 秒解释“为什么一个 `while` 循环不是生产级编排器”，再用 3 分钟展开状态、终止、失败、Checkpoint、幂等和 Trace 边界。
+
+## 完成证据
+
+进入 E1 前保存：取消功能代码差异、完整测试输出、一份 `invalid` 与 `action-error` 的分层调试记录，以及一次 3 分钟口述。资产可用和示例成功均不代表个人已经掌握。
+
+## 下一步
+
+完成证据后进入 [E1 · 结构化决策契约](../decision-contract-minimal/README.md)。E0～E4 全部完成后再进入阶段工程考核。

@@ -1,0 +1,85 @@
+{
+  "labs": [
+    {
+      "id": "agent-loop-lab",
+      "stage": "E0",
+      "order": 1,
+      "title": "最小 Agent Loop",
+      "directory": "labs/agent-loop-minimal",
+      "readme": "labs/agent-loop-minimal/README.md",
+      "entry": "labs/agent-loop-minimal/demo.py",
+      "tests": "labs/agent-loop-minimal/tests",
+      "prerequisites": [
+        "docs/orchestration/index.html",
+        "assessment/01-orchestration-theory-checkpoint.html"
+      ],
+      "nextId": "decision-contract-lab",
+      "status": "available"
+    },
+    {
+      "id": "decision-contract-lab",
+      "stage": "E1",
+      "order": 2,
+      "title": "结构化决策契约",
+      "directory": "labs/decision-contract-minimal",
+      "readme": "labs/decision-contract-minimal/README.md",
+      "entry": "labs/decision-contract-minimal/demo.py",
+      "tests": "labs/decision-contract-minimal/tests",
+      "prerequisites": [
+        "docs/reasoning/index.html",
+        "assessment/02-reasoning-core-theory-checkpoint.html"
+      ],
+      "nextId": "tool-calling-lab",
+      "status": "available"
+    },
+    {
+      "id": "tool-calling-lab",
+      "stage": "E2",
+      "order": 3,
+      "title": "工具调用与 Schema",
+      "directory": "labs/tool-calling-minimal",
+      "readme": "labs/tool-calling-minimal/README.md",
+      "entry": "labs/tool-calling-minimal/demo.py",
+      "tests": "labs/tool-calling-minimal/tests",
+      "prerequisites": [
+        "docs/tools/index.html",
+        "assessment/03-tools-actions-theory-checkpoint.html"
+      ],
+      "nextId": "tool-reliability-lab",
+      "status": "available"
+    },
+    {
+      "id": "tool-reliability-lab",
+      "stage": "E3",
+      "order": 4,
+      "title": "权限与可靠副作用",
+      "directory": "labs/tool-reliability-minimal",
+      "readme": "labs/tool-reliability-minimal/README.md",
+      "entry": "labs/tool-reliability-minimal/demo.py",
+      "tests": "labs/tool-reliability-minimal/tests",
+      "prerequisites": [
+        "docs/tools/03-permissions-approval-and-sandbox.html",
+        "docs/tools/04-retry-idempotency-and-side-effects.html"
+      ],
+      "nextId": "checkpoint-resume-lab",
+      "status": "available"
+    },
+    {
+      "id": "checkpoint-resume-lab",
+      "stage": "E4",
+      "order": 5,
+      "title": "Checkpoint 与安全恢复",
+      "directory": "labs/checkpoint-resume-minimal",
+      "readme": "labs/checkpoint-resume-minimal/README.md",
+      "entry": "labs/checkpoint-resume-minimal/demo.py",
+      "tests": "labs/checkpoint-resume-minimal/tests",
+      "prerequisites": [
+        "docs/orchestration/04-reliability-and-recovery.html",
+        "docs/interaction-access/03-clarification-hitl-and-handoff.html"
+      ],
+      "nextId": "orchestration-engineering-check",
+      "status": "available"
+    }
+  ],
+  "terminalId": "orchestration-engineering-check"
+}
