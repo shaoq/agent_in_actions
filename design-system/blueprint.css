@@ -384,7 +384,7 @@ details.deep .placeholder .ph-tag{color:var(--rose)}
 .practice-experience-note{
   margin:16px 0 0 !important;padding:12px 14px;border-left:3px solid var(--warn);background:rgba(251,191,36,.07);color:var(--ink) !important;
 }
-:is(.rag-core-concepts,.l2-core-concepts){display:grid;gap:30px;min-width:0;overflow-wrap:anywhere}
+:is(.rag-core-concepts,.l2-core-concepts){display:grid;grid-template-columns:minmax(0,1fr);gap:30px;min-width:0;overflow-wrap:anywhere}
 :is(.rag-core-concepts,.l2-core-concepts)>[data-concept-part]{min-width:0}
 :is(.rag-core-concepts,.l2-core-concepts)>[data-concept-part]+[data-concept-part]{padding-top:6px;border-top:1px dashed var(--line-soft)}
 :is(.rag-core-concepts,.l2-core-concepts) [data-concept-part]>h3{margin-top:20px}

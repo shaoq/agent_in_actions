@@ -233,8 +233,8 @@
       "page": "docs/knowledge-rag/01-boundary-and-pipeline.html",
       "source": "docs/knowledge-rag/diagrams/rag-online-pipeline.mmd",
       "svg": "docs/knowledge-rag/diagrams/rag-online-pipeline.svg",
-      "caption": "在线链路必须携带身份、资源范围和证据引用；记忆只通过独立策略接入。",
-      "alt": "知识检索在线流水线：问题经编排、访问策略、检索、重排、证据组装、生成和引用校验后返回；Agent 经历记忆保持独立。",
+      "caption": "在线链路必须携带身份、资源范围、四层证据身份和预算；支持不足走类型化降级，质量、延迟和成本回馈查询策略。",
+      "alt": "知识检索在线流水线：查询先分类并执行访问策略，再按需改写、混合检索、重排和 Context Budget，生成 Atomic Claims 后验证语义支持，以类型化结果和 Trace 返回。",
       "wide": true
     },
     {
@@ -243,8 +243,8 @@
       "page": "docs/knowledge-rag/02-ingestion-chunking-and-indexing.html",
       "source": "docs/knowledge-rag/diagrams/ingestion-indexing-pipeline.mmd",
       "svg": "docs/knowledge-rag/diagrams/ingestion-indexing-pipeline.svg",
-      "caption": "索引发布是带质量门禁的版本切换，不是在原索引上不可逆覆盖。",
-      "alt": "权威数据源经连接、解析、权限元数据、结构感知切分、特征生成和版本化索引，质量门禁后发布或回滚。",
+      "caption": "document/version 与 content hash 各司其职；索引是可重建派生物，通过 Shadow/Active、Ledger/Receipt、Tombstone 和对账实现发布与恢复。",
+      "alt": "权威源经 Registry、Run Manifest、Action Ledger、Parser 质量、Parent-Child 切分和 Shadow 索引，在门禁后切换 Active Alias；失败按 Receipt 幂等恢复。",
       "wide": true
     },
     {
@@ -253,8 +253,8 @@
       "page": "docs/knowledge-rag/03-retrieval-and-reranking.html",
       "source": "docs/knowledge-rag/diagrams/retrieval-reranking-funnel.mmd",
       "svg": "docs/knowledge-rag/diagrams/retrieval-reranking-funnel.svg",
-      "caption": "召回、重排和最终生成有不同优化目标，必须分别留 trace 和评测。",
-      "alt": "查询经改写后并行执行向量、关键词与结构化检索，候选合并去重和重排，最后形成证据集或受控降级。",
+      "caption": "Transformation、候选融合、Rerank、Parent 扩展和 Context Packing 目标不同，需分别记录首次丢失、预算和淘汰原因。",
+      "alt": "Raw Query 与硬约束按查询桶选择改写策略，BM25/Dense 召回 Child，经融合重排、Parent 扩展和 Context Budget 形成证据或类型化降级。",
       "wide": true
     },
     {
@@ -263,8 +263,8 @@
       "page": "docs/knowledge-rag/04-grounding-citations-and-access-control.html",
       "source": "docs/knowledge-rag/diagrams/grounded-answer-control.mmd",
       "svg": "docs/knowledge-rag/diagrams/grounded-answer-control.svg",
-      "caption": "检索前强制授权缩小数据面，输出前复核声明、引用和敏感信息。",
-      "alt": "编排先取得允许资源过滤，再检索带来源与权限的证据，推理生成声明和引用，治理层复核后允许、脱敏或拒答。",
+      "caption": "检索前授权缩小数据面，使用点与流式提交前再鉴权；CitationChecker 只管可定位性，语义支持验证决定回答、限定或拒答。",
+      "alt": "编排先取得强制过滤，再把 allowlisted evidence IDs/locators 交给推理；治理分别验证 Citation 语法、Semantic Support、当前授权和流式提交边界。",
       "wide": true
     },
     {
@@ -273,8 +273,8 @@
       "page": "docs/knowledge-rag/05-evaluation-and-failure-diagnosis.html",
       "source": "docs/knowledge-rag/diagrams/rag-failure-diagnosis.mmd",
       "svg": "docs/knowledge-rag/diagrams/rag-failure-diagnosis.svg",
-      "caption": "先证明正确证据在哪一步消失，再选择修复点。",
-      "alt": "依次检查语料覆盖、索引可检索性、Top-K 召回、重排保留、声明支持和引用策略，以定位 RAG 失败阶段。",
+      "caption": "先找 First Divergence，再以单变量实验验证修复；质量、P95、成本和 hard fail 共同决定 Shadow/Canary 或回滚。",
+      "alt": "固定版本后依次检查语料授权、Registry/索引、Transformation/召回、候选预算、Context、Claim 支持和引用，再用 Oracle/Ablation 与 Pareto 决定发布。",
       "wide": true
     },
     {
@@ -513,8 +513,8 @@
       "page": "docs/04-knowledge-rag.html",
       "source": "docs/diagrams/knowledge-rag-overview.mmd",
       "svg": "docs/diagrams/knowledge-rag-overview.svg",
-      "caption": "RAG 从外部资料建立索引并按身份检索证据；它与保存 Agent 经历的记忆系统具有不同语义。",
-      "alt": "知识检索总览：外部资料经过摄取索引，任务查询经过召回重排形成带来源证据，再用于 Grounding 和推理。",
+      "caption": "RAG 以 document/version 与 namespace/hash 双身份治理离线供给，在线按权限取证，并用支持、质量、延迟和成本反馈优化；Memory 保持独立语义。",
+      "alt": "知识检索总览：外部资料以稳定文档身份、版本和内容指纹进入索引，授权查询形成预算化证据包，经 Claim 支持验证后回答，并以 Trace 反馈评测。",
       "wide": true
     },
     {

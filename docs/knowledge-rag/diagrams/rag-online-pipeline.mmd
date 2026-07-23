@@ -1,14 +1,18 @@
 flowchart LR
     U[用户问题 + 身份上下文] --> O[编排控制]
-    O --> Q[查询理解与过滤条件]
+    O --> Q[Query 分类 + 约束提取]
     Q --> A{访问策略允许?}
     A -- 否 --> D[拒绝 / 降级 / 人工]
-    A -- 是 --> R[混合检索]
+    A -- 是 --> T[按需 Rewrite / 分解 / Multi-query]
+    T --> R[BM25 + Dense + 结构化检索]
     K[(外部知识索引)] --> R
-    R --> RR[重排 + 去重 + 阈值]
-    RR --> C[证据上下文 + 来源元数据]
-    C --> P[推理内核生成]
-    P --> V[引用与声明校验]
-    V --> O
+    R --> RR[融合 + 去重 + Rerank]
+    RR --> C[Context Budget + Parent 回填]
+    C --> P[基于证据生成 Atomic Claims]
+    P --> V[引用有效性 + Semantic Support]
+    V -- 支持不足 / 冲突 --> D
+    V -- 通过 --> E[类型化 GroundedResult + Trace]
+    E --> O
+    E -. 质量 / 延迟 / 成本反馈 .-> Q
     O --> U
     M[(Agent 经历记忆)] -. 仅经编排按独立策略读取 .-> O

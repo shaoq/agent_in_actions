@@ -6,8 +6,10 @@ sequenceDiagram
     O->>G: subject + query + resource scope
     G-->>O: allowed filters / deny
     O->>R: query + enforced filters
-    R-->>O: chunks + source_id + version + ACL
-    O->>P: instructions + authorized evidence
-    P-->>O: claims + citation refs + uncertainty
-    O->>G: verify citation coverage / output policy
+    R-->>O: document/version/content/chunk + locator + ACL
+    O->>P: instructions + allowlisted evidence IDs / locators
+    P-->>O: atomic claims + citation refs + uncertainty
+    O->>G: verify validity / correctness / completeness
+    G->>G: Citation syntax + semantic support + current ACL
+    G->>G: 使用点复核 / 流式段提交 / conflict
     G-->>O: allow / redact / abstain

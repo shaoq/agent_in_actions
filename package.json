@@ -18,10 +18,12 @@
     "l2-core-concepts:check": "node design-system/validate-l2-core-concepts.mjs",
     "rag-core-concepts:test": "node design-system/test-rag-core-concepts.mjs",
     "rag-core-concepts:check": "node design-system/validate-rag-core-concepts.mjs",
+    "rag-reference-integration:test": "node design-system/test-rag-reference-integration.mjs",
+    "rag-reference-integration:check": "node design-system/validate-rag-reference-integration.mjs",
     "engineering-labs-contract:test": "node design-system/test-progressive-engineering-labs.mjs",
     "engineering-labs:check": "node design-system/validate-progressive-engineering-labs.mjs",
     "engineering-labs:test": "conda run -n agent_in_actions python design-system/run-l3-engineering-tests.py",
-    "content:check": "npm run diagrams:check && npm run navigation:check && npm run links:check && npm run interview:check && npm run theory-followups:check && npm run theory-checkpoint-answer-diagrams:test && npm run theory-checkpoint-answers:check && npm run rag-practice-keypoints:test && npm run rag-practice-keypoints:check && npm run l2-practice-keypoints:test && npm run l2-practice-keypoints:check && npm run rag-core-concepts:test && npm run rag-core-concepts:check && npm run l2-core-concepts:test && npm run l2-core-concepts:check && npm run engineering-labs-contract:test && npm run engineering-labs:check"
+    "content:check": "npm run diagrams:check && npm run navigation:check && npm run links:check && npm run interview:check && npm run theory-followups:check && npm run theory-checkpoint-answer-diagrams:test && npm run theory-checkpoint-answers:check && npm run rag-practice-keypoints:test && npm run rag-practice-keypoints:check && npm run l2-practice-keypoints:test && npm run l2-practice-keypoints:check && npm run rag-core-concepts:test && npm run rag-core-concepts:check && npm run rag-reference-integration:test && npm run rag-reference-integration:check && npm run l2-core-concepts:test && npm run l2-core-concepts:check && npm run engineering-labs-contract:test && npm run engineering-labs:check"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "11.12.0"
